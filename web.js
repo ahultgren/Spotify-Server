@@ -22,6 +22,12 @@ function getNameAndArtist(callback){
 	});
 }
 
+function isPlaying(callback){
+	osascript('player state', function(){
+		callback(arguments[1] === 'playing\n');
+	});
+}
+
 // Routing
 app.get('/', function(req, res){
 	res.sendfile(__dirname + '/index.html');
@@ -29,15 +35,29 @@ app.get('/', function(req, res){
 
 app.get('/play', function(req, res){
 	osascript('playpause', function(){
-		osascript('player state', function(){
-			console.log(arguments);
-			if( arguments[1] === 'playing\n' ){
+		isPlaying(function(isPlaying){
+			if( isPlaying ){
 				getNameAndArtist(function(nameAndArtist){
 					res.send(nameAndArtist);
 				});
 			}
 			else {
 				res.send('Paused');
+			}
+		});
+	});
+});
+
+app.get('/next', function(req, res){
+	osascript('next track', function(){
+		isPlaying(function(isPlaying){
+			if( isPlaying ){
+				getNameAndArtist(function(nameAndArtist){
+					res.send(nameAndArtist);
+				});
+			}
+			else {
+				res.send('No song is playing.');
 			}
 		});
 	});
