@@ -1,4 +1,4 @@
-# Spotify server
+# Spotify Server
 
 Let the whole team choose what's played in the office speakers.
 Also works if you want people at say a party easily check what song is currently being played, if they're too shy to ask someone.
@@ -7,14 +7,14 @@ Also works if you want people at say a party easily check what song is currently
 
 You must have node.js and npm installed.
 
-* Clone this repo
-    $ git clone spotify-server@git
-* Enter the created directory
-    $ cd spotify-server
-* Install dependencies
-    $ npm install
-* Start the server
-    $ node web.js
+* Clone this repo  
+    `$ git clone spotify-server@git`
+* Enter the created directory  
+    `$ cd spotify-server`
+* Install dependencies  
+    `$ npm install`
+* Start the server  
+    `$ node web.js`
 
 Try it out by visiting http://localhost:3000
 
