@@ -64,5 +64,61 @@ app.get('/prev', function(req, res){
 	});
 });
 
+app.get('/get/:property', function(req, res){
+	var property = req.params.property;
+
+	switch( property ){
+		case 'state':
+			osascript('player state', function(){
+				res.send(arguments[1]);
+			});
+		break;
+		case 'position':
+			osascript('player position', function(){
+				res.send(arguments[1]);
+			});
+		break;
+		case 'volume':
+			osascript('sound volume', function(){
+				res.send(arguments[1]);
+			});
+		break;
+		case 'name':
+			osascript('name of current track', function(){
+				res.send(arguments[1]);
+			});
+		break;
+		case 'artist':
+			osascript('artist of current track', function(){
+				res.send(arguments[1]);
+			});
+		break;
+		//## I need to figure out how to stream the response from 
+		/*case 'artwork':
+			osascript('artwork of current track', function(){
+				res.send(arguments[1]);
+			});
+		break;*/
+		case 'album':
+			osascript('album of current track', function(){
+				res.send(arguments[1]);
+			});
+		break;
+		case 'duration':
+			osascript('duration of current track', function(){
+				res.send(arguments[1]);
+			});
+		break;
+		case 'url':
+			osascript('spotify url of current track', function(){
+				res.send(arguments[1]);
+			});
+		break;
+		default:
+			res.send(404, 'Unknown property');
+		break;
+	}
+});
+
 app.listen(port);
 console.log('Listening on port ' + port);
