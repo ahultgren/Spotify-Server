@@ -22,6 +22,19 @@ function getNameAndArtist(callback){
 	});
 }
 
+function sendNameAndArtist(res, error){
+	isPlaying(function(isPlaying){
+		if( isPlaying ){
+			getNameAndArtist(function(nameAndArtist){
+				res.send(nameAndArtist);
+			});
+		}
+		else {
+			res.send(error || 'Not playing.');
+		}
+	});
+}
+
 function isPlaying(callback){
 	osascript('player state', function(){
 		callback(arguments[1] === 'playing\n');
@@ -35,31 +48,19 @@ app.get('/', function(req, res){
 
 app.get('/play', function(req, res){
 	osascript('playpause', function(){
-		isPlaying(function(isPlaying){
-			if( isPlaying ){
-				getNameAndArtist(function(nameAndArtist){
-					res.send(nameAndArtist);
-				});
-			}
-			else {
-				res.send('Paused');
-			}
-		});
+		sendNameAndArtist(res, 'Paused');
 	});
 });
 
 app.get('/next', function(req, res){
 	osascript('next track', function(){
-		isPlaying(function(isPlaying){
-			if( isPlaying ){
-				getNameAndArtist(function(nameAndArtist){
-					res.send(nameAndArtist);
-				});
-			}
-			else {
-				res.send('No song is playing.');
-			}
-		});
+		sendNameAndArtist(res, 'No song is playing.');
+	});
+});
+
+app.get('/prev', function(req, res){
+	osascript('previous track', function(){
+		sendNameAndArtist(res, 'No song is playing.');
 	});
 });
 

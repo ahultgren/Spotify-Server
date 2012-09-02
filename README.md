@@ -26,6 +26,9 @@ Plays current song if no song is playing, pauses if a song is currenty playing.
 **[/next](http://localhost:3000/next)**
 Plays next song in the play queue.
 
+**[/prev](http://localhost:3000/prev)**
+Plays previous song in the play queue.
+
 ## Contribution
 
 Contributions are very much appreciated. The following are stuff that need special attention:
