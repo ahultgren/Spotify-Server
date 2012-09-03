@@ -1,15 +1,31 @@
 var exec = require('child_process').exec,
-	child,
 	app = require('express')(),
-	port = 3000,
-	prefix = 'tell application "Spotify" to ';
+	port = 3000;
 
-function osascript(command, callback){
+function osascript(){
 	"use strict";
+	// args: command 1, command n, ..., callback
+	var command = 'osascript -e \'tell application "Spotify"\' ',
+		end = "-e 'end tell' -e 'return var'",
+		l = arguments.length,
+		callback = arguments[--l] || function(){},
+		i;
 
-	callback = callback || function(){};
+	for( i = 0; i < l; i++ ){
+		command += "-e 'set var to " + (i === 0 ? '' : 'var & ";;;" & ') + arguments[i] + "' ";
+	}
 
-	exec("osascript -e '" + prefix + command + "'", callback);
+	command += end;
+
+	exec(command, function(err, result){
+		if( !err ){
+			// Removing anoying newline character by splicing
+			callback.apply(null, result.split('').splice(0, result.length - 1).join('').split(';;;'));
+		}
+		else {
+			console.log(arguments);
+		}
+	});
 }
 
 function getNameAndArtist(callback){
