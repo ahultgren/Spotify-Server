@@ -23,6 +23,9 @@ Then try it out by visiting [http://localhost:3000](http://localhost:3000)
 **[/play](http://localhost:3000/play)**  
 Plays current song if no song is playing, pauses if a song is currenty playing.
 
+**[/play/uri](http://localhost:3000/play/spotify:track:3Y2nz1ySBZ9Wg0kv9Cuc3Q)**  
+Plays whatever the Spotify URI points to. Could be a song, a playlist, an album or an artist.
+
 **[/next](http://localhost:3000/next)**  
 Plays next song in the play queue.
 
