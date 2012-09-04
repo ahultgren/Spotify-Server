@@ -60,6 +60,25 @@ app.get('/play', function(req, res){
 	});
 });
 
+app.get('/play/:uri', function(req, res){
+	var uri = req.params.uri;
+
+	// Make VERY sure that the uri doesn't contain anything I don't want it to contain
+	if( !uri.match(/[^A-Za-z0-9:]/g) ){
+		osascript('play track "' + uri + '"', 'player state', 'name of current track', 'artist of current track', function(){
+			if( arguments[1] === 'playing' ){
+				res.send('Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
+			}
+			else {
+				res.send('It didn\'t work, but I have to say that song sucks anyways.');
+			}
+		});
+	}
+	else {
+		res.send(400, '¿Hablos español?');
+	}
+});
+
 app.get('/next', function(req, res){
 	osascript('next track', 'player state', 'name of current track', 'artist of current track', function(){
 		if( arguments[1] === 'playing' ){
