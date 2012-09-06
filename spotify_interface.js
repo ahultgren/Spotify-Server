@@ -32,6 +32,24 @@ Spotify.prototype.play = function(callback) {
 	});
 };
 
+Spotify.prototype.playUri = function(uri, callback) {
+	// Make VERY sure that the uri doesn't contain anything I don't want it to contain
+	if( !uri.match(/[^A-Za-z0-9:]/g) ){
+		this.ask('play track "' + uri + '"', 'player state', 'name of current track', 'artist of current track', function(){
+			if( arguments[1] === 'playing' ){
+				callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
+			}
+			else {
+				console.log(arguments[1]);
+				callback(200, 'It seems that URI didn\'t work, but I have to say that song sucks anyways.');
+			}
+		});
+	}
+	else {
+		callback(400, '¿Hablos español?');
+	}
+};
+
 
 /* "Private" methods */
 
