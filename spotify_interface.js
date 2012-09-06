@@ -126,6 +126,70 @@ Spotify.prototype.get = function(property, callback) {
 	}
 };
 
+Spotify.prototype.set = function(property, value, callback) {
+	switch( property ){
+		case 'state':
+			if( value === 'play' ){
+				this.ask('play', 'player state', 'name of current track', 'artist of current track', function(){
+					if( arguments[1] === 'playing' ){
+						callback(200, 'Now dancing to ' + arguments[2] + ' by ' + arguments[3] + '.');
+					}
+					else {
+						callback(200, 'Because of technical problems we only offer the following a capella song: "Bä bää vita lamm, har du någon ull? [---]"');
+					}
+				});
+			}
+			else if( value === 'pause' ){
+				this.ask('pause', 'player state', 'name of current track', 'artist of current track', function(){
+					if( arguments[1] === 'paused' ){
+						callback(200, 'You paused in the middle of ' + arguments[2] + ' by ' + arguments[3] + '! :O');
+					}
+					else {
+						callback(200, 'Hey, I\'m not playing!');
+					}
+				});
+			}
+			else {
+				callback(400, 'I can\'t do that!');
+			}
+		break;
+		case 'position':
+			if( !isNaN(value) && value >= 0 ){
+				this.ask('set player position to ' + value, 'duration of current track', function(){
+					if( value < arguments[0] ){
+						callback(200, 'Yeah! I\'ve always loved the part at ' + value + ' seconds!');
+					}
+					else {
+						callback(200, 'I know this song is way too long, but not that long!');
+					}
+				});
+			}
+			else {
+				callback(400, 'That\'s not a knife... THIS is a knife.');
+			}
+		break;
+		case 'volume':
+			if( !isNaN(value) && value >= 0 && value <= 100 ){
+				this.ask('set sound volume to ' + value, function(){
+					callback(200, 'Volume set to ' + value);
+				});
+			}
+			else if( value > 100 ){
+				callback(200, 'The numbers all go to eleven. Look, right across the board, eleven, eleven, eleven... Not ' + value + '!');
+			}
+			else if( value < 0 ){
+				callback(200, 'So you like it quiet, eh?');
+			}
+			else {
+				callback(400, 'Invalid volume value');
+			}
+		break;
+		default:
+			callback(404, 'No hablo americano');
+		break;
+	}
+};
+
 
 /* "Private" methods */
 
