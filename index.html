@@ -10,28 +10,28 @@ Also works if you want people at say a party easily check what song is currently
 
 <h2>How to use Spotify Server</h2>
 
-<p><strong><a href="http://localhost:3000/play">/play</a></strong> <br />
+<p><strong><a href="/play">/play</a></strong> <br />
 Plays current song if no song is playing, pauses if a song is currenty playing.</p>
 
-<p><strong><a href="http://localhost:3000/play/spotify:track:3Y2nz1ySBZ9Wg0kv9Cuc3Q">/play/uri</a></strong> <br />
+<p><strong><a href="/play/spotify:track:3Y2nz1ySBZ9Wg0kv9Cuc3Q">/play/uri</a></strong> <br />
 Plays whatever the Spotify URI points to. Could be a song, a playlist, an album or an artist.</p>
 
-<p><strong><a href="http://localhost:3000/next">/next</a></strong> <br />
+<p><strong><a href="/next">/next</a></strong> <br />
 Plays next song in the play queue.</p>
 
-<p><strong><a href="http://localhost:3000/prev">/prev</a></strong> <br />
+<p><strong><a href="/prev">/prev</a></strong> <br />
 Plays previous song in the play queue.</p>
 
-<p><strong><a href="http://localhost:3000/get/name">/get/property</a></strong> <br />
-Get a player or track property. Currently supported properties: <a href="http://localhost:3000/get/state">/state</a>, <a href="http://localhost:3000/get/position">/position</a>, <a href="http://localhost:3000/get/volume">/volume</a>, <a href="http://localhost:3000/get/name">/name</a>, <a href="http://localhost:3000/get/artist">/artist</a>, <a href="http://localhost:3000/get/album">/album</a>, <a href="http://localhost:3000/get/duration">/duration</a>, <a href="http://localhost:3000/get/url">/url</a>.</p>
+<p><strong><a href="/get/name">/get/property</a></strong> <br />
+Get a player or track property. Currently supported properties: <a href="/get/state">/state</a>, <a href="/get/position">/position</a>, <a href="/get/volume">/volume</a>, <a href="/get/name">/name</a>, <a href="/get/artist">/artist</a>, <a href="/get/album">/album</a>, <a href="/get/duration">/duration</a>, <a href="/get/url">/url</a>.</p>
 
-<p><strong><a href="http://localhost:3000/set/volume/50">/set/property/value</a></strong> <br />
+<p><strong><a href="/set/volume/50">/set/property/value</a></strong> <br />
 Set a player property. Currently supported:</p>
 
 <ul>
-<li><a href="http://localhost:3000/set/state/pause">/state</a> - <em>play</em> or <em>pause</em>.</li>
-<li><a href="http://localhost:3000/set/position/200">/position</a> - Number of seconds. Must be at least 0 and less than the lenght of the track.</li>
-<li><a href="http://localhost:3000/set/volume/50">/volume</a> - Number of seconds. Must be between 0 and 100.</li>
+<li><a href="/set/state/pause">/state</a> - <em>play</em> or <em>pause</em>.</li>
+<li><a href="/set/position/200">/position</a> - Number of seconds. Must be at least 0 and less than the lenght of the track.</li>
+<li><a href="/set/volume/50">/volume</a> - Number of seconds. Must be between 0 and 100.</li>
 </ul>
 
 </body>
