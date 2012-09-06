@@ -19,6 +19,8 @@ Spotify.prototype.ask = function() {
 };
 
 Spotify.prototype.play = function(callback) {
+	callback = callback || function(){};
+
 	this.ask('playpause', 'player state', 'name of current track', 'artist of current track', function(){
 		if( arguments[1] === 'playing' ){
 			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
@@ -33,6 +35,8 @@ Spotify.prototype.play = function(callback) {
 };
 
 Spotify.prototype.playUri = function(uri, callback) {
+	callback = callback || function(){};
+
 	// Make VERY sure that the uri doesn't contain anything I don't want it to contain
 	if( !uri.match(/[^A-Za-z0-9:]/g) ){
 		this.ask('play track "' + uri + '"', 'player state', 'name of current track', 'artist of current track', function(){
@@ -51,6 +55,8 @@ Spotify.prototype.playUri = function(uri, callback) {
 };
 
 Spotify.prototype.next = function(callback) {
+	callback = callback || function(){};
+
 	this.ask('next track', 'player state', 'name of current track', 'artist of current track', function(){
 		if( arguments[1] === 'playing' ){
 			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '!');
@@ -62,6 +68,8 @@ Spotify.prototype.next = function(callback) {
 };
 
 Spotify.prototype.prev = function(callback) {
+	callback = callback || function(){};
+
 	this.ask('previous track', 'player state', 'name of current track', 'artist of current track', function(){
 		if( arguments[1] === 'playing' ){
 			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
@@ -73,6 +81,8 @@ Spotify.prototype.prev = function(callback) {
 };
 
 Spotify.prototype.get = function(property, callback) {
+	callback = callback || function(){};
+
 	switch( property ){
 		case 'state':
 			this.ask('player state', function(){
@@ -127,6 +137,8 @@ Spotify.prototype.get = function(property, callback) {
 };
 
 Spotify.prototype.set = function(property, value, callback) {
+	callback = callback || function(){};
+
 	switch( property ){
 		case 'state':
 			if( value === 'play' ){
@@ -199,7 +211,7 @@ Spotify.prototype._osascript = function() {
 	var command = 'osascript -e \'set var to ""\' -e \'tell application "Spotify"\' ',
 		end = "-e 'end tell'",
 		l = arguments.length,
-		callback = ( arguments[l - 1] && typeof arguments[l - 1] === 'function' ? arguments[l - 1] : function(){console.log("meow!");} ),
+		callback = ( arguments[l - 1] && typeof arguments[l - 1] === 'function' ? arguments[l - 1] : function(){} ),
 		i,
 		notSet = 0;
 
