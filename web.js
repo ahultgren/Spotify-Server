@@ -22,13 +22,8 @@ app.get('/play/:uri', function(req, res){
 });
 
 app.get('/next', function(req, res){
-	spotify.ask('next track', 'player state', 'name of current track', 'artist of current track', function(){
-		if( arguments[1] === 'playing' ){
-			res.send('Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
-		}
-		else {
-			res.send('Nothing is playing anymore... Guess this is the end of the road.');
-		}
+	spotify.next(function(status, message){
+		res.send(status, message);
 	});
 });
 

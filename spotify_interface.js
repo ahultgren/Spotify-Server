@@ -50,6 +50,17 @@ Spotify.prototype.playUri = function(uri, callback) {
 	}
 };
 
+Spotify.prototype.next = function(callback) {
+	this.ask('next track', 'player state', 'name of current track', 'artist of current track', function(){
+		if( arguments[1] === 'playing' ){
+			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '!');
+		}
+		else {
+			callback(200, 'Nothing is playing anymore... Guess this is the end of the road.');
+		}
+	});
+};
+
 
 /* "Private" methods */
 
