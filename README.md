@@ -59,7 +59,7 @@ Wouldn't it be awesome if you could be pushed automagically when a new song is p
 
 If you want to contribute just clone this repo, make your own branch, follow current coding style, change/add one feature per commit, and issue a pull request when you're done. Cuntributors will be credited below.
 
-Thanks to nicoo for this comhempresible [list of supported Spoitfy commands](http://www.instructables.com/id/RFID-Controls-for-Spotify-on-OSX-using-hacked-Mir/step3/Spotify-osascript-commands/).
+Thanks to nicoo for this extensible [list of supported Spoitfy commands](http://www.instructables.com/id/RFID-Controls-for-Spotify-on-OSX-using-hacked-Mir/step3/Spotify-osascript-commands/).
 
 [get1]: http://localhost:3000/get/state
 [get2]: http://localhost:3000/get/position
