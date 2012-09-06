@@ -28,13 +28,8 @@ app.get('/next', function(req, res){
 });
 
 app.get('/prev', function(req, res){
-	spotify.ask('previous track', 'player state', 'name of current track', 'artist of current track', function(){
-		if( arguments[1] === 'playing' ){
-			res.send('Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
-		}
-		else {
-			res.send('Whoaa! You backed so fast nothing is playing anymore... :(');
-		}
+	spotify.prev(function(status, message){
+		res.send(status, message);
 	});
 });
 

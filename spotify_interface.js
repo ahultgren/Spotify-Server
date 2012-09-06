@@ -61,6 +61,17 @@ Spotify.prototype.next = function(callback) {
 	});
 };
 
+Spotify.prototype.prev = function(callback) {
+	this.ask('previous track', 'player state', 'name of current track', 'artist of current track', function(){
+		if( arguments[1] === 'playing' ){
+			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
+		}
+		else {
+			callback(200, 'Whoaa! You backed up so fast nothing is playing anymore... :(');
+		}
+	});
+};
+
 
 /* "Private" methods */
 
