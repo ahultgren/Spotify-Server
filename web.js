@@ -34,59 +34,9 @@ app.get('/prev', function(req, res){
 });
 
 app.get('/get/:property', function(req, res){
-	var property = req.params.property;
-
-	switch( property ){
-		case 'state':
-			spotify.ask('player state', function(){
-				res.send(arguments[0]);
-			});
-		break;
-		case 'position':
-			spotify.ask('player position', function(){
-				res.send(arguments[0]);
-			});
-		break;
-		case 'volume':
-			spotify.ask('sound volume', function(){
-				res.send(arguments[0]);
-			});
-		break;
-		case 'name':
-			spotify.ask('name of current track', function(){
-				res.send(arguments[0]);
-			});
-		break;
-		case 'artist':
-			spotify.ask('artist of current track', function(){
-				res.send(arguments[0]);
-			});
-		break;
-		//## I need to figure out how to stream the response from 
-		/*case 'artwork':
-			spotify.ask('artwork of current track', function(){
-				res.send(arguments[1]);
-			});
-		break;*/
-		case 'album':
-			spotify.ask('album of current track', function(){
-				res.send(arguments[0]);
-			});
-		break;
-		case 'duration':
-			spotify.ask('duration of current track', function(){
-				res.send(arguments[0]);
-			});
-		break;
-		case 'url':
-			spotify.ask('spotify url of current track', function(){
-				res.send(arguments[0]);
-			});
-		break;
-		default:
-			res.send(404, 'Que?');
-		break;
-	}
+	spotify.get(req.params.property, function(status, message){
+		res.send(status, message);
+	});
 });
 
 app.get('/set/:property/:value', function(req, res){
