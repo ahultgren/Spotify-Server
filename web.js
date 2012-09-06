@@ -10,16 +10,8 @@ app.get('/', function(req, res){
 });
 
 app.get('/play', function(req, res){
-	spotify.ask('playpause', 'player state', 'name of current track', 'artist of current track', function(){
-		if( arguments[1] === 'playing' ){
-			res.send('Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
-		}
-		else if( arguments[1] === 'paused' ){
-			res.send('You paused in the middle of ' + arguments[2] + ' by ' + arguments[3] + '! :O');
-		}
-		else {
-			res.send('Nothing is playing...');
-		}
+	spotify.play(function(status, message){
+		res.send(status, message);
 	});
 });
 

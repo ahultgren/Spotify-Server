@@ -18,6 +18,20 @@ Spotify.prototype.ask = function() {
 	this.interface.apply(null, arguments);
 };
 
+Spotify.prototype.play = function(callback) {
+	this.ask('playpause', 'player state', 'name of current track', 'artist of current track', function(){
+		if( arguments[1] === 'playing' ){
+			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
+		}
+		else if( arguments[1] === 'paused' ){
+			callback(200, 'You paused in the middle of ' + arguments[2] + ' by ' + arguments[3] + '! :O');
+		}
+		else {
+			callback(200, 'Nothing is playing...');
+		}
+	});
+};
+
 
 /* "Private" methods */
 
