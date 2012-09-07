@@ -51,9 +51,7 @@ Currently this is not much more than a REST API, which is not very usable.
 * **Windows support**  
 Is there a way to interact with Spotify from the commad prompt in windows?
 * **Linux support**  
-Actually I have no idea if this works in Linux. Anyone have an idea?
-* **Get rid of Express.js**  
-Express is kinda bloated when I'm only using the routing part, though it was fast to get running. But it should't require much work to refactor it out of here and make this module dependency free.
+This page seems to have some useful info: http://ubuntuforums.org/showthread.php?t=1797848
 * **Web Sockets API**  
 Wouldn't it be awesome if you could be pushed automagically when a new song is played?
 
