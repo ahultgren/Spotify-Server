@@ -5,6 +5,9 @@ module.exports = function(){
 };
 
 function Spotify(){
+	// Property used for caching
+	this._cache = {};
+
 	//## When supported it would be possible to figure out if osascipt or another interface can be used
 
 	// Set correct reference
@@ -15,7 +18,7 @@ function Spotify(){
 /* Public methods */
 
 Spotify.prototype.ask = function() {
-	this.interface.apply(null, arguments);
+	this.interface.apply(this, arguments);
 };
 
 Spotify.prototype.play = function(callback) {
@@ -207,37 +210,61 @@ Spotify.prototype.set = function(property, value, callback) {
 
 Spotify.prototype._osascript = function() {
 	"use strict";
-	// args: command 1, command n, ..., callback
-	var command = 'osascript -e \'set var to ""\' -e \'tell application "Spotify"\' ',
+	// args: command 1, command n, ..., callback, useCache
+
+	var that = this,
+		command = 'osascript -e \'set var to ""\' -e \'tell application "Spotify"\' ',
 		end = "-e 'end tell'",
 		l = arguments.length,
-		callback = ( arguments[l - 1] && typeof arguments[l - 1] === 'function' ? arguments[l - 1] : function(){} ),
+		//! Important to note that l is reduced automatically here if cache/callback is found
+		useCache = typeof arguments[l - 1] === 'boolean' && arguments[--l] || false,
+		callback = typeof arguments[l] === 'function' && arguments[--l] 
+			|| typeof arguments[l - 1] && arguments[--l] || function(){},
 		i,
-		notSet = 0;
+		notSet = 0,
+		cache = '';
 
-	for( i = 0, --l; i < l; i++ ){
-		command += "-e '";
-
-		if( arguments[i].indexOf('set') === -1 ){
-			command += "set var to var & " + ( notSet === 0 ? '' : '";;;" & ' ) + arguments[i];
-			notSet++;
-		}
-		else {
-			command += arguments[i]
-		}
-
-		command += "' ";
+	// Create cache var
+	for( i = l; i--; ){
+		cache += arguments[i];
 	}
+	cache += ~~(Date.now() / 10000); // Cache every ten seconds and floor it bitwise
 
-	command += end + ( notSet === 0 ? '' :  " -e 'return var'" );
+	// Check if cache should be used and if it's cached
+	if( useCache && that._cache[cache] ){
+		if( !that._cache[cache].error ){
+			callback.apply(null, that._cache[cache]);
+		}
+	}
+	else {
+		for( i = 0, l; i < l; i++ ){
+			command += "-e '";
 
-	exec(command, function(err, result){
-		if( !err ){
-			// Removing anoying newline character by splicing
-			callback.apply(null, result.split('').splice(0, result.length - 1).join('').split(';;;'));
+			if( arguments[i].indexOf('set') === -1 ){
+				command += "set var to var & " + ( notSet === 0 ? '' : '";;;" & ' ) + arguments[i];
+				notSet++;
+			}
+			else {
+				command += arguments[i]
+			}
+
+			command += "' ";
 		}
-		else {
-			console.log(arguments);
-		}
-	});
+
+		command += end + ( notSet === 0 ? '' :  " -e 'return var'" );
+
+		exec(command, function(err, result){
+			if( !err ){
+				// Removing anoying newline character by splicing
+				result = result.split('').splice(0, result.length - 1).join('').split(';;;');
+
+				callback.apply(null, result);
+				that._cache[cache] = result;
+			}
+			else {
+				console.log(arguments);
+				that._cache[cache] = {error: arguments};
+			}
+		});
+	}
 };
