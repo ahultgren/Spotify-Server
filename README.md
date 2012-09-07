@@ -73,3 +73,8 @@ Thanks to nicoo for this extensible [list of supported Spoitfy commands](http://
 [set1]: http://localhost:3000/set/state/pause
 [set2]: http://localhost:3000/set/position/200
 [set3]: http://localhost:3000/set/volume/50
+
+## License
+
+MIT. Eg. use as you please but don't expect anything and don't remove this notice :)
+Oh, and I'd be happy if you tell people it's me (Andreas Hultgren) who built this.
