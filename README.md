@@ -8,7 +8,7 @@ Also works if you want people at say a party easily check what song is currently
 You must have node.js and npm installed.
 
 * Clone this repo  
-    `$ git clone spotify-server@git`
+    `$ git clone git://github.com/ahultgren/Spotify-Server.git`
 * Enter the created directory  
     `$ cd spotify-server`
 * Install dependencies  
