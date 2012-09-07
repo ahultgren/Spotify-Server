@@ -8,7 +8,7 @@ Also works if you want people at say a party easily check what song is currently
 You must have node.js and npm installed.
 
 * Clone this repo  
-    `$ git clone spotify-server@git`
+    `$ git clone git://github.com/ahultgren/Spotify-Server.git`
 * Enter the created directory  
     `$ cd spotify-server`
 * Install dependencies  
@@ -51,9 +51,7 @@ Currently this is not much more than a REST API, which is not very usable.
 * **Windows support**  
 Is there a way to interact with Spotify from the commad prompt in windows?
 * **Linux support**  
-Actually I have no idea if this works in Linux. Anyone have an idea?
-* **Get rid of Express.js**  
-Express is kinda bloated when I'm only using the routing part, though it was fast to get running. But it should't require much work to refactor it out of here and make this module dependency free.
+This page seems to have some useful info: http://ubuntuforums.org/showthread.php?t=1797848
 * **Web Sockets API**  
 Wouldn't it be awesome if you could be pushed automagically when a new song is played?
 
@@ -73,3 +71,8 @@ Thanks to nicoo for this extensible [list of supported Spoitfy commands](http://
 [set1]: http://localhost:3000/set/state/pause
 [set2]: http://localhost:3000/set/position/200
 [set3]: http://localhost:3000/set/volume/50
+
+## License
+
+MIT. Eg. use as you please but don't expect anything and don't remove this notice :)
+Oh, and I'd be happy if you tell people it's me (Andreas Hultgren) who built this.
