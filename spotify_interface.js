@@ -84,58 +84,49 @@ Spotify.prototype.prev = function(callback) {
 };
 
 Spotify.prototype.get = function(property, callback) {
+	var command = '',
+		cache = true;
 	callback = callback || function(){};
 
 	switch( property ){
 		case 'state':
-			this.ask('player state', function(){
-				callback(200, arguments[0]);
-			});
+			command = 'player state';
 		break;
 		case 'position':
-			this.ask('player position', function(){
-				callback(200, arguments[0]);
-			});
+			command = 'player position';
+			cache = false;
 		break;
 		case 'volume':
-			this.ask('sound volume', function(){
-				callback(200, arguments[0]);
-			});
+			command = 'sound volume';
 		break;
 		case 'name':
-			this.ask('name of current track', function(){
-				callback(200, arguments[0]);
-			});
+			command = 'name of current track';
 		break;
 		case 'artist':
-			this.ask('artist of current track', function(){
-				callback(200, arguments[0]);
-			});
+			command = 'artist of current track';
 		break;
 		//## I need to figure out how to stream the response from an osascript or get it from the spotify api
 		/*case 'artwork':
-			this.ask('artwork of current track', function(){
-				callback(200, arguments[1]);
-			});
+			command = 'artwork of current track';
 		break;*/
 		case 'album':
-			this.ask('album of current track', function(){
-				callback(200, arguments[0]);
-			});
+			command = 'album of current track';
 		break;
 		case 'duration':
-			this.ask('duration of current track', function(){
-				callback(200, arguments[0]);
-			});
+			command = 'duration of current track';
 		break;
 		case 'url':
-			this.ask('spotify url of current track', function(){
-				callback(200, arguments[0]);
-			});
+			command = 'spotify url of current track';
 		break;
-		default:
-			callback(404, 'Que?');
-		break;
+	}
+
+	if( command ){
+		this.ask(command, function(){
+			callback(200, arguments[0]);
+		}, cache);
+	}
+	else {
+		callback(404, 'Que?');
 	}
 };
 
