@@ -5,44 +5,39 @@ var app = require('express')(),
 
 // Routing
 
+app.use(function(req, res, next){
+	res.httpResponse = function(status, message){
+		res.send(status, message);
+	};
+	next();
+});
+
 app.get('/', function(req, res){
 	res.sendfile(__dirname + '/index.html');
 });
 
 app.get('/play', function(req, res){
-	spotify.play(function(status, message){
-		res.send(status, message);
-	});
+	spotify.play(res.httpResponse);
 });
 
 app.get('/play/:uri', function(req, res){
-	spotify.playUri(req.params.uri, function(status, message){
-		res.send(status, message);
-	});
+	spotify.playUri(req.params.uri, res.httpResponse);
 });
 
 app.get('/next', function(req, res){
-	spotify.next(function(status, message){
-		res.send(status, message);
-	});
+	spotify.next(res.httpResponse);
 });
 
 app.get('/prev', function(req, res){
-	spotify.prev(function(status, message){
-		res.send(status, message);
-	});
+	spotify.prev(res.httpResponse);
 });
 
 app.get('/get/:property', function(req, res){
-	spotify.get(req.params.property, function(status, message){
-		res.send(status, message);
-	});
+	spotify.get(req.params.property, res.httpResponse);
 });
 
 app.get('/set/:property/:value', function(req, res){
-	spotify.set(req.params.property, req.params.value, function(status, message){
-		res.send(status, message);
-	});
+	spotify.set(req.params.property, req.params.value, res.httpResponse);
 });
 
 app.listen(port);
