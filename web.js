@@ -7,6 +7,7 @@ var app = require('express')(),
 
 app.use(function(req, res, next){
 	res.httpResponse = function(status, message){
+		res.contentType('text/plain');
 		res.send(status, message);
 	};
 	next();
