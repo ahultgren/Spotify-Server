@@ -16,11 +16,49 @@ app.use(function(req, res, next){
 });
 
 app.use(function(req, res, next){
-	req.isAuth = function(level, callback){
-		level = typeof level === 'number' && level || 0;
-		callback(level <= allowedLevels || req.query.token === auth);
-	};
-	next();
+	var level = 0,
+		i,
+		routes = app.routes.get,
+		path;
+
+	for( i in routes ){
+		if( req.path.match(routes[i].regexp) ){
+			path = routes[i].path;
+		}
+	}
+
+	switch( path ){
+		case '/':
+			level = 0;
+		break;
+		case '/current':
+			level = 1;
+		break;
+		case '/get/:property':
+			level = 2;
+		break;
+		case '/next':
+		case '/prev':
+		case '/play':
+			level = 3;
+		break;
+		case '/play/:uri':
+			level = 4;
+		break;
+		case '/set/:property/:value':
+			level = 5;
+		break;
+		case 'auth/:token/:level':
+			level = 10;
+		break;
+	}
+
+	if( level <= allowedLevels || req.query.token === auth ){
+		next();
+	}
+	else {
+		res.httpResponse(401, 'You shall not pass!');
+	}
 });
 
 app.get('/', function(req, res){
@@ -56,18 +94,9 @@ app.get('/current', function(req, res){
 });
 
 app.get('/auth/:token/:level', function(req, res){
-	// Allow to set password only if none is set already or if the user is authorized
-	req.isAuth(10, function(isAuth){
-		if( isAuth ){
-			auth = req.params.token;
-			allowedLevels = req.params.level;
-
-			res.send('Permissions updated!');
-		}
-		else {
-			res.send(401, 'You shall not pass!');
-		}
-	});
+	auth = req.params.token;
+	allowedLevels = req.params.level;
+	res.send('Permissions updated!');
 });
 
 app.listen(port);
