@@ -2,7 +2,7 @@ var app = require('express')(),
 	port = 3000,
 	spotify = require('./spotify_interface')(),
 	auth,
-	authLevel = 0;
+	allowedLevels = 9;
 
 
 // Routing
@@ -18,7 +18,7 @@ app.use(function(req, res, next){
 app.use(function(req, res, next){
 	req.isAuth = function(level, callback){
 		level = typeof level === 'number' && level || 0;
-		callback(level > authLevel || req.query.token === auth);
+		callback(level <= allowedLevels || req.query.token === auth);
 	};
 	next();
 });
@@ -53,6 +53,21 @@ app.get('/set/:property/:value', function(req, res){
 
 app.get('/current', function(req, res){
 	spotify.get('current', res.httpResponse);
+});
+
+app.get('/auth/:token/:level', function(req, res){
+	// Allow to set password only if none is set already or if the user is authorized
+	req.isAuth(10, function(isAuth){
+		if( isAuth ){
+			auth = req.params.token;
+			allowedLevels = req.params.level;
+
+			res.send('Permissions updated!');
+		}
+		else {
+			res.send(401, 'You shall not pass!');
+		}
+	});
 });
 
 app.listen(port);
