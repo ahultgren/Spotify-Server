@@ -1,6 +1,8 @@
 var app = require('express')(),
 	port = 3000,
-	spotify = require('./spotify_interface')();
+	spotify = require('./spotify_interface')(),
+	auth,
+	authLevel = 0;
 
 
 // Routing
@@ -9,6 +11,14 @@ app.use(function(req, res, next){
 	res.httpResponse = function(status, message){
 		res.contentType('text/plain');
 		res.send(status, message);
+	};
+	next();
+});
+
+app.use(function(req, res, next){
+	req.isAuth = function(level, callback){
+		level = typeof level === 'number' && level || 0;
+		callback(level > authLevel || req.query.token === auth);
 	};
 	next();
 });
