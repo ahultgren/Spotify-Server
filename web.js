@@ -2,7 +2,8 @@ var app = require('express')(),
 	port = 3000,
 	spotify = require('./spotify_interface')(),
 	auth,
-	allowedLevels = 9;
+	allowedLevels = 9,
+	useAuth = false;
 
 
 // Routing
@@ -94,9 +95,14 @@ app.get('/current', function(req, res){
 });
 
 app.get('/auth/:token/:level', function(req, res){
-	auth = req.params.token;
-	allowedLevels = req.params.level;
-	res.send('Permissions updated!');
+	if( useAuth ){
+		auth = req.params.token;
+		allowedLevels = req.params.level;
+		res.httpResponse(200, 'Permissions updated!');
+	}
+	else {
+		res.httpResponse(403, 'You require more vespene gas (authorization is disabled).');
+	}
 });
 
 app.listen(port);
