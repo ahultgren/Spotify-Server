@@ -40,5 +40,9 @@ app.get('/set/:property/:value', function(req, res){
 	spotify.set(req.params.property, req.params.value, res.httpResponse);
 });
 
+app.get('/current', function(req, res){
+	spotify.get('current', res.httpResponse);
+});
+
 app.listen(port);
 console.log('Listening on port ' + port);
