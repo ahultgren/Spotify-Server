@@ -32,6 +32,9 @@ Plays next song in the play queue.
 **[/prev](http://localhost:3000/prev)**  
 Plays previous song in the play queue.
 
+**[/current](http://localhost:3000/current)**  
+Shows all info about the current track.
+
 **[/get/property](http://localhost:3000/get/name)**  
 Get a player or track property. Currently supported properties: [/state][get1], [/position][get2], [/volume][get3], [/name][get4], [/artist][get5], [/album][get6], [/duration][get7], [/url][get8].
 
@@ -41,6 +44,23 @@ Set a player property. Currently supported:
 * [/state][set1] - _play_ or _pause_.
 * [/position][set2] - Number of seconds. Must be at least 0 and less than the lenght of the track.
 * [/volume][set3] - Number of seconds. Must be between 0 and 100.
+
+**[/auth/wantedPassword/allowedLevels](http://localhost:3000/meow/2)**  
+Set password and permission level. Spotify Server now supports permissions as a way to limit what non-admins are allowed to do.
+To then authenticate yourself as admin for any action, just add [?token=meow](http://localhost:3000/play?token=meow) to the url.
+
+Currently the following levels are supported:
+
+* 0: /
+* 1: /current
+* 2: /get
+* 3: /play, /next, /prev
+* 4: /play/uri
+* 5: /set
+* 10: /auth
+
+So for example if the permission level is set to 2, anyone can get info about the player and tracks but not change what's playing.
+Also if you would set the permission level to 10 or higher anyone will be able to change the password. Don't do that.
 
 ## Contribution
 

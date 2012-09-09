@@ -118,15 +118,25 @@ Spotify.prototype.get = function(property, callback) {
 		case 'url':
 			command = 'spotify url of current track';
 		break;
+		case 'current':
+			this.ask('name of current track', 'artist of current track', 'album of current track', 'duration of current track', 'spotify url of current track', 'player state', function(){
+				callback(200, 'Track: ' + arguments[0] + '\n'
+					+ 'Artist: ' + arguments[1] + '\n'
+					+ 'Album: ' + arguments[2] + '\n'
+					+ 'Duration: ' + arguments[3] + '\n'
+					+ 'Sporify URI: ' + arguments[4] + '\n'
+					+ 'Player state: ' + arguments[5] + '\n');
+			}, true);
+		break;
+		default:
+			callback(404, 'Que?');
+		break;
 	}
 
 	if( command ){
 		this.ask(command, function(){
 			callback(200, arguments[0]);
 		}, cache);
-	}
-	else {
-		callback(404, 'Que?');
 	}
 };
 
