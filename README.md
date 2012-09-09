@@ -32,6 +32,9 @@ Plays next song in the play queue.
 **[/prev](http://localhost:3000/prev)**  
 Plays previous song in the play queue.
 
+**[/current](http://localhost:3000/current)**  
+Shows all info about the current track.
+
 **[/get/property](http://localhost:3000/get/name)**  
 Get a player or track property. Currently supported properties: [/state][get1], [/position][get2], [/volume][get3], [/name][get4], [/artist][get5], [/album][get6], [/duration][get7], [/url][get8].
 
