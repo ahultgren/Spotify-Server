@@ -70,8 +70,13 @@ app.get('/play', function(req, res){
 	spotify.play(res.httpResponse);
 });
 
-app.get('/play/:uri', function(req, res){
-	spotify.playUri(req.params.uri, res.httpResponse);
+app.get('/play/:uri/:context?', function(req, res){
+	if( req.params.context ){
+		spotify.playUri(req.params.uri, req.params.context, res.httpResponse);
+	}
+	else {
+		spotify.playUri(req.params.uri, res.httpResponse);
+	}
 });
 
 app.get('/next', function(req, res){

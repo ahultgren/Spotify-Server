@@ -37,12 +37,19 @@ Spotify.prototype.play = function(callback) {
 	});
 };
 
-Spotify.prototype.playUri = function(uri, callback) {
-	callback = callback || function(){};
+Spotify.prototype.playUri = function() {
+	// args: uri, [context], callback
+	var uri = arguments[0],
+		l = arguments.length - 1,
+		callback = typeof arguments[l] === 'function' && arguments[l--] || function(){},
+		context = (l > 0 && typeof arguments[l] === 'string') &&  arguments[l] || undefined;
 
 	// Make VERY sure that the uri doesn't contain anything I don't want it to contain
-	if( !uri.match(/[^A-Za-z0-9:]/g) ){
-		this.ask('play track "' + uri + '"', 'player state', 'name of current track', 'artist of current track', function(){
+	if( context && context.match(/[^A-Za-z0-9:#]/g) || uri.match(/[^A-Za-z0-9:#]/g) ){
+		callback(400, '¿Hablos español?');
+	}
+	else {
+		this.ask('play track "' + uri + ( context && '" in context "' + context + '"' || '"' ), 'player state', 'name of current track', 'artist of current track', function(){
 			if( arguments[1] === 'playing' ){
 				callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
 			}
@@ -51,9 +58,6 @@ Spotify.prototype.playUri = function(uri, callback) {
 				callback(200, 'It seems that URI didn\'t work, but I have to say that song sucks anyways.');
 			}
 		});
-	}
-	else {
-		callback(400, '¿Hablos español?');
 	}
 };
 
