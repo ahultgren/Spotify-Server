@@ -17,9 +17,53 @@ function Spotify(){
 
 /* Public methods */
 
+/** Ask spotify to do something
+ *
+ * Checks agains a cache to reduce stress on the server (osascripts in particular are ridiculously slow).
+ * Seperation between cache name and timestamp is done to be able to prevent memory leaks. If both are combined
+ * there is no way to delete the property and they would pile up as time goes by.
+ */
 Spotify.prototype.ask = function() {
-	this.interface.apply(this, arguments);
+	var that = this,
+		arguments = [].splice.call(arguments, 0),
+		cacheInterval = !isNaN(+arguments[arguments.length - 1]) && +arguments.pop() || false,
+		callback = typeof arguments[arguments.length - 1] === 'function' && arguments.pop() || function(){},
+		cacheName = '',
+		timestamp = ~~(Date.now() / (cacheInterval * 1000)); // Cache every n seconds and floor it using a bitwise hack
+
+	// Create cache name
+	for( i = arguments.length; i--; ){
+		cacheName += arguments[i];
+	}
+
+	// Check if cache should be used and if it's cached recently
+	if( cacheInterval && that._cache[cacheName] && that._cache[cacheName][timestamp] ){
+		if( !that._cache[cacheName][timestamp].error ){
+			// There's a cache with no error! Callback the cache
+			callback.apply(null, that._cache[cacheName][timestamp]);
+		}
+		else {
+			// There's a cache but there was an error last time
+		}
+	}
+	else{
+		arguments.push(function(err){
+			if( !err.error ){
+				callback.apply(null, arguments);
+			}
+
+			if( cacheInterval ){
+				// Create a new cache and remove the old one
+				that._cache[cacheName] = {};
+				that._cache[cacheName][timestamp] = arguments;
+			}
+		});
+
+		// Call the proper spotify interface
+		that.interface.apply(this, arguments);
+	}
 };
+
 
 Spotify.prototype.play = function(callback) {
 	callback = callback || function(){};
@@ -89,7 +133,7 @@ Spotify.prototype.prev = function(callback) {
 
 Spotify.prototype.get = function(property, callback) {
 	var command = '',
-		cache = true;
+		cache = 10;
 	callback = callback || function(){};
 
 	switch( property ){
@@ -130,7 +174,7 @@ Spotify.prototype.get = function(property, callback) {
 					+ 'Duration: ' + arguments[3] + '\n'
 					+ 'Sporify URI: ' + arguments[4] + '\n'
 					+ 'Player state: ' + arguments[5] + '\n');
-			}, true);
+			}, cache);
 		break;
 		default:
 			callback(404, 'Que?');
@@ -215,61 +259,43 @@ Spotify.prototype.set = function(property, value, callback) {
 
 Spotify.prototype._osascript = function() {
 	"use strict";
-	// args: command 1, command n, ..., callback, useCache
+	// args: command 1, command n, ..., callback
 
 	var that = this,
 		command = 'osascript -e \'set var to ""\' -e \'tell application "Spotify"\' ',
 		end = "-e 'end tell'",
 		l = arguments.length,
-		//! Important to note that l is reduced automatically here if cache/callback is found
-		useCache = typeof arguments[l - 1] === 'boolean' && arguments[--l] || false,
+		//! Important to note that l is reduced automatically here if callback is found
 		callback = typeof arguments[l] === 'function' && arguments[--l] 
 			|| typeof arguments[l - 1] && arguments[--l] || function(){},
 		i,
-		notSet = 0,
-		cache = '';
+		notSet = 0;
 
-	// Create cache var
-	for( i = l; i--; ){
-		cache += arguments[i];
-	}
-	cache += ~~(Date.now() / 10000); // Cache every ten seconds and floor it bitwise
+	for( i = 0, l; i < l; i++ ){
+		command += "-e '";
 
-	// Check if cache should be used and if it's cached
-	if( useCache && that._cache[cache] ){
-		if( !that._cache[cache].error ){
-			callback.apply(null, that._cache[cache]);
+		if( arguments[i].indexOf('set') === -1 ){
+			command += "set var to var & " + ( notSet === 0 ? '' : '";;;" & ' ) + arguments[i];
+			notSet++;
 		}
-	}
-	else {
-		for( i = 0, l; i < l; i++ ){
-			command += "-e '";
-
-			if( arguments[i].indexOf('set') === -1 ){
-				command += "set var to var & " + ( notSet === 0 ? '' : '";;;" & ' ) + arguments[i];
-				notSet++;
-			}
-			else {
-				command += arguments[i]
-			}
-
-			command += "' ";
+		else {
+			command += arguments[i]
 		}
 
-		command += end + ( notSet === 0 ? '' :  " -e 'return var'" );
-
-		exec(command, function(err, result){
-			if( !err ){
-				// Removing anoying newline character by splicing
-				result = result.split('').splice(0, result.length - 1).join('').split(';;;');
-
-				callback.apply(null, result);
-				that._cache[cache] = result;
-			}
-			else {
-				console.log(arguments);
-				that._cache[cache] = {error: arguments};
-			}
-		});
+		command += "' ";
 	}
+
+	command += end + ( notSet === 0 ? '' :  " -e 'return var'" );
+
+	exec(command, function(err, result){
+		if( !err ){
+			// Removing anoying newline character by splicing
+			result = result.split('').splice(0, result.length - 1).join('').split(';;;');
+
+			callback.apply(null, result);
+		}
+		else {
+			callback({error: arguments});
+		}
+	});
 };
