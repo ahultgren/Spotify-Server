@@ -1,4 +1,7 @@
 var app = require('express')(),
+	server = require('http').createServer(app),
+	socket = require('socket.io'),
+	io = socket.listen(server),
 	port = 3000,
 	spotify = require('./spotify_interface')(),
 	auth,
@@ -110,5 +113,15 @@ app.get('/auth/:token/:level', function(req, res){
 	}
 });
 
-app.listen(port);
-console.log('Listening on port ' + port);
+server.listen(port);
+console.info('Listening on port %s', port);
+spotify.event.on('get', function(data){
+	console.log(data);
+});
+
+io.sockets.on('connection', function (socket) {
+	socket.emit('news', { hello: 'world' });
+	socket.on('my other event', function (data) {
+		console.log(data);
+	});
+});

@@ -1,4 +1,5 @@
-var exec = require('child_process').exec;
+var exec = require('child_process').exec,
+	events = require('events');
 
 module.exports = function(){
 	return new Spotify();	
@@ -13,6 +14,7 @@ function Spotify(){
 	// Set correct reference
 	this.language = 'osascript';
 	this.interface = this._osascript;
+	this.event = new events.EventEmitter();
 }
 
 /* Public methods */
