@@ -68,9 +68,11 @@ Spotify.prototype.ask = function() {
 
 
 Spotify.prototype.play = function(callback) {
+	var that = this;
+
 	callback = callback || function(){};
 
-	this.ask('playpause', 'player state', 'name of current track', 'artist of current track', function(){
+	that.ask('playpause', 'player state', 'name of current track', 'artist of current track', function(){
 		if( arguments[1] === 'playing' ){
 			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
 		}
@@ -80,12 +82,18 @@ Spotify.prototype.play = function(callback) {
 		else {
 			callback(200, 'Nothing is playing...');
 		}
+
+		that.event.emit('set', {
+			state: arguments[1]
+		});
 	});
 };
 
 Spotify.prototype.playUri = function() {
 	// args: uri, [context], callback
-	var uri = arguments[0],
+	
+	var that = this,
+		uri = arguments[0],
 		l = arguments.length - 1,
 		callback = typeof arguments[l] === 'function' && arguments[l--] || function(){},
 		context = (l > 0 && typeof arguments[l] === 'string') &&  arguments[l] || undefined;
@@ -95,47 +103,77 @@ Spotify.prototype.playUri = function() {
 		callback(400, '¿Hablos español?');
 	}
 	else {
-		this.ask('play track "' + uri + ( context && '" in context "' + context + '"' || '"' ), 'player state', 'name of current track', 'artist of current track', function(){
+		that.ask('play track "' + uri + ( context && '" in context "' + context + '"' || '"' ), 'player state', 'name of current track', 'artist of current track', 'album of current track', 'spotify url of current track', function(){
 			if( arguments[1] === 'playing' ){
 				callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
 			}
 			else {
 				console.log(arguments[1]);
-				callback(200, 'It seems that URI didn\'t work, but I have to say that song sucks anyways.');
+				callback(200, 'It seems that URI didn\'t work... What a shame, I know I would have loved that song.');
 			}
+
+			that.event.emit('new track', {
+				state: arguments[1],
+				name: arguments[2],
+				artist: arguments[3],
+				album: arguments[4],
+				uri: arguments[5]
+			});
 		});
 	}
 };
 
 Spotify.prototype.next = function(callback) {
+	var that = this;
+
 	callback = callback || function(){};
 
-	this.ask('next track', 'player state', 'name of current track', 'artist of current track', function(){
+	that.ask('next track', 'player state', 'name of current track', 'artist of current track', 'album of current track', 'spotify url of current track', function(){
 		if( arguments[1] === 'playing' ){
 			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '!');
 		}
 		else {
 			callback(200, 'Nothing is playing anymore... Guess this is the end of the road.');
 		}
+
+		that.event.emit('new track', {
+			state: arguments[1],
+			name: arguments[2],
+			artist: arguments[3],
+			album: arguments[4],
+			uri: arguments[5]
+		});
 	});
 };
 
 Spotify.prototype.prev = function(callback) {
+	var that = this;
+
 	callback = callback || function(){};
 
-	this.ask('previous track', 'player state', 'name of current track', 'artist of current track', function(){
+	that.ask('previous track', 'player state', 'name of current track', 'artist of current track', 'album of current track', 'spotify url of current track', function(){
 		if( arguments[1] === 'playing' ){
 			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
 		}
 		else {
 			callback(200, 'Whoaa! You backed up so fast nothing is playing anymore... :(');
 		}
+
+		that.event.emit('new track', {
+			state: arguments[1],
+			name: arguments[2],
+			artist: arguments[3],
+			album: arguments[4],
+			uri: arguments[5]
+		});
 	});
 };
 
 Spotify.prototype.get = function(property, callback) {
-	var command = '',
+	var that = this,
+		command = '',
 		cache = 10;
+
 	callback = callback || function(){};
 
 	switch( property ){
@@ -169,13 +207,23 @@ Spotify.prototype.get = function(property, callback) {
 			command = 'spotify url of current track';
 		break;
 		case 'current':
-			this.ask('name of current track', 'artist of current track', 'album of current track', 'duration of current track', 'spotify url of current track', 'player state', function(){
-				callback(200, 'Track: ' + arguments[0] + '\n'
+			that.ask('name of current track', 'artist of current track', 'album of current track', 'duration of current track', 'spotify url of current track', 'player state', function(){
+				var data = 'Track: ' + arguments[0] + '\n'
 					+ 'Artist: ' + arguments[1] + '\n'
 					+ 'Album: ' + arguments[2] + '\n'
 					+ 'Duration: ' + arguments[3] + '\n'
 					+ 'Sporify URI: ' + arguments[4] + '\n'
-					+ 'Player state: ' + arguments[5] + '\n');
+					+ 'Player state: ' + arguments[5] + '\n';
+
+				callback(200, data);
+				that.event.emit('get', {
+					name: arguments[0],
+					artist: arguments[1],
+					album: arguments[2],
+					duration: arguments[3],
+					uri: arguments[4],
+					state: arguments[5]
+				});
 			}, cache);
 		break;
 		default:
@@ -184,35 +232,41 @@ Spotify.prototype.get = function(property, callback) {
 	}
 
 	if( command ){
-		this.ask(command, function(){
+		that.ask(command, function(){
+			var obj = {};
+			obj[property] = arguments[0];
+
+			that.event.emit('get', obj);
 			callback(200, arguments[0]);
 		}, cache);
 	}
 };
 
 Spotify.prototype.set = function(property, value, callback) {
+	var that = this;
+
 	callback = callback || function(){};
 
 	switch( property ){
 		case 'state':
 			if( value === 'play' ){
-				this.ask('play', 'player state', 'name of current track', 'artist of current track', function(){
-					if( arguments[1] === 'playing' ){
-						callback(200, 'Now dancing to ' + arguments[2] + ' by ' + arguments[3] + '.');
-					}
-					else {
-						callback(200, 'Because of technical problems we only offer the following a capella song: "Bä bää vita lamm, har du någon ull? [---]"');
-					}
+				that.ask('play', 'player state', 'name of current track', 'artist of current track', function(){
+					var response = arguments[1] === 'playing'
+						&& 'Now dancing to ' + arguments[2] + ' by ' + arguments[3] + '!'
+						|| 'Because of technical problems we only offer the following a capella song: "Bä bää vita lamm, har du någon ull? [---]"';
+					
+					callback(200, response);
+					that.event.emit('set', {state: arguments[1]});
 				});
 			}
 			else if( value === 'pause' ){
-				this.ask('pause', 'player state', 'name of current track', 'artist of current track', function(){
-					if( arguments[1] === 'paused' ){
-						callback(200, 'You paused in the middle of ' + arguments[2] + ' by ' + arguments[3] + '! :O');
-					}
-					else {
-						callback(200, 'Hey, I\'m not playing!');
-					}
+				that.ask('pause', 'player state', 'name of current track', 'artist of current track', function(){
+					var response = arguments[1] === 'paused'
+						&& 'You paused in the middle of ' + arguments[2] + ' by ' + arguments[3] + '! :O'
+						|| 'Hey, I\'m not playing!';
+
+					callback(200, response);
+					that.event.emit('set', {state: arguments[1]});
 				});
 			}
 			else {
@@ -221,13 +275,13 @@ Spotify.prototype.set = function(property, value, callback) {
 		break;
 		case 'position':
 			if( !isNaN(value) && value >= 0 ){
-				this.ask('set player position to ' + value, 'duration of current track', function(){
-					if( value < arguments[0] ){
-						callback(200, 'Yeah! I\'ve always loved the part at ' + value + ' seconds!');
-					}
-					else {
-						callback(200, 'I know this song is way too long, but not that long!');
-					}
+				that.ask('set player position to ' + value, 'duration of current track', function(){
+					var response = value < arguments[0]
+						&& 'Yeah! I\'ve always loved the part at ' + value + ' seconds!'
+						|| 'I know this song is way too long, but not that long!';
+					
+					callback(200, response);
+					that.event.emit('set', {position: value});
 				});
 			}
 			else {
@@ -236,8 +290,9 @@ Spotify.prototype.set = function(property, value, callback) {
 		break;
 		case 'volume':
 			if( !isNaN(value) && value >= 0 && value <= 100 ){
-				this.ask('set sound volume to ' + value, function(){
+				that.ask('set sound volume to ' + value, function(){
 					callback(200, 'Volume set to ' + value);
+					that.event.emit('set', {volume: value});
 				});
 			}
 			else if( value > 100 ){
@@ -263,8 +318,7 @@ Spotify.prototype._osascript = function() {
 	"use strict";
 	// args: command 1, command n, ..., callback
 
-	var that = this,
-		command = 'osascript -e \'set var to ""\' -e \'tell application "Spotify"\' ',
+	var command = 'osascript -e \'set var to ""\' -e \'tell application "Spotify"\' ',
 		end = "-e 'end tell'",
 		l = arguments.length,
 		//! Important to note that l is reduced automatically here if callback is found
