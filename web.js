@@ -1,28 +1,119 @@
-var app = require('express')(),
-	server = require('http').createServer(app),
-	socket = require('socket.io'),
-	io = socket.listen(server),
-	port = 3000,
-	spotify = require('./spotify_interface')(),
+var 
+// Dependencies
+	express = require('express'),
+	server = require('http'),
+	spotify = require('./spotify_interface'),
+// Other private vars
 	auth,
-	allowedLevels = 9,
-	useAuth = false;
+	allowedLevels = 9;
 
 
-// Routing
+function App(args){
+	var that = this;
 
-app.use(function(req, res, next){
+	that.useAuth = false;
+	that.app = args.express();
+	that.server = args.server.createServer(that.app);
+	that.port = args.port;
+
+	that.start();
+}
+
+App.prototype.start = function() {
+	var that = this;
+
+	that.route();
+	that.httpListen();
+	that.connectToSpotify();
+};
+
+App.prototype.route = function() {
+	var that = this;
+
+	// Make a basic templating method accessible. Better templating will come later
+	that.app.use(httpResponse);
+
+	// Check if user is allowed to perform the request
+	that.app.use(authorization);
+
+
+	//Routing
+
+	that.app.get('/', function(req, res){
+		res.sendfile(__dirname + '/index.html');
+	});
+
+	that.app.get('/play', function(req, res){
+		that.spotify.play(res.httpResponse);
+	});
+
+	that.app.get('/play/:uri/:context?', function(req, res){
+		if( req.params.context ){
+			that.spotify.playUri(req.params.uri, req.params.context, res.httpResponse);
+		}
+		else {
+			that.spotify.playUri(req.params.uri, res.httpResponse);
+		}
+	});
+
+	that.app.get('/next', function(req, res){
+		that.spotify.next(res.httpResponse);
+	});
+
+	that.app.get('/prev', function(req, res){
+		that.spotify.prev(res.httpResponse);
+	});
+
+	that.app.get('/get/:property', function(req, res){
+		that.spotify.get(req.params.property, res.httpResponse);
+	});
+
+	that.app.get('/set/:property/:value', function(req, res){
+		that.spotify.set(req.params.property, req.params.value, res.httpResponse);
+	});
+
+	that.app.get('/current', function(req, res){
+		that.spotify.get('current', res.httpResponse);
+	});
+
+	that.app.get('/auth/:token/:level', function(req, res){
+		if( that.useAuth ){
+			auth = req.params.token;
+			allowedLevels = req.params.level;
+			res.httpResponse(200, 'Permissions updated!');
+		}
+		else {
+			res.httpResponse(403, 'You require more vespene gas (authorization is disabled).');
+		}
+	});
+};
+
+App.prototype.httpListen = function() {
+	var that = this,
+		port = that.port;
+		
+	that.server.listen(port);
+	console.info('Listening on port %s', port);
+};
+
+App.prototype.connectToSpotify = function() {
+	this.spotify = spotify();
+};
+
+/* Private functions */
+
+function httpResponse(req, res, next){
 	res.httpResponse = function(status, message){
 		res.contentType('text/plain');
 		res.send(status, message);
 	};
 	next();
-});
+}
 
-app.use(function(req, res, next){
+function authorization(req, res, next){
 	var level = 0,
 		i,
-		routes = app.routes.get,
+		routes = app.app.routes.get,
 		path;
 
 	for( i in routes ){
@@ -63,65 +154,13 @@ app.use(function(req, res, next){
 	else {
 		res.httpResponse(401, 'You shall not pass!');
 	}
-});
+}
 
-app.get('/', function(req, res){
-	res.sendfile(__dirname + '/index.html');
-});
 
-app.get('/play', function(req, res){
-	spotify.play(res.httpResponse);
-});
+// Wohoo
 
-app.get('/play/:uri/:context?', function(req, res){
-	if( req.params.context ){
-		spotify.playUri(req.params.uri, req.params.context, res.httpResponse);
-	}
-	else {
-		spotify.playUri(req.params.uri, res.httpResponse);
-	}
-});
-
-app.get('/next', function(req, res){
-	spotify.next(res.httpResponse);
-});
-
-app.get('/prev', function(req, res){
-	spotify.prev(res.httpResponse);
-});
-
-app.get('/get/:property', function(req, res){
-	spotify.get(req.params.property, res.httpResponse);
-});
-
-app.get('/set/:property/:value', function(req, res){
-	spotify.set(req.params.property, req.params.value, res.httpResponse);
-});
-
-app.get('/current', function(req, res){
-	spotify.get('current', res.httpResponse);
-});
-
-app.get('/auth/:token/:level', function(req, res){
-	if( useAuth ){
-		auth = req.params.token;
-		allowedLevels = req.params.level;
-		res.httpResponse(200, 'Permissions updated!');
-	}
-	else {
-		res.httpResponse(403, 'You require more vespene gas (authorization is disabled).');
-	}
-});
-
-server.listen(port);
-console.info('Listening on port %s', port);
-spotify.event.on('get', function(data){
-	console.log(data);
-});
-
-io.sockets.on('connection', function (socket) {
-	socket.emit('news', { hello: 'world' });
-	socket.on('my other event', function (data) {
-		console.log(data);
-	});
+var app = new App({
+	express: express,
+	server: server,
+	port: 3000
 });
