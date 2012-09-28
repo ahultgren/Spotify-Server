@@ -2,8 +2,10 @@ var
 // Dependencies
 	express = require('express'),
 	server = require('http'),
-	spotify = require('./spotify_interface'),
 	socket = require('socket.io'),
+// Interfaces
+	spotify = require('./spotify_interface'),
+	osascript = require('./spotify_osascript'),
 // Other private vars
 	auth,
 	allowedLevels = 9;
@@ -16,7 +18,10 @@ function App(args){
 	that.app = args.express();
 	that.server = args.server.createServer(that.app);
 	that.sio = args.socket.listen(that.server);
+	that.osascript = args.osascript;
 	that.port = args.port;
+
+	that._cache = {};
 
 	that.start();
 }
@@ -100,7 +105,13 @@ App.prototype.httpListen = function() {
 };
 
 App.prototype.connectToSpotify = function() {
-	this.spotify = spotify();
+	var that = this;
+
+	that.spotify = spotify();
+
+	if( process.platform === 'darwin' ){
+		that.osascript = that.osascript(that.spotify);
+	}
 };
 
 App.prototype.socketsListen = function() {
@@ -198,4 +209,5 @@ var app = new App({
 	server: server,
 	port: 3000,
 	socket: socket,
+	osascript: osascript
 });

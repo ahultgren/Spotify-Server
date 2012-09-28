@@ -1,5 +1,4 @@
-var exec = require('child_process').exec,
-	events = require('events');
+var events = require('events');
 
 module.exports = function(){
 	return new Spotify();	
@@ -12,12 +11,42 @@ function Spotify(){
 	//## When supported it would be possible to figure out if osascipt or another interface can be used
 
 	// Set correct reference
-	this.language = 'osascript';
-	this.interface = this._osascript;
+	this.interfaceName;
+	this.interface = function(){};
+	this.interfaces = [];
+
 	this.event = new events.EventEmitter();
 }
 
 /* Public methods */
+
+/** Set what spotify interface should be used
+ */
+Spotify.prototype.setInterface = function(args) {
+	var that = this;
+
+	// First check if the same interface is already used. If so don't change anything
+	if( args.name !== this.interfaceName && args.name && typeof args.interface === 'function' ){
+		that.interface = args.interface;
+		that.interfaceName = args.name;
+		that.interfaceObj = args.obj;
+		that.interfaces.push(args);
+	}
+};
+
+Spotify.prototype.removeInterface = function(name) {
+	var that = this, 
+		interfaces = that.interfaces,
+		i;
+
+	// Loop through the interfaces backwards and remove the first (last) occurence
+	for( i = interfaces.length; i--; ){
+		if( interfaces[i].name === name ){
+			interfaces.splice(i, 1);
+			break;
+		}
+	}
+};
 
 /** Ask spotify to do something
  *
@@ -62,7 +91,7 @@ Spotify.prototype.ask = function() {
 		});
 
 		// Call the proper spotify interface
-		that.interface.apply(this, arguments);
+		that.interface.apply(that.interfaceObj || this, arguments);
 	}
 };
 
