@@ -6,6 +6,7 @@ var
 // Interfaces
 	spotify = require('./spotify_interface'),
 	osascript = require('./spotify_osascript'),
+	slave = require('./spotify_slave'),
 // Other private vars
 	auth,
 	allowedLevels = 9;
@@ -19,6 +20,7 @@ function App(args){
 	that.server = args.server.createServer(that.app);
 	that.sio = args.socket.listen(that.server);
 	that.osascript = args.osascript;
+	that.slave = args.slave;
 	that.port = args.port;
 
 	that._cache = {};
@@ -112,6 +114,12 @@ App.prototype.connectToSpotify = function() {
 	if( process.platform === 'darwin' ){
 		that.osascript = that.osascript(that.spotify);
 	}
+
+	that.slave = that.slave({
+		sio: that.sio,
+		spotify: that.spotify,
+		token: '1337' //## Create a config-file and keep auth stuff there
+	});
 };
 
 App.prototype.socketsListen = function() {
@@ -119,8 +127,11 @@ App.prototype.socketsListen = function() {
 		sockets = that.sio.sockets,
 		spotify = that.spotify;
 
-	that.sio.of('client').on('connection', function (socket) {
+	that.sio.of('/client').on('connection', function (socket) {
+		console.log('connected as client');
+
 		socket.emit('news', { hello: 'world' });
+		
 		socket.on('disconnect', function (data) {
 			console.log('disconnect', data);
 		});
@@ -136,12 +147,12 @@ App.prototype.socketsListen = function() {
 
 		// Tell everyone only if there's actually a difference
 		if( that._cache[property] !== data[property] ){
-			sockets.in('client').emit(that._cache[property] = data[property]);
+			that.sio.of('client').emit(that._cache[property] = data[property]);
 		}
 	});
 
 	spotify.event.on('new track', function(data){
-		sockets.in('client').emit('new track', data);
+		that.sio.of('client').emit('new track', data);
 	});
 };
 
@@ -209,5 +220,6 @@ var app = new App({
 	server: server,
 	port: 3000,
 	socket: socket,
-	osascript: osascript
+	osascript: osascript,
+	slave: slave
 });
