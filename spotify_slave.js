@@ -45,8 +45,9 @@ Slave.prototype.initialize = function() {
 
 			// Respones to a request from a client
 			socket.on('response', function(response){
+				console.log("responseeeeeee", response);
 				if( response.id ){
-					that.emit(response.id, response.result);
+					that.event.emit(response.id, response.result);
 				}
 			});
 
