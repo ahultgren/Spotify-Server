@@ -43,14 +43,6 @@ Slave.prototype.initialize = function() {
 
 			/* Listen for emits from the slave */
 
-			// Respones to a request from a client
-			socket.on('response', function(response){
-				console.log("responseeeeeee", response);
-				if( response.id ){
-					that.event.emit(response.id, response.result);
-				}
-			});
-
 			// Automatical emits on changes to states. The message is expected
 			// to contain { changedProperty: newValue }
 			socket.on('change', function(msg){
@@ -71,24 +63,13 @@ Slave.prototype.ask = function() {
 		args = arguments.splice(0, l),
 		id;
 
-	// Generate a unique key so that the right client will get the response
-	generateID(function(key){
-		id = key;
+	// Ask spotify to execute the command
+	that.sio.of('/slave').emit('ask', {
+		commands: args
+	});
 
-		// Ask spotify to execute the command
-		that.sio.of('/slave').emit('ask', {
-			commands: args,
-			id: id
-		});
-
-		// Create a one-time eventlistener for this id
-		that.event.once(id, function(result){
-			callback.apply(null, result);
-		});
+	callback({
+		error: 'asyncRequest',
+		text: 'The command was successfully sent. However I was unable to retrieve data since the active Spotify controller is using sockets which is an asyncronous action and thus no response can be recieved.'
 	});
 };
-
-function generateID(callback){
-	// Not expecting a shitload of concurrent requests, so no excessive randomness here
-	callback(('00'+(Math.random()*4096<<0).toString(16)).substr(-3) + '');
-}

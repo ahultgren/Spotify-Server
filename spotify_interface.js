@@ -79,9 +79,7 @@ Spotify.prototype.ask = function() {
 	}
 	else{
 		arguments.push(function(err){
-			if( !err.error ){
-				callback.apply(null, arguments);
-			}
+			callback.apply(null, arguments);
 
 			if( cacheInterval ){
 				// Create a new cache and remove the old one
@@ -102,6 +100,12 @@ Spotify.prototype.play = function(callback) {
 	callback = callback || function(){};
 
 	that.ask('playpause', 'player state', 'name of current track', 'artist of current track', function(){
+
+		if( typeof arguments[0] === 'object' ){
+			that.error(arguments[0], callback);
+			return;
+		}
+
 		if( arguments[1] === 'playing' ){
 			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
 		}
@@ -133,6 +137,11 @@ Spotify.prototype.playUri = function() {
 	}
 	else {
 		that.ask('play track "' + uri + ( context && '" in context "' + context + '"' || '"' ), 'player state', 'name of current track', 'artist of current track', 'album of current track', 'spotify url of current track', function(){
+			if( typeof arguments[0] === 'object' ){
+				that.error(arguments[0], callback);
+				return;
+			}
+
 			if( arguments[1] === 'playing' ){
 				callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
 			}
@@ -158,6 +167,11 @@ Spotify.prototype.next = function(callback) {
 	callback = callback || function(){};
 
 	that.ask('next track', 'player state', 'name of current track', 'artist of current track', 'album of current track', 'spotify url of current track', function(){
+		if( typeof arguments[0] === 'object' ){
+			that.error(arguments[0], callback);
+			return;
+		}
+
 		if( arguments[1] === 'playing' ){
 			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '!');
 		}
@@ -181,6 +195,11 @@ Spotify.prototype.prev = function(callback) {
 	callback = callback || function(){};
 
 	that.ask('previous track', 'player state', 'name of current track', 'artist of current track', 'album of current track', 'spotify url of current track', function(){
+		if( typeof arguments[0] === 'object' ){
+			that.error(arguments[0], callback);
+			return;
+		}
+
 		if( arguments[1] === 'playing' ){
 			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
 		}
@@ -237,6 +256,11 @@ Spotify.prototype.get = function(property, callback) {
 		break;
 		case 'current':
 			that.ask('name of current track', 'artist of current track', 'album of current track', 'duration of current track', 'spotify url of current track', 'player state', function(){
+				if( typeof arguments[0] === 'object' ){
+					that.error(arguments[0], callback);
+					return;
+				}
+
 				var data = 'Track: ' + arguments[0] + '\n'
 					+ 'Artist: ' + arguments[1] + '\n'
 					+ 'Album: ' + arguments[2] + '\n'
@@ -263,6 +287,12 @@ Spotify.prototype.get = function(property, callback) {
 	if( command ){
 		that.ask(command, function(){
 			var obj = {};
+
+			if( typeof arguments[0] === 'object' ){
+				that.error(arguments[0], callback);
+				return;
+			}
+
 			obj[property] = arguments[0];
 
 			that.event.emit('get', obj);
@@ -280,6 +310,11 @@ Spotify.prototype.set = function(property, value, callback) {
 		case 'state':
 			if( value === 'play' ){
 				that.ask('play', 'player state', 'name of current track', 'artist of current track', function(){
+					if( typeof arguments[0] === 'object' ){
+						that.error(arguments[0], callback);
+						return;
+					}
+
 					var response = arguments[1] === 'playing'
 						&& 'Now dancing to ' + arguments[2] + ' by ' + arguments[3] + '!'
 						|| 'Because of technical problems we only offer the following a capella song: "Bä bää vita lamm, har du någon ull? [---]"';
@@ -290,6 +325,11 @@ Spotify.prototype.set = function(property, value, callback) {
 			}
 			else if( value === 'pause' ){
 				that.ask('pause', 'player state', 'name of current track', 'artist of current track', function(){
+					if( typeof arguments[0] === 'object' ){
+						that.error(arguments[0], callback);
+						return;
+					}
+
 					var response = arguments[1] === 'paused'
 						&& 'You paused in the middle of ' + arguments[2] + ' by ' + arguments[3] + '! :O'
 						|| 'Hey, I\'m not playing!';
@@ -305,6 +345,11 @@ Spotify.prototype.set = function(property, value, callback) {
 		case 'position':
 			if( !isNaN(value) && value >= 0 ){
 				that.ask('set player position to ' + value, 'duration of current track', function(){
+					if( typeof arguments[0] === 'object' ){
+						that.error(arguments[0], callback);
+						return;
+					}
+
 					var response = value < arguments[0]
 						&& 'Yeah! I\'ve always loved the part at ' + value + ' seconds!'
 						|| 'I know this song is way too long, but not that long!';
@@ -320,6 +365,11 @@ Spotify.prototype.set = function(property, value, callback) {
 		case 'volume':
 			if( !isNaN(value) && value >= 0 && value <= 100 ){
 				that.ask('set sound volume to ' + value, function(){
+					if( typeof arguments[0] === 'object' ){
+						that.error(arguments[0], callback);
+						return;
+					}
+
 					callback(200, 'Volume set to ' + value);
 					that.event.emit('set', {volume: value});
 				});
@@ -337,6 +387,12 @@ Spotify.prototype.set = function(property, value, callback) {
 		default:
 			callback(404, 'No hablo americano');
 		break;
+	}
+};
+
+Spotify.prototype.error = function(error, callback) {
+	if( error.error === 'asyncRequest' ){
+		callback(202, error.text);
 	}
 };
 
