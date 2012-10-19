@@ -5,7 +5,6 @@ var
 	socket = require('socket.io'),
 // Interfaces
 	spotify = require('./spotify_interface'),
-	osascript = require('./spotify_osascript'),
 	slave = require('./spotify_slave'),
 // Other private vars
 	auth,
@@ -19,7 +18,6 @@ function App(args){
 	that.app = args.express();
 	that.server = args.server.createServer(that.app);
 	that.sio = args.socket.listen(that.server);
-	that.osascript = args.osascript;
 	that.slave = args.slave;
 	that.port = args.port;
 
@@ -110,10 +108,6 @@ App.prototype.connectToSpotify = function() {
 	var that = this;
 
 	that.spotify = spotify();
-
-	if( process.platform === 'darwin' ){
-		that.osascript = that.osascript(that.spotify);
-	}
 
 	that.slave = that.slave({
 		sio: that.sio,
@@ -220,6 +214,5 @@ var app = new App({
 	server: server,
 	port: 3000,
 	socket: socket,
-	osascript: osascript,
 	slave: slave
 });
