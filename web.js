@@ -52,36 +52,36 @@ App.prototype.route = function() {
 	});
 
 	that.app.get('/play', function(req, res){
-		that.spotify.play(res.httpResponse);
+		that.spotify.play();
 	});
 
 	that.app.get('/play/:uri/:context?', function(req, res){
 		if( req.params.context ){
-			that.spotify.playUri(req.params.uri, req.params.context, res.httpResponse);
+			that.spotify.playUri(req.params.uri, req.params.context);
 		}
 		else {
-			that.spotify.playUri(req.params.uri, res.httpResponse);
+			that.spotify.playUri(req.params.uri);
 		}
 	});
 
 	that.app.get('/next', function(req, res){
-		that.spotify.next(res.httpResponse);
+		that.spotify.next();
 	});
 
 	that.app.get('/prev', function(req, res){
-		that.spotify.prev(res.httpResponse);
+		that.spotify.prev();
 	});
 
 	that.app.get('/get/:property', function(req, res){
-		that.spotify.get(req.params.property, res.httpResponse);
+		that.spotify.get(req.params.property);
 	});
 
 	that.app.get('/set/:property/:value', function(req, res){
-		that.spotify.set(req.params.property, req.params.value, res.httpResponse);
+		that.spotify.set(req.params.property, req.params.value);
 	});
 
 	that.app.get('/current', function(req, res){
-		that.spotify.get('current', res.httpResponse);
+		that.spotify.get('current');
 	});
 
 	that.app.get('/auth/:token/:level', function(req, res){

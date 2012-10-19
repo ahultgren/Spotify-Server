@@ -54,149 +54,50 @@ Spotify.prototype.removeInterface = function(name) {
  * Seperation between cache name and timestamp is done to be able to prevent memory leaks. If both are combined
  * there is no way to delete the property and they would pile up as time goes by.
  */
-Spotify.prototype.ask = function(commands, callback) {
+Spotify.prototype.ask = function(commands) {
 	var that = this;
-	
-	callback = callback || function(){};
 
 	// Call the proper spotify interface
-	that.interface.call(that.interfaceObj, commands, callback);
+	that.interface.call(that.interfaceObj, commands);
 };
 
 
-Spotify.prototype.play = function(callback) {
+Spotify.prototype.play = function() {
 	var that = this;
 
-	callback = callback || function(){};
-
-	that.ask(['playpause', 'state', 'name', 'artist'], function(){
-
-		if( typeof arguments[0] === 'object' ){
-			that.error(arguments[0], callback);
-			return;
-		}
-
-		if( arguments[1] === 'playing' ){
-			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
-		}
-		else if( arguments[1] === 'paused' ){
-			callback(200, 'You paused in the middle of ' + arguments[2] + ' by ' + arguments[3] + '! :O');
-		}
-		else {
-			callback(200, 'Nothing is playing...');
-		}
-
-		that.event.emit('set', {
-			state: arguments[1]
-		});
-	});
+	that.ask(['playpause', 'state', 'name', 'artist']);
 };
 
-Spotify.prototype.playUri = function() {
-	// args: uri, [context], callback
-
+Spotify.prototype.playUri = function(uri, context) {
 	var that = this,
 		uri = arguments[0],
-		l = arguments.length - 1,
-		callback = typeof arguments[l] === 'function' && arguments[l--] || function(){},
-		context = (l > 0 && typeof arguments[l] === 'string') &&  arguments[l] || undefined;
+		l = arguments.length - 1;
 
 	// Make VERY sure that the uri doesn't contain anything I don't want it to contain
-	if( context && context.match(/[^A-Za-z0-9:#]/g) || uri.match(/[^A-Za-z0-9:#]/g) ){
-		callback(400, '¿Hablos español?');
-	}
-	else {
+	if( !(context && context.match(/[^A-Za-z0-9:#]/g) || uri.match(/[^A-Za-z0-9:#]/g)) ){
 		that.ask([{
 				command: 'play track',
 				values: [uri, context]
-			}, 'state', 'name', 'artist', 'album', 'uri'],
-			function(){
-				if( typeof arguments[0] === 'object' ){
-					that.error(arguments[0], callback);
-					return;
-				}
-
-				if( arguments[1] === 'playing' ){
-					callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
-				}
-				else {
-					callback(200, 'It seems that URI didn\'t work... What a shame, I know I would have loved that song.');
-				}
-
-				that.event.emit('new track', {
-					state: arguments[1],
-					name: arguments[2],
-					artist: arguments[3],
-					album: arguments[4],
-					uri: arguments[5]
-				});
-			}
-		);
+			}, 'state', 'name', 'artist', 'album', 'uri']);
 	}
 };
 
-Spotify.prototype.next = function(callback) {
+Spotify.prototype.next = function() {
 	var that = this;
 
-	callback = callback || function(){};
-
-	that.ask(['next track', 'state', 'name', 'artist', 'album', 'uri'], function(){
-		if( typeof arguments[0] === 'object' ){
-			that.error(arguments[0], callback);
-			return;
-		}
-
-		if( arguments[1] === 'playing' ){
-			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '!');
-		}
-		else {
-			callback(200, 'Nothing is playing anymore... Guess this is the end of the road.');
-		}
-
-		that.event.emit('new track', {
-			state: arguments[1],
-			name: arguments[2],
-			artist: arguments[3],
-			album: arguments[4],
-			uri: arguments[5]
-		});
-	});
+	that.ask(['next track', 'state', 'name', 'artist', 'album', 'uri']);
 };
 
-Spotify.prototype.prev = function(callback) {
+Spotify.prototype.prev = function() {
 	var that = this;
 
-	callback = callback || function(){};
-
-	that.ask(['previous track', 'state', 'name', 'artist', 'album', 'uri'], function(){
-		if( typeof arguments[0] === 'object' ){
-			that.error(arguments[0], callback);
-			return;
-		}
-
-		if( arguments[1] === 'playing' ){
-			callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
-		}
-		else {
-			callback(200, 'Whoaa! You backed up so fast nothing is playing anymore... :(');
-		}
-
-		that.event.emit('new track', {
-			state: arguments[1],
-			name: arguments[2],
-			artist: arguments[3],
-			album: arguments[4],
-			uri: arguments[5]
-		});
-	});
+	that.ask(['previous track', 'state', 'name', 'artist', 'album', 'uri']);
 };
 
-Spotify.prototype.get = function(property, callback) {
+Spotify.prototype.get = function(property) {
 	var that = this,
 		command = '',
 		cache = 10;
-
-	callback = callback || function(){};
 
 	switch( property ){
 		case 'state':
@@ -229,88 +130,25 @@ Spotify.prototype.get = function(property, callback) {
 			command = 'uri';
 		break;
 		case 'current':
-			that.ask(['name', 'artist', 'album', 'duration', 'uri', 'state'], function(){
-				if( typeof arguments[0] === 'object' ){
-					that.error(arguments[0], callback);
-					return;
-				}
-
-				var data = 'Track: ' + arguments[0] + '\n'
-					+ 'Artist: ' + arguments[1] + '\n'
-					+ 'Album: ' + arguments[2] + '\n'
-					+ 'Duration: ' + arguments[3] + '\n'
-					+ 'Sporify URI: ' + arguments[4] + '\n'
-					+ 'state: ' + arguments[5] + '\n';
-
-				callback(200, data);
-				that.event.emit('get', {
-					name: arguments[0],
-					artist: arguments[1],
-					album: arguments[2],
-					duration: arguments[3],
-					uri: arguments[4],
-					state: arguments[5]
-				});
-			});
-		break;
-		default:
-			callback(404, 'Que?');
+			command = 'update';
 		break;
 	}
 
 	if( command ){
-		that.ask([command], function(){
-			var obj = {};
-
-			if( typeof arguments[0] === 'object' ){
-				that.error(arguments[0], callback);
-				return;
-			}
-
-			obj[property] = arguments[0];
-
-			that.event.emit('get', obj);
-			callback(200, arguments[0]);
-		});
+		that.ask([command]);
 	}
 };
 
-Spotify.prototype.set = function(property, value, callback) {
+Spotify.prototype.set = function(property, value) {
 	var that = this;
-
-	callback = callback || function(){};
 
 	switch( property ){
 		case 'state':
 			if( value === 'play' ){
-				that.ask(['play', 'state', 'name', 'artist'], function(){
-					if( typeof arguments[0] === 'object' ){
-						that.error(arguments[0], callback);
-						return;
-					}
-
-					var response = arguments[1] === 'playing'
-						&& 'Now dancing to ' + arguments[2] + ' by ' + arguments[3] + '!'
-						|| 'Because of technical problems we only offer the following a capella song: "Bä bää vita lamm, har du någon ull? [---]"';
-					
-					callback(200, response);
-					that.event.emit('set', {state: arguments[1]});
-				});
+				that.ask(['play', 'state', 'name', 'artist']);
 			}
 			else if( value === 'pause' ){
-				that.ask(['pause', 'state', 'name', 'artist'], function(){
-					if( typeof arguments[0] === 'object' ){
-						that.error(arguments[0], callback);
-						return;
-					}
-
-					var response = arguments[1] === 'paused'
-						&& 'You paused in the middle of ' + arguments[2] + ' by ' + arguments[3] + '! :O'
-						|| 'Hey, I\'m not playing!';
-
-					callback(200, response);
-					that.event.emit('set', {state: arguments[1]});
-				});
+				that.ask(['pause', 'state', 'name', 'artist']);
 			}
 			else {
 				callback(400, 'I can\'t do that!');
@@ -321,21 +159,7 @@ Spotify.prototype.set = function(property, value, callback) {
 				that.ask([{
 						command: 'position',
 						values: [value]
-					}], 'duration',
-					function(){
-						if( typeof arguments[0] === 'object' ){
-							that.error(arguments[0], callback);
-							return;
-						}
-
-						var response = value < arguments[0]
-							&& 'Yeah! I\'ve always loved the part at ' + value + ' seconds!'
-							|| 'I know this song is way too long, but not that long!';
-						
-						callback(200, response);
-						that.event.emit('set', {position: value});
-					}
-				);
+					}, 'duration']);
 			}
 			else {
 				callback(400, 'That\'s not a knife... THIS is a knife.');
@@ -346,35 +170,8 @@ Spotify.prototype.set = function(property, value, callback) {
 				that.ask([{
 					command: 'volume',
 					values: [value]
-				}],
-				function(){
-					if( typeof arguments[0] === 'object' ){
-						that.error(arguments[0], callback);
-						return;
-					}
-
-					callback(200, 'Volume set to ' + value);
-					that.event.emit('set', {volume: value});
-				});
-			}
-			else if( value > 100 ){
-				callback(200, 'The numbers all go to eleven. Look, right across the board, eleven, eleven, eleven... Not ' + value + '!');
-			}
-			else if( value < 0 ){
-				callback(200, 'So you like it quiet, eh?');
-			}
-			else {
-				callback(400, 'Invalid volume value');
+				}]);
 			}
 		break;
-		default:
-			callback(404, 'No hablo americano');
-		break;
-	}
-};
-
-Spotify.prototype.error = function(error, callback) {
-	if( error.error === 'asyncRequest' ){
-		callback(202, error.text);
 	}
 };

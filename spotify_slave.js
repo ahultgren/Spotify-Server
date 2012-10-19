@@ -52,20 +52,13 @@ Slave.prototype.initialize = function() {
 		});
 };
 
-Slave.prototype.ask = function(commands, callback) {
+Slave.prototype.ask = function(commands) {
 	var that = this,
 		sockets = that.sio.sockets,
 		id;
 
-	callback = callback || function(){};
-
 	// Ask spotify to execute the command
 	that.sio.of('/slave').emit('ask', {
 		commands: commands
-	});
-
-	callback({
-		error: 'asyncRequest',
-		text: 'The command was successfully sent. However I was unable to retrieve data since the active Spotify controller is using sockets which is an asyncronous action and thus no response can be recieved.'
 	});
 };
