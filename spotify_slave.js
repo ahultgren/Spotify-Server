@@ -52,20 +52,16 @@ Slave.prototype.initialize = function() {
 		});
 };
 
-Slave.prototype.ask = function() {
-	// args: command 1, ..., command n, callback
-
+Slave.prototype.ask = function(commands, callback) {
 	var that = this,
-		arguments = Array.prototype.slice.call(arguments),
 		sockets = that.sio.sockets,
-		l = arguments.length - 1,
-		callback = typeof arguments[l] === 'function' && arguments[l--] || function(){},
-		args = arguments.splice(0, l),
 		id;
+
+	callback = callback || function(){};
 
 	// Ask spotify to execute the command
 	that.sio.of('/slave').emit('ask', {
-		commands: args
+		commands: commands
 	});
 
 	callback({

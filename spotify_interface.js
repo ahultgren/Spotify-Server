@@ -54,43 +54,13 @@ Spotify.prototype.removeInterface = function(name) {
  * Seperation between cache name and timestamp is done to be able to prevent memory leaks. If both are combined
  * there is no way to delete the property and they would pile up as time goes by.
  */
-Spotify.prototype.ask = function(arguments, callback) {
-	var that = this,
-		cacheName = '',
-		cacheInterval = 10000,
-		timestamp = ~~(Date.now() / (cacheInterval * 1000)); // Cache every n seconds and floor it using a bitwise hack
+Spotify.prototype.ask = function(commands, callback) {
+	var that = this;
 	
-	callback = callback || function(){}
+	callback = callback || function(){};
 
-	// Create cache name
-	for( i = arguments.length; i--; ){
-		cacheName += arguments[i];
-	}
-
-	// Check if cache should be used and if it's cached recently
-	if( cacheInterval && that._cache[cacheName] && that._cache[cacheName][timestamp] ){
-		if( !that._cache[cacheName][timestamp].error ){
-			// There's a cache with no error! Callback the cache
-			callback.apply(null, that._cache[cacheName][timestamp]);
-		}
-		else {
-			// There's a cache but there was an error last time
-		}
-	}
-	else{
-		arguments.push(function(err){
-			callback.apply(null, arguments);
-
-			if( cacheInterval ){
-				// Create a new cache and remove the old one
-				that._cache[cacheName] = {};
-				that._cache[cacheName][timestamp] = arguments;
-			}
-		});
-
-		// Call the proper spotify interface
-		that.interface.apply(that.interfaceObj || this, arguments);
-	}
+	// Call the proper spotify interface
+	that.interface.call(that.interfaceObj, commands, callback);
 };
 
 
@@ -139,7 +109,7 @@ Spotify.prototype.playUri = function() {
 		that.ask([{
 				command: 'play track',
 				values: [uri, context]
-			}], 'state', 'name', 'artist', 'album', 'uri',
+			}, 'state', 'name', 'artist', 'album', 'uri'],
 			function(){
 				if( typeof arguments[0] === 'object' ){
 					that.error(arguments[0], callback);
