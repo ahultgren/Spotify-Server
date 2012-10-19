@@ -3,6 +3,8 @@
 Let the whole team choose what Spotify is playing in the office speakers.
 Also works if you want people at say a party easily check what song is currently being played, if they're too shy to ask someone.
 
+_Now working with all OSs that runs Spotify!_
+
 ## Installation
 
 You must have node.js and npm installed.
@@ -13,6 +15,7 @@ You must have node.js and npm installed.
     `$ cd spotify-server`
 * Install dependencies  
     `$ npm install`
+* If you're not on a mac, get [Spotify Slave](https://github.com/ahultgren/Spotify-Slave)  
 * Start the server  
     `$ node web.js`
 
@@ -68,14 +71,8 @@ Contributions are very much appreciated. The following are stuff that need speci
 
 * **A UI**  
 Currently this is not much more than a REST API, which is not very usable.
-* **Windows support**  
-Is there a way to interact with Spotify from the commad prompt in windows?
-* **Linux support**  
-This page seems to have some useful info: http://ubuntuforums.org/showthread.php?t=1797848
-* **Web Sockets API**  
-Wouldn't it be awesome if you could be pushed automagically when a new song is played?
 
-If you want to contribute just clone this repo, make your own branch, follow current coding style, change/add one feature per commit, and issue a pull request when you're done. Cuntributors will be credited below.
+If you want to contribute just fork this repo, make your own branch, follow current coding style, change/add one feature per commit, and issue a pull request when you're done. Contributors will be credited below.
 
 Thanks to nicoo for this extensible [list of supported Spoitfy commands](http://www.instructables.com/id/RFID-Controls-for-Spotify-on-OSX-using-hacked-Mir/step3/Spotify-osascript-commands/).
 
