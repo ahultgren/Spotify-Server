@@ -54,13 +54,13 @@ Spotify.prototype.removeInterface = function(name) {
  * Seperation between cache name and timestamp is done to be able to prevent memory leaks. If both are combined
  * there is no way to delete the property and they would pile up as time goes by.
  */
-Spotify.prototype.ask = function() {
+Spotify.prototype.ask = function(arguments, callback) {
 	var that = this,
-		arguments = [].splice.call(arguments, 0),
-		cacheInterval = !isNaN(+arguments[arguments.length - 1]) && +arguments.pop() || false,
-		callback = typeof arguments[arguments.length - 1] === 'function' && arguments.pop() || function(){},
 		cacheName = '',
+		cacheInterval = 10000,
 		timestamp = ~~(Date.now() / (cacheInterval * 1000)); // Cache every n seconds and floor it using a bitwise hack
+	
+	callback = callback || function(){}
 
 	// Create cache name
 	for( i = arguments.length; i--; ){
@@ -99,7 +99,7 @@ Spotify.prototype.play = function(callback) {
 
 	callback = callback || function(){};
 
-	that.ask('playpause', 'state', 'name', 'artist', function(){
+	that.ask(['playpause', 'state', 'name', 'artist'], function(){
 
 		if( typeof arguments[0] === 'object' ){
 			that.error(arguments[0], callback);
@@ -124,7 +124,7 @@ Spotify.prototype.play = function(callback) {
 
 Spotify.prototype.playUri = function() {
 	// args: uri, [context], callback
-	
+
 	var that = this,
 		uri = arguments[0],
 		l = arguments.length - 1,
@@ -136,10 +136,10 @@ Spotify.prototype.playUri = function() {
 		callback(400, '¿Hablos español?');
 	}
 	else {
-		that.ask({
+		that.ask([{
 				command: 'play track',
 				values: [uri, context]
-			}, 'state', 'name', 'artist', 'album', 'uri',
+			}], 'state', 'name', 'artist', 'album', 'uri',
 			function(){
 				if( typeof arguments[0] === 'object' ){
 					that.error(arguments[0], callback);
@@ -150,7 +150,6 @@ Spotify.prototype.playUri = function() {
 					callback(200, 'Now playing ' + arguments[2] + ' by ' + arguments[3] + '.');
 				}
 				else {
-					console.log(arguments[1]);
 					callback(200, 'It seems that URI didn\'t work... What a shame, I know I would have loved that song.');
 				}
 
@@ -171,7 +170,7 @@ Spotify.prototype.next = function(callback) {
 
 	callback = callback || function(){};
 
-	that.ask('next track', 'state', 'name', 'artist', 'album', 'uri', function(){
+	that.ask(['next track', 'state', 'name', 'artist', 'album', 'uri'], function(){
 		if( typeof arguments[0] === 'object' ){
 			that.error(arguments[0], callback);
 			return;
@@ -199,7 +198,7 @@ Spotify.prototype.prev = function(callback) {
 
 	callback = callback || function(){};
 
-	that.ask('previous track', 'state', 'name', 'artist', 'album', 'uri', function(){
+	that.ask(['previous track', 'state', 'name', 'artist', 'album', 'uri'], function(){
 		if( typeof arguments[0] === 'object' ){
 			that.error(arguments[0], callback);
 			return;
@@ -256,11 +255,11 @@ Spotify.prototype.get = function(property, callback) {
 		case 'duration':
 			command = 'duration';
 		break;
-		case 'url':
+		case 'uri':
 			command = 'uri';
 		break;
 		case 'current':
-			that.ask('name', 'artist', 'album', 'duration', 'uri', 'state', function(){
+			that.ask(['name', 'artist', 'album', 'duration', 'uri', 'state'], function(){
 				if( typeof arguments[0] === 'object' ){
 					that.error(arguments[0], callback);
 					return;
@@ -282,7 +281,7 @@ Spotify.prototype.get = function(property, callback) {
 					uri: arguments[4],
 					state: arguments[5]
 				});
-			}, cache);
+			});
 		break;
 		default:
 			callback(404, 'Que?');
@@ -290,7 +289,7 @@ Spotify.prototype.get = function(property, callback) {
 	}
 
 	if( command ){
-		that.ask(command, function(){
+		that.ask([command], function(){
 			var obj = {};
 
 			if( typeof arguments[0] === 'object' ){
@@ -302,7 +301,7 @@ Spotify.prototype.get = function(property, callback) {
 
 			that.event.emit('get', obj);
 			callback(200, arguments[0]);
-		}, cache);
+		});
 	}
 };
 
@@ -314,7 +313,7 @@ Spotify.prototype.set = function(property, value, callback) {
 	switch( property ){
 		case 'state':
 			if( value === 'play' ){
-				that.ask('play', 'state', 'name', 'artist', function(){
+				that.ask(['play', 'state', 'name', 'artist'], function(){
 					if( typeof arguments[0] === 'object' ){
 						that.error(arguments[0], callback);
 						return;
@@ -329,7 +328,7 @@ Spotify.prototype.set = function(property, value, callback) {
 				});
 			}
 			else if( value === 'pause' ){
-				that.ask('pause', 'state', 'name', 'artist', function(){
+				that.ask(['pause', 'state', 'name', 'artist'], function(){
 					if( typeof arguments[0] === 'object' ){
 						that.error(arguments[0], callback);
 						return;
@@ -349,10 +348,10 @@ Spotify.prototype.set = function(property, value, callback) {
 		break;
 		case 'position':
 			if( !isNaN(value) && value >= 0 ){
-				that.ask({
+				that.ask([{
 						command: 'position',
 						values: [value]
-					}, 'duration',
+					}], 'duration',
 					function(){
 						if( typeof arguments[0] === 'object' ){
 							that.error(arguments[0], callback);
@@ -374,10 +373,11 @@ Spotify.prototype.set = function(property, value, callback) {
 		break;
 		case 'volume':
 			if( !isNaN(value) && value >= 0 && value <= 100 ){
-				that.ask({
+				that.ask([{
 					command: 'volume',
 					values: [value]
-				}, function(){
+				}],
+				function(){
 					if( typeof arguments[0] === 'object' ){
 						that.error(arguments[0], callback);
 						return;
