@@ -65,39 +65,33 @@ Spotify.prototype.ask = function(commands) {
 Spotify.prototype.play = function() {
 	var that = this;
 
-	that.ask(['playpause', 'state', 'name', 'artist']);
+	that.ask(['playpause']);
 };
 
 Spotify.prototype.playUri = function(uri, context) {
-	var that = this,
-		uri = arguments[0],
-		l = arguments.length - 1;
+	var that = this;
 
-	// Make VERY sure that the uri doesn't contain anything I don't want it to contain
-	if( !(context && context.match(/[^A-Za-z0-9:#]/g) || uri.match(/[^A-Za-z0-9:#]/g)) ){
-		that.ask([{
-				command: 'play track',
-				values: [uri, context]
-			}, 'state', 'name', 'artist', 'album', 'uri']);
-	}
+	that.ask([{
+		command: 'play uri',
+		values: [uri, context]
+	}]);
 };
 
 Spotify.prototype.next = function() {
 	var that = this;
 
-	that.ask(['next track', 'state', 'name', 'artist', 'album', 'uri']);
+	that.ask(['next']);
 };
 
 Spotify.prototype.prev = function() {
 	var that = this;
 
-	that.ask(['previous track', 'state', 'name', 'artist', 'album', 'uri']);
+	that.ask(['previous']);
 };
 
 Spotify.prototype.get = function(property) {
 	var that = this,
-		command = '',
-		cache = 10;
+		command = '';
 
 	switch( property ){
 		case 'state':
@@ -129,8 +123,8 @@ Spotify.prototype.get = function(property) {
 		case 'uri':
 			command = 'uri';
 		break;
-		case 'current':
-			command = 'update';
+		case 'all':
+			command = 'all';
 		break;
 	}
 
@@ -145,24 +139,18 @@ Spotify.prototype.set = function(property, value) {
 	switch( property ){
 		case 'state':
 			if( value === 'play' ){
-				that.ask(['play', 'state', 'name', 'artist']);
+				that.ask(['play']);
 			}
 			else if( value === 'pause' ){
-				that.ask(['pause', 'state', 'name', 'artist']);
-			}
-			else {
-				callback(400, 'I can\'t do that!');
+				that.ask(['pause']);
 			}
 		break;
 		case 'position':
 			if( !isNaN(value) && value >= 0 ){
 				that.ask([{
-						command: 'position',
-						values: [value]
-					}, 'duration']);
-			}
-			else {
-				callback(400, 'That\'s not a knife... THIS is a knife.');
+					command: 'position',
+					values: [value]
+				}]);
 			}
 		break;
 		case 'volume':

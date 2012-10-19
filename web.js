@@ -38,61 +38,10 @@ App.prototype.start = function() {
 App.prototype.route = function() {
 	var that = this;
 
-	// Make a basic templating method accessible. Better templating will come later
-	that.app.use(httpResponse);
-
-	// Check if user is allowed to perform the request
-	that.app.use(authorization);
-
-
 	//Routing
 
 	that.app.get('/', function(req, res){
 		res.sendfile(__dirname + '/index.html');
-	});
-
-	that.app.get('/play', function(req, res){
-		that.spotify.play();
-	});
-
-	that.app.get('/play/:uri/:context?', function(req, res){
-		if( req.params.context ){
-			that.spotify.playUri(req.params.uri, req.params.context);
-		}
-		else {
-			that.spotify.playUri(req.params.uri);
-		}
-	});
-
-	that.app.get('/next', function(req, res){
-		that.spotify.next();
-	});
-
-	that.app.get('/prev', function(req, res){
-		that.spotify.prev();
-	});
-
-	that.app.get('/get/:property', function(req, res){
-		that.spotify.get(req.params.property);
-	});
-
-	that.app.get('/set/:property/:value', function(req, res){
-		that.spotify.set(req.params.property, req.params.value);
-	});
-
-	that.app.get('/current', function(req, res){
-		that.spotify.get('current');
-	});
-
-	that.app.get('/auth/:token/:level', function(req, res){
-		if( that.useAuth ){
-			auth = req.params.token;
-			allowedLevels = req.params.level;
-			res.httpResponse(200, 'Permissions updated!');
-		}
-		else {
-			res.httpResponse(403, 'You require more vespene gas (authorization is disabled).');
-		}
 	});
 };
 
@@ -149,62 +98,6 @@ App.prototype.socketsListen = function() {
 		that.sio.of('client').emit('new track', data);
 	});
 };
-
-/* Private functions */
-
-function httpResponse(req, res, next){
-	res.httpResponse = function(status, message){
-		res.contentType('text/plain');
-		res.send(status, message);
-	};
-	next();
-}
-
-function authorization(req, res, next){
-	var level = 0,
-		i,
-		routes = app.app.routes.get,
-		path;
-
-	for( i in routes ){
-		if( req.path.match(routes[i].regexp) ){
-			path = routes[i].path;
-		}
-	}
-
-	switch( path ){
-		case '/':
-			level = 0;
-		break;
-		case '/current':
-			level = 1;
-		break;
-		case '/get/:property':
-			level = 2;
-		break;
-		case '/next':
-		case '/prev':
-		case '/play':
-			level = 3;
-		break;
-		case '/play/:uri':
-			level = 4;
-		break;
-		case '/set/:property/:value':
-			level = 5;
-		break;
-		case 'auth/:token/:level':
-			level = 10;
-		break;
-	}
-
-	if( level <= allowedLevels || req.query.token === auth ){
-		next();
-	}
-	else {
-		res.httpResponse(401, 'You shall not pass!');
-	}
-}
 
 
 // Wohoo
