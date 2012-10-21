@@ -1,16 +1,14 @@
 var events = require('events');
 
-module.exports = function(){
-	return new Spotify();	
+module.exports = function(args){
+	return new Spotify(args);	
 };
 
-function Spotify(){
-	// Property used for caching
-	this._cache = {};
+function Spotify(args){
+	var that = this;
 
-	//## When supported it would be possible to figure out if osascipt or another interface can be used
+	that.cache = args.cache;
 
-	// Set correct reference
 	this.interfaceName;
 	this.interface = function(){};
 	this.interfaces = [];

@@ -10,6 +10,7 @@ function Slave(args){
 	that.sio = args.sio;
 	that.token = args.token;
 	that.spotify = args.spotify;
+	that.cache = args.cache;
 
 	that.event = new events.EventEmitter();
 
@@ -45,9 +46,12 @@ Slave.prototype.initialize = function() {
 
 			// Automatical emits on changes to states. The message is expected
 			// to contain { changedProperty: newValue }
-			socket.on('change', function(msg){
+			socket.on('change', function(changed){
+				// Cache it
+				that.cache.set(changed);
+
 				// Notify the spotify object, so the world may know
-				that.spotify.event.emit('change', msg);
+				that.spotify.event.emit('change', changed);
 			});
 		});
 };

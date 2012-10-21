@@ -6,15 +6,12 @@ var
 // Interfaces
 	spotify = require('./spotify_interface'),
 	slave = require('./spotify_slave'),
-// Other private vars
-	auth,
-	allowedLevels = 9;
+	Cache = require('./cache');
 
 
 function App(args){
 	var that = this;
 
-	that.useAuth = false;
 	that.app = args.express();
 	that.server = args.server.createServer(that.app);
 	that.sio = args.socket.listen(that.server);
@@ -28,6 +25,8 @@ function App(args){
 
 App.prototype.start = function() {
 	var that = this;
+
+	that.cache = Cache();
 
 	that.route();
 	that.httpListen();
@@ -56,11 +55,14 @@ App.prototype.httpListen = function() {
 App.prototype.connectToSpotify = function() {
 	var that = this;
 
-	that.spotify = spotify();
+	that.spotify = spotify({
+		cache: that.cache
+	});
 
 	that.slave = that.slave({
 		sio: that.sio,
 		spotify: that.spotify,
+		cache: that.cache,
 		token: '1337' //## Create a config-file and keep auth stuff there
 	});
 };
@@ -73,29 +75,13 @@ App.prototype.socketsListen = function() {
 	that.sio.of('/client').on('connection', function (socket) {
 		console.log('connected as client');
 
-		socket.emit('news', { hello: 'world' });
-		
 		socket.on('disconnect', function (data) {
 			console.log('disconnect', data);
 		});
 	});
 
-	spotify.event.on('set', function(data){
-		var property;
-
-		// Extract setted property
-		for( property in data ){
-			break;
-		}
-
-		// Tell everyone only if there's actually a difference
-		if( that._cache[property] !== data[property] ){
-			that.sio.of('client').emit(that._cache[property] = data[property]);
-		}
-	});
-
-	spotify.event.on('new track', function(data){
-		that.sio.of('client').emit('new track', data);
+	spotify.event.on('change', function(changed){
+		that.sio.of('client').emit('change', changed);
 	});
 };
 
