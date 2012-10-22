@@ -5,21 +5,16 @@ var
 	socket = require('socket.io'),
 // Interfaces
 	spotify = require('./spotify_interface'),
-	osascript = require('./spotify_osascript'),
 	slave = require('./spotify_slave'),
-// Other private vars
-	auth,
-	allowedLevels = 9;
+	Cache = require('./cache');
 
 
 function App(args){
 	var that = this;
 
-	that.useAuth = false;
 	that.app = args.express();
 	that.server = args.server.createServer(that.app);
 	that.sio = args.socket.listen(that.server);
-	that.osascript = args.osascript;
 	that.slave = args.slave;
 	that.port = args.port;
 
@@ -31,6 +26,8 @@ function App(args){
 App.prototype.start = function() {
 	var that = this;
 
+	that.cache = Cache();
+
 	that.route();
 	that.httpListen();
 	that.connectToSpotify();
@@ -40,61 +37,10 @@ App.prototype.start = function() {
 App.prototype.route = function() {
 	var that = this;
 
-	// Make a basic templating method accessible. Better templating will come later
-	that.app.use(httpResponse);
-
-	// Check if user is allowed to perform the request
-	that.app.use(authorization);
-
-
 	//Routing
 
 	that.app.get('/', function(req, res){
 		res.sendfile(__dirname + '/index.html');
-	});
-
-	that.app.get('/play', function(req, res){
-		that.spotify.play(res.httpResponse);
-	});
-
-	that.app.get('/play/:uri/:context?', function(req, res){
-		if( req.params.context ){
-			that.spotify.playUri(req.params.uri, req.params.context, res.httpResponse);
-		}
-		else {
-			that.spotify.playUri(req.params.uri, res.httpResponse);
-		}
-	});
-
-	that.app.get('/next', function(req, res){
-		that.spotify.next(res.httpResponse);
-	});
-
-	that.app.get('/prev', function(req, res){
-		that.spotify.prev(res.httpResponse);
-	});
-
-	that.app.get('/get/:property', function(req, res){
-		that.spotify.get(req.params.property, res.httpResponse);
-	});
-
-	that.app.get('/set/:property/:value', function(req, res){
-		that.spotify.set(req.params.property, req.params.value, res.httpResponse);
-	});
-
-	that.app.get('/current', function(req, res){
-		that.spotify.get('current', res.httpResponse);
-	});
-
-	that.app.get('/auth/:token/:level', function(req, res){
-		if( that.useAuth ){
-			auth = req.params.token;
-			allowedLevels = req.params.level;
-			res.httpResponse(200, 'Permissions updated!');
-		}
-		else {
-			res.httpResponse(403, 'You require more vespene gas (authorization is disabled).');
-		}
 	});
 };
 
@@ -109,15 +55,14 @@ App.prototype.httpListen = function() {
 App.prototype.connectToSpotify = function() {
 	var that = this;
 
-	that.spotify = spotify();
-
-	if( process.platform === 'darwin' ){
-		that.osascript = that.osascript(that.spotify);
-	}
+	that.spotify = spotify({
+		cache: that.cache
+	});
 
 	that.slave = that.slave({
 		sio: that.sio,
 		spotify: that.spotify,
+		cache: that.cache,
 		token: '1337' //## Create a config-file and keep auth stuff there
 	});
 };
@@ -130,87 +75,25 @@ App.prototype.socketsListen = function() {
 	that.sio.of('/client').on('connection', function (socket) {
 		console.log('connected as client');
 
-		socket.emit('news', { hello: 'world' });
-		
+		socket.on('get', function(property){
+			that.spotify.get(property, function(data){
+				socket.emit(property, data);
+			});
+		});
+
+		socket.on('refresh', function(){
+			that.slave.refresh();
+		});
+
 		socket.on('disconnect', function (data) {
 			console.log('disconnect', data);
 		});
 	});
 
-	spotify.event.on('set', function(data){
-		var property;
-
-		// Extract setted property
-		for( property in data ){
-			break;
-		}
-
-		// Tell everyone only if there's actually a difference
-		if( that._cache[property] !== data[property] ){
-			that.sio.of('client').emit(that._cache[property] = data[property]);
-		}
-	});
-
-	spotify.event.on('new track', function(data){
-		that.sio.of('client').emit('new track', data);
+	spotify.event.on('change', function(changed){
+		that.sio.of('client').emit('change', changed);
 	});
 };
-
-/* Private functions */
-
-function httpResponse(req, res, next){
-	res.httpResponse = function(status, message){
-		res.contentType('text/plain');
-		res.send(status, message);
-	};
-	next();
-}
-
-function authorization(req, res, next){
-	var level = 0,
-		i,
-		routes = app.app.routes.get,
-		path;
-
-	for( i in routes ){
-		if( req.path.match(routes[i].regexp) ){
-			path = routes[i].path;
-		}
-	}
-
-	switch( path ){
-		case '/':
-			level = 0;
-		break;
-		case '/current':
-			level = 1;
-		break;
-		case '/get/:property':
-			level = 2;
-		break;
-		case '/next':
-		case '/prev':
-		case '/play':
-			level = 3;
-		break;
-		case '/play/:uri':
-			level = 4;
-		break;
-		case '/set/:property/:value':
-			level = 5;
-		break;
-		case 'auth/:token/:level':
-			level = 10;
-		break;
-	}
-
-	if( level <= allowedLevels || req.query.token === auth ){
-		next();
-	}
-	else {
-		res.httpResponse(401, 'You shall not pass!');
-	}
-}
 
 
 // Wohoo
@@ -220,6 +103,5 @@ var app = new App({
 	server: server,
 	port: 3000,
 	socket: socket,
-	osascript: osascript,
 	slave: slave
 });

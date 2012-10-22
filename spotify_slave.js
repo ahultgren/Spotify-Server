@@ -10,6 +10,7 @@ function Slave(args){
 	that.sio = args.sio;
 	that.token = args.token;
 	that.spotify = args.spotify;
+	that.cache = args.cache;
 
 	that.event = new events.EventEmitter();
 
@@ -45,31 +46,29 @@ Slave.prototype.initialize = function() {
 
 			// Automatical emits on changes to states. The message is expected
 			// to contain { changedProperty: newValue }
-			socket.on('change', function(msg){
+			socket.on('change', function(changed){
+				// Cache it
+				that.cache.set(changed);
+
 				// Notify the spotify object, so the world may know
-				that.spotify.event.emit('change', msg);
+				that.spotify.event.emit('change', changed);
 			});
 		});
 };
 
-Slave.prototype.ask = function() {
-	// args: command 1, ..., command n, callback
+Slave.prototype.refresh = function() {
+	var that = this;
 
+	that.sio.sockets.in('/slave').emit('refresh');
+};
+
+Slave.prototype.ask = function(commands) {
 	var that = this,
-		arguments = Array.prototype.slice.call(arguments),
 		sockets = that.sio.sockets,
-		l = arguments.length - 1,
-		callback = typeof arguments[l] === 'function' && arguments[l--] || function(){},
-		args = arguments.splice(0, l),
 		id;
 
 	// Ask spotify to execute the command
 	that.sio.of('/slave').emit('ask', {
-		commands: args
-	});
-
-	callback({
-		error: 'asyncRequest',
-		text: 'The command was successfully sent. However I was unable to retrieve data since the active Spotify controller is using sockets which is an asyncronous action and thus no response can be recieved.'
+		commands: commands
 	});
 };
