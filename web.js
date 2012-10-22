@@ -79,7 +79,11 @@ App.prototype.socketsListen = function() {
 			that.spotify.get(property, function(data){
 				socket.emit(property, data);
 			});
-		})
+		});
+
+		socket.on('refresh', function(){
+			that.slave.refresh();
+		});
 
 		socket.on('disconnect', function (data) {
 			console.log('disconnect', data);
