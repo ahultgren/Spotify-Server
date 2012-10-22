@@ -18,5 +18,25 @@ Cache.prototype.set = function(params) {
 };
 
 Cache.prototype.get = function(param) {
+	if( param === 'position' ){
+		return Date.now() - this.params.position.timestamp + this.params.position.value;
+	}
 	return this.params[param].value;
+};
+
+Cache.prototype.getAll = function() {
+	var params = this.params,
+		result = {},
+		i;
+
+	for( i in params ){
+		if( params[i] === 'position' ){
+			result[i] = Date.now() - this.params.position.timestamp + this.params.position.value;
+		}
+		else {
+			result[i] = params[i].value;
+		}
+	}
+
+	return result;
 };

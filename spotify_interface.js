@@ -87,48 +87,28 @@ Spotify.prototype.prev = function() {
 	that.ask(['previous']);
 };
 
-Spotify.prototype.get = function(property) {
+Spotify.prototype.get = function(property, callback) {
 	var that = this,
-		command = '';
+		result = {};
 
 	switch( property ){
 		case 'state':
-			command = 'state';
-		break;
 		case 'position':
-			command = 'position';
-			cache = false;
-		break;
 		case 'volume':
-			command = 'volume';
-		break;
 		case 'name':
-			command = 'name';
-		break;
 		case 'artist':
-			command = 'artist';
-		break;
-		//## I need to figure out how to stream the response from an osascript or get it from the spotify api
-		/*case 'artwork':
-			command = 'artwork of current track';
-		break;*/
+		case 'cover':
 		case 'album':
-			command = 'album';
-		break;
 		case 'duration':
-			command = 'duration';
-		break;
 		case 'uri':
-			command = 'uri';
+			result[property] = that.cache.get(property);
 		break;
 		case 'all':
-			command = 'all';
+			result = that.cache.getAll();
 		break;
 	}
 
-	if( command ){
-		that.ask([command]);
-	}
+	callback(result);
 };
 
 Spotify.prototype.set = function(property, value) {
