@@ -89,7 +89,7 @@ Spotify.prototype.prev = function() {
 
 Spotify.prototype.get = function(property, callback) {
 	var that = this,
-		result = {};
+		result;
 
 	switch( property ){
 		case 'state':
@@ -101,7 +101,7 @@ Spotify.prototype.get = function(property, callback) {
 		case 'album':
 		case 'duration':
 		case 'uri':
-			result[property] = that.cache.get(property);
+			result = that.cache.get(property);
 		break;
 		case 'all':
 			result = that.cache.getAll();

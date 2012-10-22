@@ -75,6 +75,12 @@ App.prototype.socketsListen = function() {
 	that.sio.of('/client').on('connection', function (socket) {
 		console.log('connected as client');
 
+		socket.on('get', function(property){
+			that.spotify.get(property, function(data){
+				socket.emit(property, data);
+			});
+		})
+
 		socket.on('disconnect', function (data) {
 			console.log('disconnect', data);
 		});
