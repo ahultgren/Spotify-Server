@@ -5,12 +5,11 @@
 <body>
 <h1>Spotify Server</h1>
 
-<p>Let the whole team choose what's played in the office speakers.
-Also works if you want people at say a party easily check what song is currently being played, if they're too shy to ask someone.</p>
+<p>Let the whole team choose what's played in the office speakers!</p>
 
-<h2>How to use Spotify Server</h2>
+<h2>What do you want to do?</h2>
 
-<p><strong><a href="/play">/play</a></strong> <br />
+<p><strong><a href="/play">playpause</a></strong> <br />
 Plays current song if no song is playing, pauses if a song is currenty playing.</p>
 
 <p><strong><a href="/play/spotify:track:3Y2nz1ySBZ9Wg0kv9Cuc3Q">/play/uri</a></strong> <br />
@@ -36,6 +35,18 @@ Set a player property. Currently supported:</p>
 <li><a href="/set/position/200">/position</a> - Number of seconds. Must be at least 0 and less than the lenght of the track.</li>
 <li><a href="/set/volume/50">/volume</a> - Number of seconds. Must be between 0 and 100.</li>
 </ul>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	var socket = io.connect(':3000/client');
+
+	socket.on('connect', function(data){
+		console.log('Successfully connected as client');
+	});
+	socket.on('change', function(data){
+		console.log(data);
+	});
+</script>
 
 </body>
 </html>

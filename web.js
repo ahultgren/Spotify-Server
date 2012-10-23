@@ -75,6 +75,10 @@ App.prototype.socketsListen = function() {
 	that.sio.of('/client').on('connection', function (socket) {
 		console.log('connected as client');
 
+		that.spotify.get('all', function(data){
+			socket.emit('change', data);
+		});
+
 		socket.on('get', function(property){
 			that.spotify.get(property, function(data){
 				socket.emit(property, data);
@@ -91,7 +95,7 @@ App.prototype.socketsListen = function() {
 	});
 
 	spotify.event.on('change', function(changed){
-		that.sio.of('client').emit('change', changed);
+		that.sio.of('/client').emit('change', changed);
 	});
 };
 
