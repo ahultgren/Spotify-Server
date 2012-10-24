@@ -89,6 +89,10 @@ App.prototype.socketsListen = function() {
 			that.slave.refresh();
 		});
 
+		socket.on('ask', function(command){
+			that.slave.ask(command);
+		});
+
 		socket.on('disconnect', function (data) {
 			console.log('disconnect', data);
 		});

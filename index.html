@@ -9,19 +9,19 @@
 
 <h2>What do you want to do?</h2>
 
-<p><strong><a href="/play">playpause</a></strong> <br />
+<p><strong><a href="play">playpause</a></strong> <br />
 Plays current song if no song is playing, pauses if a song is currenty playing.</p>
 
-<p><strong><a href="/play/spotify:track:3Y2nz1ySBZ9Wg0kv9Cuc3Q">/play/uri</a></strong> <br />
+<p><strong><a href="playURI/spotify:track:3Y2nz1ySBZ9Wg0kv9Cuc3Q">/play/uri</a></strong> <br />
 Plays whatever the Spotify URI points to. Could be a song, a playlist, an album or an artist.</p>
 
-<p><strong><a href="/next">/next</a></strong> <br />
+<p><strong><a href="next">/next</a></strong> <br />
 Plays next song in the play queue.</p>
 
-<p><strong><a href="/prev">/prev</a></strong> <br />
+<p><strong><a href="prev">/prev</a></strong> <br />
 Plays previous song in the play queue.</p>
 
-<p><strong><a href="/current">/current</a></strong> <br />
+<p><strong><a href="current">/current</a></strong> <br />
 Shows all info about the current track.</p>
 
 <p><strong><a href="/get/name">/get/property</a></strong> <br />
@@ -37,14 +37,29 @@ Set a player property. Currently supported:</p>
 </ul>
 
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script>
 	var socket = io.connect(':3000/client');
 
 	socket.on('connect', function(data){
 		console.log('Successfully connected as client');
 	});
+
 	socket.on('change', function(data){
 		console.log(data);
+	});
+
+	jQuery(function($){
+		$('a').click(function(e){
+			var params = $(this).attr('href').split('/');
+
+			e.preventDefault();
+
+			socket.emit('ask', {
+				command: params[0],
+				values: params.splice(1)
+			});
+		});
 	});
 </script>
 
