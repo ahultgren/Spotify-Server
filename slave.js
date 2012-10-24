@@ -21,28 +21,12 @@ Slave.prototype.initialize = function() {
 	var that = this,
 		sockets = that.sio.sockets;
 
-	// Authorize new slaves and make sure spotify_interface is using this driver
 	that.sio.of('/slave')
 		.authorization(function (handshakeData, callback) {
 			callback(null, ( handshakeData.query.token === that.token ));
 		})
 		.on('connection', function(socket){
 			console.log('connected as slave');
-
-			that.client.setInterface({
-				interface: that.ask,
-				name: 'slave',
-				obj: that
-			});
-
-			socket.on('disconnect', function(){
-				if( !sockets.clients().length ){
-					that.client.removeInterface('slave');
-				}
-			});
-
-
-			/* Listen for emits from the slave */
 
 			// Automatical emits on changes to states. The message is expected
 			// to contain { changedProperty: newValue }
@@ -68,7 +52,7 @@ Slave.prototype.ask = function(command) {
 		i;
 
 	// Ability to send multiple commands
-	if( !command.isArray() ){
+	if( !Array.isArray(command) ){
 		command = [command];
 	}
 

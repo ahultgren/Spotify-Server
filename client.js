@@ -7,58 +7,19 @@ module.exports = function(args){
 function Client(args){
 	var that = this;
 
+	that.main = args.main;
 	that.cache = args.main.cache;
-
-	that.interfaceName;
-	that.interface = function(){};
-	that.interfaces = [];
-
 	that.event = new events.EventEmitter();
 }
 
 /* Public methods */
 
-/** Set what spotify interface should be used
- */
-Client.prototype.setInterface = function(args) {
-	var that = this;
-
-	// First check if the same interface is already used. If so don't change anything
-	if( args.name !== this.interfaceName && args.name && typeof args.interface === 'function' ){
-		that.interface = args.interface;
-		that.interfaceName = args.name;
-		that.interfaceObj = args.obj;
-		that.interfaces.push(args);
-	}
-};
-
-Client.prototype.removeInterface = function(name) {
-	var that = this, 
-		interfaces = that.interfaces,
-		i;
-
-	// Loop through the interfaces backwards and remove the first (last) occurence
-	for( i = interfaces.length; i--; ){
-		if( interfaces[i].name === name ){
-			interfaces.splice(i, 1);
-			break;
-		}
-	}
-};
-
-/** Ask spotify to do something
- *
- * Checks agains a cache to reduce stress on the server (osascripts in particular are ridiculously slow).
- * Seperation between cache name and timestamp is done to be able to prevent memory leaks. If both are combined
- * there is no way to delete the property and they would pile up as time goes by.
- */
 Client.prototype.ask = function(commands) {
 	var that = this;
 
 	// Call the proper spotify interface
-	that.interface.call(that.interfaceObj, commands);
+	that.main.slave.ask(commands);
 };
-
 
 Client.prototype.play = function() {
 	var that = this;
