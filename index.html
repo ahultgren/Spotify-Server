@@ -7,6 +7,11 @@
 
 <p>Let the whole team choose what's played in the office speakers!</p>
 
+<p id="player">
+	Now <span id="state"></span> <span id="name"></span> by <span id="artists"></span> from the album <span id="album"></span>.
+	<br />The player is at <span id="position"></span> and is <span id="repeat"></span> and is <span id="shuffle"></span>.
+</p>
+
 <h2>What do you want to do?</h2>
 
 <p><strong><a href="play">playpause</a></strong> <br />
@@ -21,12 +26,6 @@ Plays next song in the play queue.</p>
 <p><strong><a href="prev">/prev</a></strong> <br />
 Plays previous song in the play queue.</p>
 
-<p><strong><a href="current">/current</a></strong> <br />
-Shows all info about the current track.</p>
-
-<p><strong><a href="/get/name">/get/property</a></strong> <br />
-Get a player or track property. Currently supported properties: <a href="/get/state">/state</a>, <a href="/get/position">/position</a>, <a href="/get/volume">/volume</a>, <a href="/get/name">/name</a>, <a href="/get/artist">/artist</a>, <a href="/get/album">/album</a>, <a href="/get/duration">/duration</a>, <a href="/get/url">/url</a>.</p>
-
 <p><strong><a href="/set/volume/50">/set/property/value</a></strong> <br />
 Set a player property. Currently supported:</p>
 
@@ -39,18 +38,58 @@ Set a player property. Currently supported:</p>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script>
-	var socket = io.connect(':3000/client');
-
-	socket.on('connect', function(data){
-		console.log('Successfully connected as client');
-	});
-
-	socket.on('change', function(data){
-		console.log(data);
-	});
-
 	jQuery(function($){
-		$('a').click(function(e){
+		var socket = io.connect(':3000/client'),
+			state = $('#state'),
+			name = $('#name'),
+			artists = $('#artists'),
+			album = $('#album'),
+			position = $('#position'),
+			repeat = $('#repeat'),
+			shuffle = $('#shuffle');
+
+		socket.on('connect', function(data){
+			console.log('Successfully connected as client');
+		});
+
+		socket.on('change', function(data){
+			var i, time;
+			console.log(data);
+
+			for( i in data ){
+				switch( i ){
+					case 'state':
+						state.text(data[i] && 'playing' || 'paused:');
+						break;
+					case 'track':
+						name.text(data[i]);
+						break;
+					case 'artists':
+						if( data[i].length < 3 ){
+							artists.text(data[i].join(' and '));
+						}
+						else {
+							artists.text(data[i].splice(0, data[i].length - 1).join(', ') + ' and ' + data[i][data[i].length - 1]);
+						}
+						break;
+					case 'album':
+						album.text(data[i]);
+						break;
+					case 'position':
+						time = new Date(data[i]);
+						position.text(time.getMinutes() + ':' + time.getSeconds());
+						break;
+					case 'repeat':
+						repeat.text(data[i] && 'on repeat' || 'is not on repeat');
+						break;
+					case 'shuffle':
+						shuffle.text(data[i] && 'shuffling' || 'not shuffling');
+						break;
+				}
+			}
+		});
+
+		/*$('a').click(function(e){
 			var params = $(this).attr('href').split('/');
 
 			e.preventDefault();
@@ -59,7 +98,7 @@ Set a player property. Currently supported:</p>
 				command: params[0],
 				values: params.splice(1)
 			});
-		});
+		});*/
 	});
 </script>
 
