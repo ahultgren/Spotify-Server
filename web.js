@@ -5,7 +5,7 @@ var
 	socket = require('socket.io'),
 // Interfaces
 	Client = require('./client'),
-	Slave = require('./slave'),
+	Spotify = require('./spotify'),
 	Cache = require('./cache');
 
 
@@ -28,7 +28,7 @@ function App(args){
 		main: that
 	});
 
-	that.slave = Slave({
+	that.spotify = Spotify({
 		main: that,
 		token: '1337' //## Create a config-file and keep auth stuff there
 	});
@@ -74,7 +74,7 @@ App.prototype.socketsListen = function() {
 		});
 
 		socket.on('refresh', function(){
-			that.slave.refresh();
+			that.spotify.refresh();
 		});
 
 		socket.on('disconnect', function (data) {

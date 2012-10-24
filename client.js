@@ -18,7 +18,7 @@ Client.prototype.do = function(command) {
 	var that = this;
 
 	// Call the proper spotify interface
-	that.main.slave.do(command);
+	that.main.spotify.do(command);
 };
 
 Client.prototype.get = function(property, callback) {

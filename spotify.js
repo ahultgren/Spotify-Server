@@ -1,10 +1,10 @@
 var events = require('events');
 
 module.exports = function(args){
-	return new Slave(args);
+	return new Spotify(args);
 };
 
-function Slave(args){
+function Spotify(args){
 	var that = this;
 
 	that.sio = args.main.sio;
@@ -17,7 +17,7 @@ function Slave(args){
 	that.initialize();
 }
 
-Slave.prototype.initialize = function() {
+Spotify.prototype.initialize = function() {
 	var that = this,
 		sockets = that.sio.sockets;
 
@@ -40,13 +40,13 @@ Slave.prototype.initialize = function() {
 		});
 };
 
-Slave.prototype.refresh = function() {
+Spotify.prototype.refresh = function() {
 	var that = this;
 
 	that.sio.of('/slave').emit('refresh');
 };
 
-Slave.prototype.do = function(command) {
+Spotify.prototype.do = function(command) {
 	var that = this,
 		sockets = that.sio.sockets,
 		i;
