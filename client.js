@@ -1,26 +1,26 @@
 var events = require('events');
 
 module.exports = function(args){
-	return new Spotify(args);	
+	return new Client(args);
 };
 
-function Spotify(args){
+function Client(args){
 	var that = this;
 
-	that.cache = args.cache;
+	that.cache = args.main.cache;
 
-	this.interfaceName;
-	this.interface = function(){};
-	this.interfaces = [];
+	that.interfaceName;
+	that.interface = function(){};
+	that.interfaces = [];
 
-	this.event = new events.EventEmitter();
+	that.event = new events.EventEmitter();
 }
 
 /* Public methods */
 
 /** Set what spotify interface should be used
  */
-Spotify.prototype.setInterface = function(args) {
+Client.prototype.setInterface = function(args) {
 	var that = this;
 
 	// First check if the same interface is already used. If so don't change anything
@@ -32,7 +32,7 @@ Spotify.prototype.setInterface = function(args) {
 	}
 };
 
-Spotify.prototype.removeInterface = function(name) {
+Client.prototype.removeInterface = function(name) {
 	var that = this, 
 		interfaces = that.interfaces,
 		i;
@@ -52,7 +52,7 @@ Spotify.prototype.removeInterface = function(name) {
  * Seperation between cache name and timestamp is done to be able to prevent memory leaks. If both are combined
  * there is no way to delete the property and they would pile up as time goes by.
  */
-Spotify.prototype.ask = function(commands) {
+Client.prototype.ask = function(commands) {
 	var that = this;
 
 	// Call the proper spotify interface
@@ -60,13 +60,13 @@ Spotify.prototype.ask = function(commands) {
 };
 
 
-Spotify.prototype.play = function() {
+Client.prototype.play = function() {
 	var that = this;
 
 	that.ask(['playpause']);
 };
 
-Spotify.prototype.playUri = function(uri, context) {
+Client.prototype.playUri = function(uri, context) {
 	var that = this;
 
 	that.ask([{
@@ -75,19 +75,19 @@ Spotify.prototype.playUri = function(uri, context) {
 	}]);
 };
 
-Spotify.prototype.next = function() {
+Client.prototype.next = function() {
 	var that = this;
 
 	that.ask(['next']);
 };
 
-Spotify.prototype.prev = function() {
+Client.prototype.prev = function() {
 	var that = this;
 
 	that.ask(['previous']);
 };
 
-Spotify.prototype.get = function(property, callback) {
+Client.prototype.get = function(property, callback) {
 	var that = this,
 		result;
 
@@ -111,7 +111,7 @@ Spotify.prototype.get = function(property, callback) {
 	callback(result);
 };
 
-Spotify.prototype.set = function(property, value) {
+Client.prototype.set = function(property, value) {
 	var that = this;
 
 	switch( property ){

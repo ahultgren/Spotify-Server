@@ -7,10 +7,10 @@ module.exports = function(args){
 function Slave(args){
 	var that = this;
 
-	that.sio = args.sio;
+	that.sio = args.main.sio;
+	that.client = args.main.client;
+	that.cache = args.main.cache;
 	that.token = args.token;
-	that.client = args.client;
-	that.cache = args.cache;
 
 	that.event = new events.EventEmitter();
 

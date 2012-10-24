@@ -25,13 +25,11 @@ function App(args){
 	that.cache = Cache();
 
 	that.client = Client({
-		cache: that.cache
+		main: that
 	});
 
 	that.slave = Slave({
-		sio: that.sio,
-		client: that.client,
-		cache: that.cache,
+		main: that,
 		token: '1337' //## Create a config-file and keep auth stuff there
 	});
 
