@@ -4,33 +4,42 @@ var
 	server = require('http'),
 	socket = require('socket.io'),
 // Interfaces
-	spotify = require('./client'),
-	slave = require('./slave'),
+	Client = require('./client'),
+	Slave = require('./slave'),
 	Cache = require('./cache');
 
 
 function App(args){
 	var that = this;
 
+	/* Server stuff */
+
 	that.app = args.express();
 	that.server = args.server.createServer(that.app);
 	that.sio = args.socket.listen(that.server);
-	that.slave = args.slave;
 	that.port = args.port;
 
-	that._cache = {};
 
-	that.start();
-}
-
-App.prototype.start = function() {
-	var that = this;
+	/* Modules */
 
 	that.cache = Cache();
 
+	that.client = Client({
+		cache: that.cache
+	});
+
+	that.slave = Slave({
+		sio: that.sio,
+		client: that.client,
+		cache: that.cache,
+		token: '1337' //## Create a config-file and keep auth stuff there
+	});
+
+
+	/* Start server stuff */
+
 	that.route();
 	that.httpListen();
-	that.connectToSpotify();
 	that.socketsListen();
 };
 
@@ -52,31 +61,16 @@ App.prototype.httpListen = function() {
 	console.info('Listening on port %s', port);
 };
 
-App.prototype.connectToSpotify = function() {
-	var that = this;
-
-	that.spotify = spotify({
-		cache: that.cache
-	});
-
-	that.slave = that.slave({
-		sio: that.sio,
-		spotify: that.spotify,
-		cache: that.cache,
-		token: '1337' //## Create a config-file and keep auth stuff there
-	});
-};
-
 App.prototype.socketsListen = function() {
 	var that = this,
 		sockets = that.sio.sockets,
-		spotify = that.spotify;
+		client = that.client;
 
 	that.sio.of('/client').on('connection', function (socket) {
 		console.log('connected as client');
 
 		socket.on('get', function(property){
-			that.spotify.get(property, function(data){
+			that.client.get(property, function(data){
 				socket.emit(property, data);
 			});
 		});
@@ -90,7 +84,7 @@ App.prototype.socketsListen = function() {
 		});
 	});
 
-	spotify.event.on('change', function(changed){
+	client.event.on('change', function(changed){
 		that.sio.of('client').emit('change', changed);
 	});
 };
@@ -102,6 +96,5 @@ var app = new App({
 	express: express,
 	server: server,
 	port: 3000,
-	socket: socket,
-	slave: slave
+	socket: socket
 });

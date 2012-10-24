@@ -9,7 +9,7 @@ function Slave(args){
 
 	that.sio = args.sio;
 	that.token = args.token;
-	that.spotify = args.spotify;
+	that.client = args.client;
 	that.cache = args.cache;
 
 	that.event = new events.EventEmitter();
@@ -29,7 +29,7 @@ Slave.prototype.initialize = function() {
 		.on('connection', function(socket){
 			console.log('connected as slave');
 
-			that.spotify.setInterface({
+			that.client.setInterface({
 				interface: that.ask,
 				name: 'slave',
 				obj: that
@@ -37,7 +37,7 @@ Slave.prototype.initialize = function() {
 
 			socket.on('disconnect', function(){
 				if( !sockets.clients().length ){
-					that.spotify.removeInterface('slave');
+					that.client.removeInterface('slave');
 				}
 			});
 
@@ -51,7 +51,7 @@ Slave.prototype.initialize = function() {
 				that.cache.set(changed);
 
 				// Notify the spotify object, so the world may know
-				that.spotify.event.emit('change', changed);
+				that.client.event.emit('change', changed);
 			});
 		});
 };
