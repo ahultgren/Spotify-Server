@@ -1,48 +1,32 @@
 var events = require('events');
 
 module.exports = function(args){
-	return new Slave(args);
+	return new Spotify(args);
 };
 
-function Slave(args){
+function Spotify(args){
 	var that = this;
 
-	that.sio = args.sio;
+	that.sio = args.main.sio;
+	that.client = args.main.client;
+	that.cache = args.main.cache;
 	that.token = args.token;
-	that.spotify = args.spotify;
-	that.cache = args.cache;
 
 	that.event = new events.EventEmitter();
 
 	that.initialize();
 }
 
-Slave.prototype.initialize = function() {
+Spotify.prototype.initialize = function() {
 	var that = this,
 		sockets = that.sio.sockets;
 
-	// Authorize new slaves and make sure spotify_interface is using this driver
 	that.sio.of('/slave')
 		.authorization(function (handshakeData, callback) {
 			callback(null, ( handshakeData.query.token === that.token ));
 		})
 		.on('connection', function(socket){
 			console.log('connected as slave');
-
-			that.spotify.setInterface({
-				interface: that.ask,
-				name: 'slave',
-				obj: that
-			});
-
-			socket.on('disconnect', function(){
-				if( !sockets.clients().length ){
-					that.spotify.removeInterface('slave');
-				}
-			});
-
-
-			/* Listen for emits from the slave */
 
 			// Automatical emits on changes to states. The message is expected
 			// to contain { changedProperty: newValue }
@@ -51,24 +35,31 @@ Slave.prototype.initialize = function() {
 				that.cache.set(changed);
 
 				// Notify the spotify object, so the world may know
-				that.spotify.event.emit('change', changed);
+				that.client.event.emit('change', changed);
 			});
 		});
 };
 
-Slave.prototype.refresh = function() {
+Spotify.prototype.refresh = function() {
 	var that = this;
 
 	that.sio.of('/slave').emit('refresh');
 };
 
-Slave.prototype.ask = function(commands) {
+Spotify.prototype.do = function(command) {
 	var that = this,
 		sockets = that.sio.sockets,
-		id;
+		i;
 
-	// Ask spotify to execute the command
-	that.sio.of('/slave').emit('ask', {
-		commands: commands
-	});
+	// Ability to send multiple commands
+	if( !Array.isArray(command) ){
+		command = [command];
+	}
+
+	// Ask spotify to execute the command(s)
+	for( i = command.length; i--; ){
+		that.sio.of('/slave').emit('do', {
+			command: command
+		});
+	}
 };
