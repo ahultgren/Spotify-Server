@@ -41,10 +41,12 @@ Set a player property. Currently supported:</p>
 	jQuery(function($){
 		var socket = io.connect(':3000/client'),
 			state = $('#state'),
+			isPlaying,
 			name = $('#name'),
 			artists = $('#artists'),
 			album = $('#album'),
 			position = $('#position'),
+			positionValue, time,
 			repeat = $('#repeat'),
 			shuffle = $('#shuffle');
 
@@ -53,41 +55,56 @@ Set a player property. Currently supported:</p>
 		});
 
 		socket.on('change', function(data){
-			var i, time;
+			var i;
 			console.log(data);
 
 			for( i in data ){
 				switch( i ){
 					case 'state':
-						state.text(data[i] && 'playing' || 'paused:');
+						isPlaying = data[i];
+						state.html(data[i] && 'playing' || 'paused:');
 						break;
 					case 'track':
-						name.text(data[i]);
+						name.html(data[i]);
 						break;
 					case 'artists':
 						if( data[i].length < 3 ){
-							artists.text(data[i].join(' and '));
+							artists.html(data[i].join(' and '));
 						}
 						else {
-							artists.text(data[i].splice(0, data[i].length - 1).join(', ') + ' and ' + data[i][data[i].length - 1]);
+							artists.html(data[i].splice(0, data[i].length - 1).join(', ') + ' and ' + data[i][data[i].length - 1]);
 						}
 						break;
 					case 'album':
-						album.text(data[i]);
+						album.html(data[i]);
 						break;
 					case 'position':
-						time = new Date(data[i]);
-						position.text(time.getMinutes() + ':' + time.getSeconds());
+						positionValue = data[i];
+						time = new Date(positionValue);
+						position.html(time.getMinutes() + ':' + time.getSeconds());
 						break;
 					case 'repeat':
-						repeat.text(data[i] && 'on repeat' || 'is not on repeat');
+						repeat.html(data[i] && 'on repeat' || 'not on repeat');
 						break;
 					case 'shuffle':
-						shuffle.text(data[i] && 'shuffling' || 'not shuffling');
+						shuffle.html(data[i] && 'shuffling' || 'not shuffling');
 						break;
 				}
 			}
 		});
+
+		// Keep approximate time updated
+		(function updateTime(){
+			if( !isNaN(positionValue) && isPlaying ){
+				positionValue += 1000;
+				time = new Date(positionValue);
+			}
+
+			if( time ){
+				position.html(time.getMinutes() + ':' + time.getSeconds());
+			}
+			setTimeout(updateTime, 1000);
+		}());
 
 		/*$('a').click(function(e){
 			var params = $(this).attr('href').split('/');
