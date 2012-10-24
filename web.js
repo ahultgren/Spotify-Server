@@ -4,8 +4,8 @@ var
 	server = require('http'),
 	socket = require('socket.io'),
 // Interfaces
-	spotify = require('./spotify_interface'),
-	slave = require('./spotify_slave'),
+	spotify = require('./client'),
+	slave = require('./slave'),
 	Cache = require('./cache');
 
 
