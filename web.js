@@ -38,7 +38,6 @@ function App(args){
 
 	that.route();
 	that.httpListen();
-	that.socketsListen();
 };
 
 App.prototype.route = function() {
@@ -57,34 +56,6 @@ App.prototype.httpListen = function() {
 
 	that.server.listen(port);
 	console.info('Listening on port %s', port);
-};
-
-App.prototype.socketsListen = function() {
-	var that = this,
-		sockets = that.sio.sockets,
-		client = that.client;
-
-	that.sio.of('/client').on('connection', function (socket) {
-		console.log('connected as client');
-
-		socket.on('get', function(property){
-			that.client.get(property, function(data){
-				socket.emit(property, data);
-			});
-		});
-
-		socket.on('refresh', function(){
-			that.spotify.refresh();
-		});
-
-		socket.on('disconnect', function (data) {
-			console.log('disconnect', data);
-		});
-	});
-
-	client.event.on('change', function(changed){
-		that.sio.of('client').emit('change', changed);
-	});
 };
 
 

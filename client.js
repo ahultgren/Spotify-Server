@@ -10,9 +10,35 @@ function Client(args){
 	that.main = args.main;
 	that.cache = args.main.cache;
 	that.event = new events.EventEmitter();
+
+	that.listen();
 }
 
-/* Public methods */
+Client.prototype.listen = function() {
+	var that = this;
+
+	that.main.sio.of('/client').on('connection', function (socket) {
+		console.log('connected as client');
+
+		socket.on('get', function(property){
+			that.get(property, function(data){
+				socket.emit(property, data);
+			});
+		});
+
+		socket.on('refresh', function(){
+			that.main.spotify.refresh();
+		});
+
+		socket.on('disconnect', function (data) {
+			console.log('disconnect', data);
+		});
+	});
+
+	that.event.on('change', function(changed){
+		that.main.sio.of('client').emit('change', changed);
+	});
+};
 
 Client.prototype.do = function(command) {
 	var that = this;
