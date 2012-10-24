@@ -33,6 +33,8 @@ function App(args){
 		token: '1337' //## Create a config-file and keep auth stuff there
 	});
 
+	that.client.listen();
+
 
 	/* Start server stuff */
 

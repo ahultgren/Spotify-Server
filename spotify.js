@@ -34,8 +34,8 @@ Spotify.prototype.initialize = function() {
 				// Cache it
 				that.cache.set(changed);
 
-				// Notify the spotify object, so the world may know
-				that.client.event.emit('change', changed);
+				// Emit so the world may know
+				that.event.emit('change', changed);
 			});
 		});
 };
