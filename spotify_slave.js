@@ -59,16 +59,23 @@ Slave.prototype.initialize = function() {
 Slave.prototype.refresh = function() {
 	var that = this;
 
-	that.sio.sockets.in('/slave').emit('refresh');
+	that.sio.of('/slave').emit('refresh');
 };
 
-Slave.prototype.ask = function(commands) {
+Slave.prototype.ask = function(command) {
 	var that = this,
 		sockets = that.sio.sockets,
-		id;
+		i;
 
-	// Ask spotify to execute the command
-	that.sio.of('/slave').emit('ask', {
-		commands: commands
-	});
+	// Ability to send multiple commands
+	if( !command.isArray() ){
+		command = [command];
+	}
+
+	// Ask spotify to execute the command(s)
+	for( i = command.length; i--; ){
+		that.sio.of('/slave').emit('ask', {
+			command: command
+		});
+	}
 };
