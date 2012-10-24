@@ -14,38 +14,11 @@ function Client(args){
 
 /* Public methods */
 
-Client.prototype.ask = function(commands) {
+Client.prototype.do = function(command) {
 	var that = this;
 
 	// Call the proper spotify interface
-	that.main.slave.ask(commands);
-};
-
-Client.prototype.play = function() {
-	var that = this;
-
-	that.ask(['playpause']);
-};
-
-Client.prototype.playUri = function(uri, context) {
-	var that = this;
-
-	that.ask([{
-		command: 'play uri',
-		values: [uri, context]
-	}]);
-};
-
-Client.prototype.next = function() {
-	var that = this;
-
-	that.ask(['next']);
-};
-
-Client.prototype.prev = function() {
-	var that = this;
-
-	that.ask(['previous']);
+	that.main.slave.do(command);
 };
 
 Client.prototype.get = function(property, callback) {
@@ -70,35 +43,4 @@ Client.prototype.get = function(property, callback) {
 	}
 
 	callback(result);
-};
-
-Client.prototype.set = function(property, value) {
-	var that = this;
-
-	switch( property ){
-		case 'state':
-			if( value === 'play' ){
-				that.ask(['play']);
-			}
-			else if( value === 'pause' ){
-				that.ask(['pause']);
-			}
-		break;
-		case 'position':
-			if( !isNaN(value) && value >= 0 ){
-				that.ask([{
-					command: 'position',
-					values: [value]
-				}]);
-			}
-		break;
-		case 'volume':
-			if( !isNaN(value) && value >= 0 && value <= 100 ){
-				that.ask([{
-					command: 'volume',
-					values: [value]
-				}]);
-			}
-		break;
-	}
 };

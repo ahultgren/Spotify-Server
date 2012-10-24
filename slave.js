@@ -46,7 +46,7 @@ Slave.prototype.refresh = function() {
 	that.sio.of('/slave').emit('refresh');
 };
 
-Slave.prototype.ask = function(command) {
+Slave.prototype.do = function(command) {
 	var that = this,
 		sockets = that.sio.sockets,
 		i;
@@ -58,7 +58,7 @@ Slave.prototype.ask = function(command) {
 
 	// Ask spotify to execute the command(s)
 	for( i = command.length; i--; ){
-		that.sio.of('/slave').emit('ask', {
+		that.sio.of('/slave').emit('do', {
 			command: command
 		});
 	}
