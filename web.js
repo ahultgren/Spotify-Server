@@ -4,34 +4,40 @@ var
 	server = require('http'),
 	socket = require('socket.io'),
 // Interfaces
-	spotify = require('./spotify_interface'),
-	slave = require('./spotify_slave'),
+	Client = require('./client'),
+	Spotify = require('./spotify'),
 	Cache = require('./cache');
 
 
 function App(args){
 	var that = this;
 
+	/* Server stuff */
+
 	that.app = args.express();
 	that.server = args.server.createServer(that.app);
 	that.sio = args.socket.listen(that.server);
-	that.slave = args.slave;
 	that.port = args.port;
 
-	that._cache = {};
 
-	that.start();
-}
-
-App.prototype.start = function() {
-	var that = this;
+	/* Modules */
 
 	that.cache = Cache();
 
+	that.client = Client({
+		main: that
+	});
+
+	that.spotify = Spotify({
+		main: that,
+		token: '1337' //## Create a config-file and keep auth stuff there
+	});
+
+
+	/* Start server stuff */
+
 	that.route();
 	that.httpListen();
-	that.connectToSpotify();
-	that.socketsListen();
 };
 
 App.prototype.route = function() {
@@ -52,49 +58,6 @@ App.prototype.httpListen = function() {
 	console.info('Listening on port %s', port);
 };
 
-App.prototype.connectToSpotify = function() {
-	var that = this;
-
-	that.spotify = spotify({
-		cache: that.cache
-	});
-
-	that.slave = that.slave({
-		sio: that.sio,
-		spotify: that.spotify,
-		cache: that.cache,
-		token: '1337' //## Create a config-file and keep auth stuff there
-	});
-};
-
-App.prototype.socketsListen = function() {
-	var that = this,
-		sockets = that.sio.sockets,
-		spotify = that.spotify;
-
-	that.sio.of('/client').on('connection', function (socket) {
-		console.log('connected as client');
-
-		socket.on('get', function(property){
-			that.spotify.get(property, function(data){
-				socket.emit(property, data);
-			});
-		});
-
-		socket.on('refresh', function(){
-			that.slave.refresh();
-		});
-
-		socket.on('disconnect', function (data) {
-			console.log('disconnect', data);
-		});
-	});
-
-	spotify.event.on('change', function(changed){
-		that.sio.of('client').emit('change', changed);
-	});
-};
-
 
 // Wohoo
 
@@ -102,6 +65,5 @@ var app = new App({
 	express: express,
 	server: server,
 	port: 3000,
-	socket: socket,
-	slave: slave
+	socket: socket
 });
