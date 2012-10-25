@@ -29,6 +29,10 @@ Client.prototype.listen = function() {
 			});
 		});
 
+		socket.on('do', function(data){
+			that.do(data);
+		});
+
 		socket.on('refresh', function(){
 			that.main.spotify.refresh();
 		});
@@ -44,10 +48,7 @@ Client.prototype.listen = function() {
 };
 
 Client.prototype.do = function(command) {
-	var that = this;
-
-	// Call the proper spotify interface
-	that.main.spotify.do(command);
+	this.main.spotify.do(command);
 };
 
 Client.prototype.get = function(property, callback) {

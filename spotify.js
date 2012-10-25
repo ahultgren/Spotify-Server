@@ -58,8 +58,6 @@ Spotify.prototype.do = function(command) {
 
 	// Ask spotify to execute the command(s)
 	for( i = command.length; i--; ){
-		that.sio.of('/slave').emit('do', {
-			command: command
-		});
+		that.sio.of('/slave').emit('do', command[i]);
 	}
 };

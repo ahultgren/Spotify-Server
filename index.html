@@ -13,26 +13,25 @@
 </p>
 
 <h2>What do you want to do?</h2>
-
-<p><strong><a href="play">playpause</a></strong> <br />
-Plays current song if no song is playing, pauses if a song is currenty playing.</p>
-
-<p><strong><a href="playURI/spotify:track:3Y2nz1ySBZ9Wg0kv9Cuc3Q">/play/uri</a></strong> <br />
-Plays whatever the Spotify URI points to. Could be a song, a playlist, an album or an artist.</p>
-
-<p><strong><a href="next">/next</a></strong> <br />
-Plays next song in the play queue.</p>
-
-<p><strong><a href="prev">/prev</a></strong> <br />
-Plays previous song in the play queue.</p>
-
-<p><strong><a href="/set/volume/50">/set/property/value</a></strong> <br />
-Set a player property. Currently supported:</p>
-
-<ul>
-<li><a href="/set/state/pause">/state</a> - <em>play</em> or <em>pause</em>.</li>
-<li><a href="/set/position/200">/position</a> - Number of seconds. Must be at least 0 and less than the lenght of the track.</li>
-<li><a href="/set/volume/50">/volume</a> - Number of seconds. Must be between 0 and 100.</li>
+<ul class="actions">
+	<li><a href="playpause">Play or pause</a></li>
+	<li>
+		Spotify URI or HTTP link to track: <input class="values" value="" /><br />
+		<a href="playURI">Play link</a>
+	</li>
+	<li>
+		Spotify URI or HTTP link to track: <input class="values" value="" /><br />
+		Spotify URI or HTTP link to playlist or artist etc: <input class="values" value="" /><br />
+		<a href="playURI">Play link</a>
+	</li>
+	<li><a href="next">Next</a></li>
+	<li><a href="prev">Previous</a></li>
+	<li>
+		<a href="volume">Set volume:</a> <input class="values" value="" />
+	</li>
+	<li>
+		<a href="position">Set position:</a> <input class="values" value="" />
+	</li>
 </ul>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -106,16 +105,35 @@ Set a player property. Currently supported:</p>
 			setTimeout(updateTime, 1000);
 		}());
 
-		/*$('a').click(function(e){
-			var params = $(this).attr('href').split('/');
-
+		// Do actions
+		$('.actions a').click(function(e){
+			var $this = $(this),
+				params = $(this).attr('href').split('/'),
+				values;
+console.log(params);
 			e.preventDefault();
 
-			socket.emit('ask', {
-				command: params[0],
-				values: params.splice(1)
-			});
-		});*/
+			if( params[0] === 'playURI' || params[0] === 'position' || params[0] === 'volume' ){
+				values = [];
+
+				$this.parent().find('.values').each(function(value){
+					values.push(value);
+				});
+
+				if( values.length ){
+					socket.emit('do', {
+						command: params[0],
+						calues: values
+					})
+				}
+			}
+			else {
+				socket.emit('do', {
+					command: params[0],
+					values: params.splice(1)
+				});
+			}
+		});
 	});
 </script>
 
