@@ -17,11 +17,7 @@
 	<li><a href="playpause">Play or pause</a></li>
 	<li>
 		Spotify URI or HTTP link to track: <input class="values" value="" /><br />
-		<a href="playURI">Play link</a>
-	</li>
-	<li>
-		Spotify URI or HTTP link to track: <input class="values" value="" /><br />
-		Spotify URI or HTTP link to playlist or artist etc: <input class="values" value="" /><br />
+		Spotify URI or HTTP link to playlist or artist etc (optional): <input class="values" value="" /><br />
 		<a href="playURI">Play link</a>
 	</li>
 	<li><a href="next">Next</a></li>
@@ -115,20 +111,20 @@
 			var $this = $(this),
 				params = $(this).attr('href').split('/'),
 				values;
-console.log(params);
+
 			e.preventDefault();
 
 			if( params[0] === 'playURI' || params[0] === 'position' || params[0] === 'volume' ){
 				values = [];
 
 				$this.parent().find('.values').each(function(value){
-					values.push(value);
+					values.push($(this).val() || '');
 				});
 
-				if( values.length ){
+				if( values.join('').length ){
 					socket.emit('do', {
 						command: params[0],
-						calues: values
+						values: values
 					})
 				}
 			}
