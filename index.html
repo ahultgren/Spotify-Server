@@ -9,7 +9,7 @@
 
 <p id="player">
 	Now <span id="state"></span> <span id="name"></span> by <span id="artists"></span> from the album <span id="album"></span>.
-	<br />The player is at <span id="position"></span> and is <span id="repeat"></span> and is <span id="shuffle"></span>.
+	<br />The player is at <span id="position"></span> of <span id="duration"></span>, and is <span id="repeat"></span> and is <span id="shuffle"></span>.
 </p>
 
 <h2>What do you want to do?</h2>
@@ -47,7 +47,9 @@
 			position = $('#position'),
 			positionValue, time,
 			repeat = $('#repeat'),
-			shuffle = $('#shuffle');
+			shuffle = $('#shuffle'),
+			duration = $('#duration'),
+			durationValue;
 
 		socket.on('connect', function(data){
 			console.log('Successfully connected as client');
@@ -55,7 +57,6 @@
 
 		socket.on('change', function(data){
 			var i;
-			console.log(data);
 
 			for( i in data ){
 				switch( i ){
@@ -87,6 +88,10 @@
 						break;
 					case 'shuffle':
 						shuffle.html(data[i] && 'shuffling' || 'not shuffling');
+						break;
+					case 'duration':
+						durationValue = new Date(data[i]);
+						duration.html(durationValue.getMinutes() + ':' + durationValue.getSeconds());
 						break;
 				}
 			}
