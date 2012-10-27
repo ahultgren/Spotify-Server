@@ -10,8 +10,6 @@ function Client(args){
 	that.main = args.main;
 	that.cache = args.main.cache;
 	that.event = new events.EventEmitter();
-
-	that.listen();
 }
 
 Client.prototype.listen = function() {
@@ -20,10 +18,19 @@ Client.prototype.listen = function() {
 	that.main.sio.of('/client').on('connection', function (socket) {
 		console.log('connected as client');
 
+		// Send all data on connect
+		that.get('all', function(all){
+			socket.emit('change', all);
+		});
+
 		socket.on('get', function(property){
 			that.get(property, function(data){
 				socket.emit(property, data);
 			});
+		});
+
+		socket.on('do', function(data){
+			that.do(data);
 		});
 
 		socket.on('refresh', function(){
@@ -31,20 +38,17 @@ Client.prototype.listen = function() {
 		});
 
 		socket.on('disconnect', function (data) {
-			console.log('disconnect', data);
+			console.log('a client disconnected', data);
 		});
 	});
 
-	that.event.on('change', function(changed){
-		that.main.sio.of('client').emit('change', changed);
+	that.main.spotify.event.on('change', function(changed){
+		that.main.sio.of('/client').emit('change', changed);
 	});
 };
 
 Client.prototype.do = function(command) {
-	var that = this;
-
-	// Call the proper spotify interface
-	that.main.spotify.do(command);
+	this.main.spotify.do(command);
 };
 
 Client.prototype.get = function(property, callback) {

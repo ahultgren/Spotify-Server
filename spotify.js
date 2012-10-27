@@ -34,8 +34,8 @@ Spotify.prototype.initialize = function() {
 				// Cache it
 				that.cache.set(changed);
 
-				// Notify the spotify object, so the world may know
-				that.client.event.emit('change', changed);
+				// Emit so the world may know
+				that.event.emit('change', changed);
 			});
 		});
 };
@@ -58,8 +58,6 @@ Spotify.prototype.do = function(command) {
 
 	// Ask spotify to execute the command(s)
 	for( i = command.length; i--; ){
-		that.sio.of('/slave').emit('do', {
-			command: command
-		});
+		that.sio.of('/slave').emit('do', command[i]);
 	}
 };

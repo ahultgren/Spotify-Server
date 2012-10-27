@@ -5,37 +5,148 @@
 <body>
 <h1>Spotify Server</h1>
 
-<p>Let the whole team choose what's played in the office speakers.
-Also works if you want people at say a party easily check what song is currently being played, if they're too shy to ask someone.</p>
+<p>Let the whole team choose what's played in the office speakers!</p>
 
-<h2>How to use Spotify Server</h2>
+<p id="player">
+	Now <span id="state"></span> <span id="name"></span> by <span id="artists"></span> from the album <span id="album"></span>.
+	<br />The player is at <span id="position"></span> of <span id="duration"></span>, and is <span id="repeat"></span> and is <span id="shuffle"></span>.
+</p>
 
-<p><strong><a href="/play">/play</a></strong> <br />
-Plays current song if no song is playing, pauses if a song is currenty playing.</p>
-
-<p><strong><a href="/play/spotify:track:3Y2nz1ySBZ9Wg0kv9Cuc3Q">/play/uri</a></strong> <br />
-Plays whatever the Spotify URI points to. Could be a song, a playlist, an album or an artist.</p>
-
-<p><strong><a href="/next">/next</a></strong> <br />
-Plays next song in the play queue.</p>
-
-<p><strong><a href="/prev">/prev</a></strong> <br />
-Plays previous song in the play queue.</p>
-
-<p><strong><a href="/current">/current</a></strong> <br />
-Shows all info about the current track.</p>
-
-<p><strong><a href="/get/name">/get/property</a></strong> <br />
-Get a player or track property. Currently supported properties: <a href="/get/state">/state</a>, <a href="/get/position">/position</a>, <a href="/get/volume">/volume</a>, <a href="/get/name">/name</a>, <a href="/get/artist">/artist</a>, <a href="/get/album">/album</a>, <a href="/get/duration">/duration</a>, <a href="/get/url">/url</a>.</p>
-
-<p><strong><a href="/set/volume/50">/set/property/value</a></strong> <br />
-Set a player property. Currently supported:</p>
-
-<ul>
-<li><a href="/set/state/pause">/state</a> - <em>play</em> or <em>pause</em>.</li>
-<li><a href="/set/position/200">/position</a> - Number of seconds. Must be at least 0 and less than the lenght of the track.</li>
-<li><a href="/set/volume/50">/volume</a> - Number of seconds. Must be between 0 and 100.</li>
+<h2>What do you want to do?</h2>
+<ul class="actions">
+	<li><a href="playpause">Play or pause</a></li>
+	<li>
+		Spotify URI or HTTP link to track: <input class="values" value="" /><br />
+		Spotify URI or HTTP link to playlist or artist etc (optional): <input class="values" value="" /><br />
+		<a href="playURI">Play song</a> or <a href="queue">queue it</a>.
+	</li>
+	<li><a href="next">Next</a></li>
+	<li><a href="prev">Previous</a></li>
+	<li>
+		<a href="set/volume">Set volume:</a> <input class="values" value="" />
+	</li>
+	<li>
+		<a href="set/position">Set position:</a> <input class="values" value="" />
+	</li>
 </ul>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script>
+	jQuery(function($){
+		var socket = io.connect(':3000/client'),
+			state = $('#state'),
+			isPlaying,
+			name = $('#name'),
+			artists = $('#artists'),
+			album = $('#album'),
+			position = $('#position'),
+			positionValue, time,
+			repeat = $('#repeat'),
+			shuffle = $('#shuffle'),
+			duration = $('#duration'),
+			durationValue;
+
+		socket.on('connect', function(data){
+			console.log('Successfully connected as client');
+		});
+
+		socket.on('change', function(data){
+			var i;
+
+			for( i in data ){
+				switch( i ){
+					case 'state':
+						isPlaying = data[i];
+						state.html(data[i] && 'playing' || 'paused:');
+						break;
+					case 'track':
+						name.html(data[i]);
+						break;
+					case 'artists':
+						if( data[i].length < 3 ){
+							artists.html(data[i].join(' and '));
+						}
+						else {
+							artists.html(data[i].splice(0, data[i].length - 1).join(', ') + ' and ' + data[i][data[i].length - 1]);
+						}
+						break;
+					case 'album':
+						album.html(data[i]);
+						break;
+					case 'position':
+						positionValue = data[i];
+						time = new Date(positionValue);
+						position.html(time.getMinutes() + ':' + time.getSeconds());
+						break;
+					case 'repeat':
+						repeat.html(data[i] && 'on repeat' || 'not on repeat');
+						break;
+					case 'shuffle':
+						shuffle.html(data[i] && 'shuffling' || 'not shuffling');
+						break;
+					case 'duration':
+						durationValue = new Date(data[i]);
+						duration.html(durationValue.getMinutes() + ':' + durationValue.getSeconds());
+						break;
+				}
+			}
+		});
+
+		// Keep approximate time updated
+		(function updateTime(){
+			if( !isNaN(positionValue) && isPlaying ){
+				positionValue += 1000;
+				time = new Date(positionValue);
+			}
+
+			if( time ){
+				position.html(time.getMinutes() + ':' + time.getSeconds());
+			}
+			setTimeout(updateTime, 1000);
+		}());
+
+		// Do actions
+		$('.actions a').click(function(e){
+			var $this = $(this),
+				params = $(this).attr('href').split('/'),
+				values;
+
+			e.preventDefault();
+
+			if( params[0] === 'playURI' || params[0] === 'position' || params[0] === 'volume' || params[0] === 'queue' ){
+				values = [];
+
+				$this.parent().find('.values').each(function(value){
+					values.push($(this).val() || '');
+				});
+
+				if( values.join('').length ){
+					socket.emit('do', {
+						command: params[0],
+						values: values
+					})
+				}
+			}
+			else if( params[0] === 'set' ){
+				values = $(this).parent().find('.values').first().val();
+
+				if( values.length && !isNaN(values) ){
+					socket.emit('do', {
+						command: params[0],
+						values: [params[1], +values]
+					});
+				}
+			}
+			else {
+				socket.emit('do', {
+					command: params[0],
+					values: params.splice(1)
+				});
+			}
+		});
+	});
+</script>
 
 </body>
 </html>

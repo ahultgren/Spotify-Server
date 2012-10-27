@@ -30,7 +30,7 @@ Cache.prototype.getAll = function() {
 		i;
 
 	for( i in params ){
-		if( params[i] === 'position' ){
+		if( i === 'position' ){
 			result[i] = Date.now() - this.params.position.timestamp + this.params.position.value;
 		}
 		else {
