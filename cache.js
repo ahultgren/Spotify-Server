@@ -18,20 +18,24 @@ Cache.prototype.set = function(params) {
 };
 
 Cache.prototype.get = function(param) {
-	if( param === 'position' ){
-		return Date.now() - this.params.position.timestamp + this.params.position.value;
+	var that = this;
+
+	if( param === 'position' && that.params.state.value ){
+		return Date.now() - that.params.position.timestamp + that.params.position.value;
 	}
-	return this.params[param].value;
+
+	return that.params[param].value;
 };
 
 Cache.prototype.getAll = function() {
-	var params = this.params,
+	var that = this,
+		params = that.params,
 		result = {},
 		i;
 
 	for( i in params ){
-		if( i === 'position' ){
-			result[i] = Date.now() - this.params.position.timestamp + this.params.position.value;
+		if( i === 'position' && that.params.state.value ){
+			result[i] = Date.now() - that.params.position.timestamp + that.params.position.value;
 		}
 		else {
 			result[i] = params[i].value;
