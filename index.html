@@ -18,15 +18,15 @@
 	<li>
 		Spotify URI or HTTP link to track: <input class="values" value="" /><br />
 		Spotify URI or HTTP link to playlist or artist etc (optional): <input class="values" value="" /><br />
-		<a href="playURI">Play link</a>
+		<a href="playURI">Play song</a> or <a href="queue">queue it</a>.
 	</li>
 	<li><a href="next">Next</a></li>
 	<li><a href="prev">Previous</a></li>
 	<li>
-		<a href="volume">Set volume:</a> <input class="values" value="" />
+		<a href="set/volume">Set volume:</a> <input class="values" value="" />
 	</li>
 	<li>
-		<a href="position">Set position:</a> <input class="values" value="" />
+		<a href="set/position">Set position:</a> <input class="values" value="" />
 	</li>
 </ul>
 
@@ -114,7 +114,7 @@
 
 			e.preventDefault();
 
-			if( params[0] === 'playURI' || params[0] === 'position' || params[0] === 'volume' ){
+			if( params[0] === 'playURI' || params[0] === 'position' || params[0] === 'volume' || params[0] === 'queue' ){
 				values = [];
 
 				$this.parent().find('.values').each(function(value){
@@ -126,6 +126,16 @@
 						command: params[0],
 						values: values
 					})
+				}
+			}
+			else if( params[0] === 'set' ){
+				values = $(this).parent().find('.values').first().val();
+
+				if( values.length && !isNaN(values) ){
+					socket.emit('do', {
+						command: params[0],
+						values: [params[1], +values]
+					});
 				}
 			}
 			else {
