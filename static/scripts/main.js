@@ -45,10 +45,10 @@ jQuery(function($){
 					position.html(time.getMinutes() + ':' + time.getSeconds());
 					break;
 				case 'repeat':
-					repeat.html(data[i] && 'on repeat' || 'not on repeat');
+					repeat.toggleClass('on', data[i]);
 					break;
 				case 'shuffle':
-					shuffle.html(data[i] && 'shuffling' || 'not shuffling');
+					shuffle.toggleClass('on', data[i]);
 					break;
 				case 'duration':
 					durationValue = new Date(data[i]);
