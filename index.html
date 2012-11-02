@@ -1,34 +1,48 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Spotify Server</title>
 </head>
 <body>
-<h1>Spotify Server</h1>
-
-<p>Let the whole team choose what's played in the office speakers!</p>
-
-<p id="player">
-	Now <span id="state"></span> <span id="name"></span> by <span id="artists"></span> from the album <span id="album"></span>.
-	<br />The player is at <span id="position"></span> of <span id="duration"></span>, and is <span id="repeat"></span> and is <span id="shuffle"></span>.
-</p>
-
-<h2>What do you want to do?</h2>
-<ul class="actions">
-	<li><a href="playpause">Play or pause</a></li>
-	<li>
-		Spotify URI or HTTP link to track: <input class="values" value="" /><br />
-		Spotify URI or HTTP link to playlist or artist etc (optional): <input class="values" value="" /><br />
-		<a href="playURI">Play song</a> or <a href="queue">queue it</a>.
-	</li>
-	<li><a href="next">Next</a></li>
-	<li><a href="prev">Previous</a></li>
-	<li>
-		<a href="set/volume">Set volume:</a> <input class="values" value="" />
-	</li>
-	<li>
-		<a href="set/position">Set position:</a> <input class="values" value="" />
-	</li>
-</ul>
+	<header class="sitehead">
+		<h1>Spotify Server</h1>
+	</header>
+	<section class="player" id="player">
+		<article class="player-info">
+			<h2 class="track" id="name"></h2>
+			<p class="artists" id="artists"></p>
+			<p class="album" id="album"></p>
+		</article>
+		<section class="actions">
+			<section class="buttons">
+				<a href="prev"></a>
+				<a href="playpause"></a>
+				<a href="next"></a>
+			</section>
+			<section class="controllers">
+				<section class="position">
+					<span id="position"></span>
+					<div id="slide"><div id="toggle"></div></div>
+					<span id="duration"></span>
+				</section>
+				<section class="volume">
+					<div id="slide"><div id="toggle"></div></div>
+				</section>
+				<section class="states">
+					<a id="repeat"></a>
+					<a id="shuffle"></a>
+				</section>
+			</section>
+		</section>
+	</section>
+	<section class="search">
+		<input class="values" value="" />
+		<a href="playURI">Play</a>
+		<a href="queue">add</a>.
+	</section>
+	<footer class="sitefooter">
+		<p>Wanna make cool stuff like this? Join Fröjd Interactive!</p>
+	</footer>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
