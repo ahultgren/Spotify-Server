@@ -55,6 +55,7 @@
 
 		that.element.mousedown(function(e){
 			e.preventDefault();
+			that.drop(that.value());
 			that.toggle.css('left', e.offsetX);
 		});
 
