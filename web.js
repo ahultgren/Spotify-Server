@@ -47,6 +47,8 @@ App.prototype.route = function() {
 
 	//Routing
 
+	that.app.use('/static', express.static(__dirname + '/static'));
+
 	that.app.get('/', function(req, res){
 		res.sendfile(__dirname + '/index.html');
 	});
