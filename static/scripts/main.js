@@ -42,7 +42,7 @@ jQuery(function($){
 				case 'position':
 					positionValue = data[i];
 					time = new Date(positionValue);
-					position.html(time.getMinutes() + ':' + time.getSeconds());
+					position.html(time.getMinutes() + ':' + ('0' + time.getSeconds()).slice(-2));
 					break;
 				case 'repeat':
 					repeat.toggleClass('on', data[i]);
@@ -52,7 +52,7 @@ jQuery(function($){
 					break;
 				case 'duration':
 					durationValue = new Date(data[i]);
-					duration.html(durationValue.getMinutes() + ':' + durationValue.getSeconds());
+					duration.html(durationValue.getMinutes() + ':' + ('0' + durationValue.getSeconds()).slice(-2));
 					break;
 			}
 		}
@@ -66,7 +66,7 @@ jQuery(function($){
 		}
 
 		if( time ){
-			position.html(time.getMinutes() + ':' + time.getSeconds());
+			position.html(time.getMinutes() + ':' + ('0' + time.getSeconds()).slice(-2));
 		}
 		setTimeout(updateTime, 1000);
 	}());
