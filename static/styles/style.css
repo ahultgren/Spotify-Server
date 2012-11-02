@@ -67,15 +67,40 @@ a:hover {
 	text-align: center;
 }
 .buttons a {
+	background: url(../images/icons.png) no-repeat;
 	border: 2px solid #37a600;
 	border-radius: 50px;
 	display: inline-block;
-	width: 50px;
-	height: 50px;
+	width: 49px;
+	height: 49px;
 	margin: 0 10px;
 }
 .buttons a:hover {
 	border-color: #a0f038;
+}
+.buttons .prev {
+	background-position: 13px 13px;
+}
+.buttons .playpause {
+	background-position: -23px 13px;
+}
+.buttons .next {
+	background-position: -65px 13px;
+}
+.buttons .playpause.pause {
+	background-position: -104px 13px;
+}
+.buttons .prev:hover {
+	background-position: 13px -25px;
+}
+.buttons .playpause:hover {
+	background-position: -23px -25px;
+}
+.buttons .next:hover {
+	background-position: -65px -25px;
+}
+.buttons .playpause.pause:hover {
+	background-position: -104px -25px;
 }
 
 .volume {
@@ -83,6 +108,31 @@ a:hover {
 	min-height: 20px;
 	float: left;
 	position: relative;
+}
+.volume::before,
+.volume::after {
+	content: "";
+	background: url(../images/icons.png) no-repeat;
+	display: block;
+	height: 12px;
+	position: absolute;
+	top: 7px;
+}
+.volume::before {
+	background-position: -211px 0;
+	width: 8px;
+	left: 0;
+}
+.volume::after {
+	background-position: -219px 0;
+	width: 14px;
+	right: 10px;
+}
+.volume .slide {
+	margin: 10px 35px 0 15px;
+}
+.volume .slide:hover {
+	background: #37a600;
 }
 
 .position {
@@ -102,6 +152,35 @@ a:hover {
 	width: 10%;
 	float: left;
 }
+.states #repeat,
+.states #shuffle {
+	background: url(../images/icons.png) no-repeat;
+	display: inline-block;
+	height: 21px;
+	margin-top: 4px;
+}
+.states #repeat {
+	background-position: -163px 0;
+	width: 25px;
+	margin-left: 20px;
+}
+.states #repeat.on {
+	background-position: -163px -21px;
+}
+.states #repeat:hover {
+	background-position:-163px -42px;
+}
+.states #shuffle {
+	background-position: -188px 0;
+	width: 23px;
+	margin-left: 10px;
+}
+.states #shuffle.on {
+	background-position: -188px -21px;
+}
+.states #shuffle:hover {
+	background-position:-188px -42px;
+}
 
 .sitefooter {
 	background: #3b552e;
@@ -111,6 +190,7 @@ a:hover {
 }
 
 /* Helper classes */
+
 .slide {
 	background: #37a600;
 	border-radius: 3px;
