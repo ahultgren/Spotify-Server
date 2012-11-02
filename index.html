@@ -2,6 +2,143 @@
 <html>
 <head>
 	<title>Spotify Server</title>
+
+	<style>
+		/* Colors
+			Main: #37a600
+			Dark: #3b552e
+			light: #a0f038
+			White: #f2f7f0
+			Bg: #373737
+			Gray: #5c5c5c
+			Borders: #777
+		*/
+
+		/* General elements */
+
+		* {
+			padding: 0;
+			margin: 0;
+		}
+		body {
+			background: #373737;
+			font: 1.125em/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+			color: #f2f7f0;
+		}
+		h2 { font-size: 2.56em; }
+		h3 { font-size: 1.6em; }
+		a {
+			color: #37a600;
+		}
+		a:hover {
+			color: #a0f038;
+		}
+
+
+		.sitehead {
+			background: #37a600;
+		}
+		.sitehead h1 {
+			font-size: 18px;
+			text-align: center;
+			height: 40px;
+			line-height: 2em;
+		}
+
+		.player,
+		.search {
+			background: #5c5c5c;
+			margin: 30px 0;
+			padding: 20px;
+			overflow: hidden;
+		}
+		.track,
+		.artists,
+		.album {
+			text-align: center;
+			white-space: nowrap;
+		}
+		.track {
+			margin-bottom: 6px;
+			margin-top: 10px;
+		}
+		.artists,
+		.album {
+			font-size: 1.6em;
+		}
+
+		.buttons {
+			padding: 40px 0 20px;
+			overflow: hidden;
+			text-align: center;
+		}
+		.buttons a {
+			border: 2px solid #37a600;
+			border-radius: 50px;
+			display: inline-block;
+			width: 50px;
+			height: 50px;
+			margin: 0 10px;
+		}
+		.buttons a:hover {
+			border-color: #a0f038;
+		}
+
+		.volume {
+			width: 20%;
+			min-height: 20px;
+			float: left;
+			position: relative;
+		}
+
+		.position {
+			width: 70%;
+			min-height: 20px;
+			float: left;
+			position: relative;
+		}
+		.position #position {
+			float: left;
+		}
+		.position #duration {
+			float: right;
+		}
+
+		.states {
+			width: 10%;
+			float: left;
+		}
+
+		.sitefooter {
+			background: #3b552e;
+			padding: 10px;
+			font-size: 0.78em;
+			text-align: center;
+		}
+
+		/* Helper classes */
+		.slide {
+			background: #37a600;
+			border-radius: 3px;
+			height: 7px;
+			margin: 10px 50px 0;
+			position: absolute;
+			left: 0;
+			right: 0;
+		}
+		.slide:hover {
+			background: #a0f038;
+		}
+		.slide .toggle {
+			background: #f2f7f0;
+			border-radius: 13px;
+			display: block;
+			width: 13px;
+			height: 13px;
+			position: absolute;
+			top: -3px;
+		}
+	</style>
 </head>
 <body>
 	<header class="sitehead">
@@ -15,18 +152,18 @@
 		</article>
 		<section class="actions">
 			<section class="buttons">
-				<a href="prev"></a>
-				<a href="playpause"></a>
-				<a href="next"></a>
+				<a class="prev" href="prev"></a>
+				<a class="playpause" href="playpause"></a>
+				<a class="next" href="next"></a>
 			</section>
 			<section class="controllers">
+				<section class="volume">
+					<div class="slide"><div class="toggle"></div></div>
+				</section>
 				<section class="position">
 					<span id="position"></span>
-					<div id="slide"><div id="toggle"></div></div>
+					<div class="slide"><div class="toggle"></div></div>
 					<span id="duration"></span>
-				</section>
-				<section class="volume">
-					<div id="slide"><div id="toggle"></div></div>
 				</section>
 				<section class="states">
 					<a id="repeat"></a>
@@ -38,10 +175,10 @@
 	<section class="search">
 		<input class="values" value="" />
 		<a href="playURI">Play</a>
-		<a href="queue">add</a>.
+		<a href="queue">add</a>
 	</section>
 	<footer class="sitefooter">
-		<p>Wanna make cool stuff like this? Join Fröjd Interactive!</p>
+		<p>Wanna make cool stuff like this? <a href="http://frojd.se/career">Join Fröjd Interactive!</a></p>
 	</footer>
 
 <script src="/socket.io/socket.io.js"></script>
