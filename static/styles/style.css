@@ -58,8 +58,6 @@ input {
 
 .player,
 .search {
-	background: #5c5c5c;
-	margin: 30px 0;
 	padding: 20px;
 	overflow: hidden;
 }
@@ -176,23 +174,23 @@ input {
 	height: 21px;
 	margin-top: 4px;
 }
-.states #repeat {
+.states #shuffle {
 	background-position: -163px 0;
 	width: 25px;
 	margin-left: 20px;
 }
-.states #repeat.on {
+.states #shuffle.on {
 	background-position: -163px -21px;
 }
-.states #repeat:hover {
+.states #shuffle:hover {
 	background-position:-163px -42px;
 }
-.states #shuffle {
+.states #repeat {
 	background-position: -188px 0;
 	width: 23px;
 	margin-left: 10px;
 }
-.states #shuffle.on {
+.states #repeat.on {
 	background-position: -188px -21px;
 }
 .states #shuffle:hover {
@@ -206,7 +204,7 @@ input {
 .sitefooter {
 	background: #3b552e;
 	height: 20px;
-	margin-top: -70px;
+	margin-top: -40px;
 	padding: 10px;
 	position: relative;
 	font-size: 0.78em;
