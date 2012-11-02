@@ -27,6 +27,17 @@ a {
 a:hover {
 	color: #a0f038;
 }
+input {
+	border: 1px solid #425738;
+	border-radius: 2px;
+	display: inline-block;
+	height: 29px;
+	width: 30%;
+	padding: 3px 10px;
+	vertical-align: middle;
+	font-size: inherit;
+	color: #37A600;
+}
 
 
 .sitehead {
@@ -180,6 +191,10 @@ a:hover {
 }
 .states #shuffle:hover {
 	background-position:-188px -42px;
+}
+
+.search {
+	display: none; /* Disabled til its actually working */
 }
 
 .sitefooter {
