@@ -5,7 +5,15 @@ jQuery(function($){
 		name = $('#name'),
 		artists = $('#artists'),
 		album = $('#album'),
-		position = $('#position'),
+		position = $('.position .slide').slide({
+			drop: function(value){
+				socket.emit('do', {
+					command: 'set',
+					values: ['position', Math.round(value/1000)]
+				});
+			}
+		}),
+		positionCounter = $('#position'),
 		positionValue, time,
 		repeat = $('#repeat'),
 		shuffle = $('#shuffle'),
@@ -16,8 +24,8 @@ jQuery(function($){
 			max: 100,
 			drop: function(value){
 				socket.emit('do', {
-					command: 'volume',
-					values: [Math.round(value)]
+					command: 'set',
+					values: ['volume', Math.round(value)]
 				});
 			}
 		});
@@ -33,7 +41,6 @@ jQuery(function($){
 			switch( i ){
 				case 'state':
 					isPlaying = data[i];
-					console.log(data[i]);
 					playpause.toggleClass('pause', data[i]);
 					break;
 				case 'track':
@@ -53,7 +60,8 @@ jQuery(function($){
 				case 'position':
 					positionValue = data[i];
 					time = new Date(positionValue);
-					position.html(time.getMinutes() + ':' + ('0' + time.getSeconds()).slice(-2));
+					position.value(data[i]);
+					positionCounter.html(time.getMinutes() + ':' + ('0' + time.getSeconds()).slice(-2));
 					break;
 				case 'repeat':
 					repeat.toggleClass('on', data[i]);
@@ -63,6 +71,9 @@ jQuery(function($){
 					break;
 				case 'duration':
 					durationValue = new Date(data[i]);
+					position.set({
+						max: data[i]
+					});
 					duration.html(durationValue.getMinutes() + ':' + ('0' + durationValue.getSeconds()).slice(-2));
 					break;
 			}
@@ -77,7 +88,8 @@ jQuery(function($){
 		}
 
 		if( time ){
-			position.html(time.getMinutes() + ':' + ('0' + time.getSeconds()).slice(-2));
+			position.value(positionValue);
+			positionCounter.html(time.getMinutes() + ':' + ('0' + time.getSeconds()).slice(-2));
 		}
 		setTimeout(updateTime, 1000);
 	}());
