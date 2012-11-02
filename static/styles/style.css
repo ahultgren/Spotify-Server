@@ -146,7 +146,7 @@ input {
 	right: 10px;
 }
 .volume .slide {
-	margin: 10px 35px 0 15px;
+	margin: 10px 40px 0 20px;
 }
 .volume .slide:hover {
 	background: #37a600;
@@ -233,6 +233,7 @@ input {
 	display: block;
 	width: 13px;
 	height: 13px;
+	margin-left: -6px;
 	position: absolute;
 	top: -3px;
 }

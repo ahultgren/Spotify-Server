@@ -10,7 +10,17 @@ jQuery(function($){
 		repeat = $('#repeat'),
 		shuffle = $('#shuffle'),
 		duration = $('#duration'),
-		durationValue;
+		durationValue,
+		volume = $('.volume .slide').slide({
+			min: 0,
+			max: 100,
+			drop: function(value){
+				socket.emit('do', {
+					command: 'volume',
+					values: [Math.round(value)]
+				});
+			}
+		});
 
 	socket.on('connect', function(data){
 		console.log('Successfully connected as client');
@@ -91,7 +101,7 @@ jQuery(function($){
 				socket.emit('do', {
 					command: params[0],
 					values: values
-				})
+				});
 			}
 		}
 		else if( params[0] === 'set' ){
