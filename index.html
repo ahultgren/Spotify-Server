@@ -7,42 +7,44 @@
 	<link href="/static/styles/style.css" rel="stylesheet" />
 </head>
 <body>
-	<header class="sitehead">
-		<h1>Spotify Server</h1>
-	</header>
-	<section class="player" id="player">
-		<article class="player-info">
-			<h2 class="track" id="name"></h2>
-			<p class="artists" id="artists"></p>
-			<p class="album" id="album"></p>
-		</article>
-		<section class="actions">
-			<section class="buttons">
-				<a class="prev" href="prev"></a>
-				<a class="playpause" href="playpause"></a>
-				<a class="next" href="next"></a>
-			</section>
-			<section class="controllers">
-				<section class="volume">
-					<div class="slide"><div class="toggle"></div></div>
+	<div class="puff">
+		<header class="sitehead">
+			<h1>Spotify Server</h1>
+		</header>
+		<section class="player" id="player">
+			<article class="player-info">
+				<h2 class="track" id="name"></h2>
+				<p class="artists" id="artists"></p>
+				<p class="album" id="album"></p>
+			</article>
+			<section class="actions">
+				<section class="buttons">
+					<a class="prev" href="prev"></a>
+					<a class="playpause" href="playpause"></a>
+					<a class="next" href="next"></a>
 				</section>
-				<section class="position">
-					<span id="position"></span>
-					<div class="slide"><div class="toggle"></div></div>
-					<span id="duration"></span>
-				</section>
-				<section class="states">
-					<a id="repeat"></a>
-					<a id="shuffle"></a>
+				<section class="controllers">
+					<section class="volume">
+						<div class="slide"><div class="toggle"></div></div>
+					</section>
+					<section class="position">
+						<span id="position"></span>
+						<div class="slide"><div class="toggle"></div></div>
+						<span id="duration"></span>
+					</section>
+					<section class="states">
+						<a id="repeat"></a>
+						<a id="shuffle"></a>
+					</section>
 				</section>
 			</section>
 		</section>
-	</section>
-	<section class="search">
-		<span>Add track: </span><input class="values" value="" />
-		<a href="playURI">Play</a>
-		<a href="queue">add</a>
-	</section>
+		<section class="search">
+			<span>Add track: </span><input class="values" value="" />
+			<a href="playURI">Play</a>
+			<a href="queue">add</a>
+		</section>
+	</div>
 	<footer class="sitefooter">
 		<p>Wanna make cool stuff like this? <a href="http://frojd.se/career">Join Fröjd Interactive!</a></p>
 	</footer>

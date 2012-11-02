@@ -14,8 +14,12 @@
 	padding: 0;
 	margin: 0;
 }
+html {
+	height: 100%;
+}
 body {
 	background: #373737;
+	height: 100%;
 	font: 1.125em/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	color: #f2f7f0;
 }
@@ -39,7 +43,9 @@ input {
 	color: #37A600;
 }
 
-
+.puff {
+	min-height: 100%;
+}
 .sitehead {
 	background: #37a600;
 }
@@ -199,7 +205,10 @@ input {
 
 .sitefooter {
 	background: #3b552e;
+	height: 20px;
+	margin-top: -70px;
 	padding: 10px;
+	position: relative;
 	font-size: 0.78em;
 	text-align: center;
 }
