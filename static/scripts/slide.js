@@ -3,9 +3,11 @@
 		var that = this;
 		args = args || {};
 
-		that.element = element;
-		that.toggle = element.find('.toggle');
-		that.width = element.width();
+		// Extend prototype with the jQuery object
+		$.extend(that, element);
+
+		that.toggle = that.find('.toggle');
+		that.width = that.width();
 		that.max = args.max || 100;
 		that.min = args.min || 0;
 		that.drop = args.drop || function(){};
@@ -53,10 +55,10 @@
 				.bind('mouseup', mouseup);
 		});
 
-		that.element.mousedown(function(e){
+		that.mousedown(function(e){
 			e.preventDefault();
-			that.drop(that.value());
 			that.toggle.css('left', e.offsetX);
+			that.drop(that.value());
 		});
 
 		function mousemove(e){
@@ -86,7 +88,7 @@
 		// Don't act on absent elements
 		if( that.length ){
 			var slide = new Slide(that, args);
-			return $.extend(that, slide);
+			return slide;
 		}
 	};
 }(document, jQuery));
