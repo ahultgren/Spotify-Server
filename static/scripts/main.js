@@ -1,6 +1,6 @@
 jQuery(function($){
 	var socket = io.connect(':3000/client'),
-		state = $('#state'),
+		playpause = $('.playpause'),
 		isPlaying,
 		name = $('#name'),
 		artists = $('#artists'),
@@ -23,7 +23,8 @@ jQuery(function($){
 			switch( i ){
 				case 'state':
 					isPlaying = data[i];
-					state.html(data[i] && 'playing' || 'paused:');
+					console.log(data[i]);
+					playpause.toggleClass('pause', data[i]);
 					break;
 				case 'track':
 					name.html(data[i]);
