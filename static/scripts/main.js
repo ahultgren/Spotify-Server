@@ -76,6 +76,9 @@ jQuery(function($){
 					});
 					duration.html(durationValue.getMinutes() + ':' + ('0' + durationValue.getSeconds()).slice(-2));
 					break;
+				case 'volume':
+					volume.value(data[i]);
+					break;
 			}
 		}
 	});
