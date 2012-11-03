@@ -6,7 +6,12 @@
 		// Extend prototype with the jQuery object
 		$.extend(that, element);
 
-		that.toggle = that.find('.toggle');
+		// Create toggle
+		that.toggle = $(document.createElement('div'))
+			.addClass('toggle')
+			.appendTo(that);
+
+		// Defaults
 		that.width = that.width();
 		that.max = args.max || 100;
 		that.min = args.min || 0;
