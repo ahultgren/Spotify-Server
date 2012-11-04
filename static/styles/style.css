@@ -235,3 +235,6 @@ input {
 	position: absolute;
 	top: -3px;
 }
+.slide.disabled {
+	background: #777;
+}

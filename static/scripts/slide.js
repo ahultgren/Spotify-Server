@@ -65,12 +65,12 @@
 
 		Slide.prototype.disable = function() {
 			enabled = false;
-			return this;
+			return this.addClass('disabled');
 		};
 
 		Slide.prototype.enable = function() {
 			enabled = true;
-			return this;
+			return this.removeClass('disabled');
 		};
 
 		slide = new Slide(element, args);
