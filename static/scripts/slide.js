@@ -12,7 +12,7 @@
 			.appendTo(that);
 
 		// Defaults
-		that.width = that.width();
+		that._width = that.width();
 		that.max = args.max || 100;
 		that.min = args.min || 0;
 		that.drop = args.drop || function(){};
@@ -37,13 +37,21 @@
 
 		if( value === undefined ){
 			// Getter
-			return (that.max - that.min) * that.toggle.position().left/that.width + that.min;
+			return (that.max - that.min) * that.toggle.position().left/that._width + that.min;
 		}
 		else {
 			// Setter
-			that.toggle.css('left', that.width * (value - that.min)/(that.max - that.min));
+			that.toggle.css('left', that._width * (value - that.min)/(that.max - that.min));
 			return that;
 		}
+	};
+
+	Slide.prototype.update = function() {
+		var that = this,
+			value = that.value();
+
+		that._width = that.width();
+		that.value(value);
 	};
 
 	// Private methods
@@ -70,7 +78,7 @@
 			e.preventDefault();
 			var position = e.pageX - initialPosition;
 
-			position > that.width && (position = that.width);
+			position > that._width && (position = that._width);
 			position < 0 && (position = 0);
 
 			that.toggle.css('left', position);

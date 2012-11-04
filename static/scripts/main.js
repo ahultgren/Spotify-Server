@@ -136,4 +136,9 @@ jQuery(function($){
 			});
 		}
 	});
+
+	// Update sliders when window is resized, since they're adaptive
+	$(window).resize(function(){
+		volume.update();
+	});
 });
