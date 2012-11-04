@@ -1,113 +1,132 @@
 (function(document, $, undefined){
 	function Slide(element, args){
-		var that = this;
-		args = args || {};
+		// Private vars
+		var slide, enabled, width, left;
 
-		// Extend prototype with the jQuery object
-		$.extend(that, element);
+		function Slide(element, args){
+			var that = this;
+			args = args || {};
 
-		// Create toggle
-		that.toggle = $(document.createElement('div'))
-			.addClass('toggle')
-			.appendTo(that);
+			// Extend prototype with the jQuery object
+			$.extend(that, element);
 
-		// Defaults
-		that._width = that.width();
-		that.max = args.max || 100;
-		that.min = args.min || 0;
-		that.drop = args.drop || function(){};
-		that.move = args.move || function(){};
-		that.enabled = args.enabled !== undefined ? args.enabled : true;
+			// Create toggle
+			that.toggle = $(document.createElement('div'))
+				.addClass('toggle')
+				.appendTo(that);
 
-		// Listen for mouse events
-		listener(that);
-	}
+			// Defaults
+			width = that.width();
+			enabled = args.enabled !== undefined ? args.enabled : true;
 
-	Slide.prototype.set = function() {
-		if( arguments.length === 1 ){
-			return $.extend(this, arguments[0]);
+			that.max = args.max || 100;
+			that.min = args.min || 0;
+			that.drop = args.drop || function(){};
+			that.move = args.move || function(){};
+
+			// Listen for mouse events
+			listener(that);
 		}
-		else {
-			this[arguments[0]] = arguments[1];
-			return this;
-		}
-	};
 
-	Slide.prototype.value = function(value) {
-		var that = this;
+		Slide.prototype.set = function() {
+			var that = this;
 
-		if( value === undefined ){
-			// Getter
-			return (that.max - that.min) * that.toggle.position().left/that._width + that.min;
-		}
-		else {
-			// Setter
-			that.toggle.css('left', that._width * (value - that.min)/(that.max - that.min));
+			if( arguments.length === 1 ){
+				return $.extend(this, arguments[0]);
+			}
+			else {
+				this[arguments[0]] = arguments[1];
+				return this;
+			}
+		};
+
+		Slide.prototype.value = function(value) {
+			var that = this;
+
+			if( value === undefined ){
+				// Getter
+				return (that.max - that.min) * left/width + that.min;
+			}
+			else {
+				// Setter
+				setLeft(width * (value - that.min)/(that.max - that.min));
+				return that;
+			}
+		};
+
+		Slide.prototype.update = function() {
+			var that = this,
+				value = that.value();
+
+			width = that.width();
+			that.value(value);
 			return that;
-		}
-	};
+		};
 
-	Slide.prototype.update = function() {
-		var that = this,
-			value = that.value();
+		Slide.prototype.disable = function() {
+			enabled = false;
+			return this;
+		};
 
-		that._width = that.width();
-		that.value(value);
-		return that;
-	};
+		Slide.prototype.enable = function() {
+			enabled = true;
+			return this;
+		};
 
-	Slide.prototype.disable = function() {
-		this.enabled = false;
-		return this;
-	};
+		slide = new Slide(element, args);
 
-	Slide.prototype.enable = function() {
-		this.enabled = true;
-		return this;
-	};
+		// Private methods
+		function listener(that){
+			var initialPosition;
 
-	// Private methods
-	function listener(that){
-		var initialPosition;
+			that.toggle.mousedown(function(e){
+				e.preventDefault();
+				e.stopPropagation();
+				initialPosition = e.pageX - left;
 
-		that.toggle.mousedown(function(e){
-			e.preventDefault();
-			e.stopPropagation();
-			initialPosition = e.pageX - that.toggle.position().left;
+				if( enabled ){
+					$(document)
+						.bind('mousemove', mousemove)
+						.bind('mouseup', mouseup);
+				}
+			});
 
-			if( that.enabled ){
-				$(document)
-					.bind('mousemove', mousemove)
-					.bind('mouseup', mouseup);
+			that.mousedown(function(e){
+				e.preventDefault();
+				if( enabled ){
+					setLeft(e.offsetX);
+					that.drop(that.value());
+				}
+			});
+
+			function mousemove(e){
+				e.preventDefault();
+				var position = e.pageX - initialPosition;
+
+				position > width && (position = width);
+				position < 0 && (position = 0);
+
+				setLeft(position);
+				that.move(that.value());
 			}
-		});
 
-		that.mousedown(function(e){
-			e.preventDefault();
-			if( that.enabled ){
-				that.toggle.css('left', e.offsetX);
+			function mouseup(e){
+				e.preventDefault();
 				that.drop(that.value());
+				$(document)
+					.unbind('mousemove', mousemove)
+					.unbind('mouseup', mouseup);
 			}
-		});
+		}
 
-		function mousemove(e){
-			e.preventDefault();
-			var position = e.pageX - initialPosition;
-
-			position > that._width && (position = that._width);
-			position < 0 && (position = 0);
-
+		function setLeft(position){
+			var that = slide;
+			
+			left = position;
 			that.toggle.css('left', position);
-			that.move(that.value());
 		}
 
-		function mouseup(e){
-			e.preventDefault();
-			that.drop(that.value());
-			$(document)
-				.unbind('mousemove', mousemove)
-				.unbind('mouseup', mouseup);
-		}
+		return slide;
 	}
 
 	// Make it jQuery
@@ -116,7 +135,7 @@
 
 		// Don't act on absent elements
 		if( that.length ){
-			var slide = new Slide(that, args);
+			var slide = Slide(that, args);
 			return slide;
 		}
 	};
