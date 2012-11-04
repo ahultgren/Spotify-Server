@@ -193,7 +193,7 @@ input {
 .states #repeat.on {
 	background-position: -188px -21px;
 }
-.states #shuffle:hover {
+.states #repeat:hover {
 	background-position:-188px -42px;
 }
 

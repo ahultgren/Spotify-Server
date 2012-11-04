@@ -120,12 +120,16 @@ jQuery(function($){
 			}
 		}
 		else if( params[0] === 'set' ){
-			values = $(this).parent().find('.values').first().val();
-
-			if( values.length && !isNaN(values) ){
+			if( params[1] === 'repeat' ){
 				socket.emit('do', {
-					command: params[0],
-					values: [params[1], +values]
+					command: 'set',
+					values: ['repeat', !repeat.is('.on')]
+				});
+			}
+			else if( params[1] === 'shuffle' ){
+				socket.emit('do', {
+					command: 'set',
+					values: ['shuffle', !shuffle.is('.on')]
 				});
 			}
 		}
