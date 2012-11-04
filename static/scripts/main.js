@@ -28,7 +28,7 @@ jQuery(function($){
 					values: ['volume', Math.round(value)]
 				});
 			}
-		});
+		}).disable();
 
 	socket.on('connect', function(data){
 		console.log('Successfully connected as client');

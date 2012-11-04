@@ -17,6 +17,7 @@
 		that.min = args.min || 0;
 		that.drop = args.drop || function(){};
 		that.move = args.move || function(){};
+		that.enabled = args.enabled !== undefined ? args.enabled : true;
 
 		// Listen for mouse events
 		listener(that);
@@ -52,6 +53,17 @@
 
 		that._width = that.width();
 		that.value(value);
+		return that;
+	};
+
+	Slide.prototype.disable = function() {
+		this.enabled = false;
+		return this;
+	};
+
+	Slide.prototype.enable = function() {
+		this.enabled = true;
+		return this;
 	};
 
 	// Private methods
@@ -63,15 +75,19 @@
 			e.stopPropagation();
 			initialPosition = e.pageX - that.toggle.position().left;
 
-			$(document)
-				.bind('mousemove', mousemove)
-				.bind('mouseup', mouseup);
+			if( that.enabled ){
+				$(document)
+					.bind('mousemove', mousemove)
+					.bind('mouseup', mouseup);
+			}
 		});
 
 		that.mousedown(function(e){
 			e.preventDefault();
-			that.toggle.css('left', e.offsetX);
-			that.drop(that.value());
+			if( that.enabled ){
+				that.toggle.css('left', e.offsetX);
+				that.drop(that.value());
+			}
 		});
 
 		function mousemove(e){
