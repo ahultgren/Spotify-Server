@@ -88,8 +88,8 @@
 
 				if( enabled ){
 					$(document)
-						.bind('mousemove', mousemove)
-						.bind('mouseup', mouseup);
+						.on('mousemove', mousemove)
+						.on('mouseup', mouseup);
 				}
 			});
 
