@@ -94,10 +94,12 @@
 			});
 
 			that.mousedown(function(e){
-				e.preventDefault();
-				if( enabled ){
-					setLeft(e.offsetX);
-					that.drop(that.value());
+				if( e.which === 1 ){
+					e.preventDefault();
+					if( enabled ){
+						setLeft(e.offsetX);
+						that.drop(that.value());
+					}
 				}
 			});
 
