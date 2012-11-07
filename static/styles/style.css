@@ -253,11 +253,16 @@ input {
 		width: 100%;
 		margin-bottom: 20px;
 	}
+	.volume::before,
+	.volume::after {
+		top: 11px;
+	}
 	.volume::after {
 		right: 0;
 	}
 	.volume .slide {
-		margin-right: 25px;
+		margin-right: 30px;
+		margin-left: 30px;
 	}
 	.position #position,
 	.position #duration {
@@ -267,7 +272,14 @@ input {
 		text-align: center;
 	}
 	.slide {
+		border-radius: 15px;
+		height: 15px;
 		margin: 10px 35px;
+	}
+	.slide .toggle {
+		width: 20px;
+		height: 20px;
+		margin-left: -10px;
 	}
 	.sitefooter {
 		font-size: 1em;
