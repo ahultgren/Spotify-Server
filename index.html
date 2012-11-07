@@ -1,152 +1,56 @@
+<!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
 	<title>Spotify Server</title>
+	<link href="/static/styles/style.css" rel="stylesheet" />
 </head>
 <body>
-<h1>Spotify Server</h1>
-
-<p>Let the whole team choose what's played in the office speakers!</p>
-
-<p id="player">
-	Now <span id="state"></span> <span id="name"></span> by <span id="artists"></span> from the album <span id="album"></span>.
-	<br />The player is at <span id="position"></span> of <span id="duration"></span>, and is <span id="repeat"></span> and is <span id="shuffle"></span>.
-</p>
-
-<h2>What do you want to do?</h2>
-<ul class="actions">
-	<li><a href="playpause">Play or pause</a></li>
-	<li>
-		Spotify URI or HTTP link to track: <input class="values" value="" /><br />
-		Spotify URI or HTTP link to playlist or artist etc (optional): <input class="values" value="" /><br />
-		<a href="playURI">Play song</a> or <a href="queue">queue it</a>.
-	</li>
-	<li><a href="next">Next</a></li>
-	<li><a href="prev">Previous</a></li>
-	<li>
-		<a href="set/volume">Set volume:</a> <input class="values" value="" />
-	</li>
-	<li>
-		<a href="set/position">Set position:</a> <input class="values" value="" />
-	</li>
-</ul>
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-<script>
-	jQuery(function($){
-		var socket = io.connect(':3000/client'),
-			state = $('#state'),
-			isPlaying,
-			name = $('#name'),
-			artists = $('#artists'),
-			album = $('#album'),
-			position = $('#position'),
-			positionValue, time,
-			repeat = $('#repeat'),
-			shuffle = $('#shuffle'),
-			duration = $('#duration'),
-			durationValue;
-
-		socket.on('connect', function(data){
-			console.log('Successfully connected as client');
-		});
-
-		socket.on('change', function(data){
-			var i;
-
-			for( i in data ){
-				switch( i ){
-					case 'state':
-						isPlaying = data[i];
-						state.html(data[i] && 'playing' || 'paused:');
-						break;
-					case 'track':
-						name.html(data[i]);
-						break;
-					case 'artists':
-						if( data[i].length < 3 ){
-							artists.html(data[i].join(' and '));
-						}
-						else {
-							artists.html(data[i].splice(0, data[i].length - 1).join(', ') + ' and ' + data[i][data[i].length - 1]);
-						}
-						break;
-					case 'album':
-						album.html(data[i]);
-						break;
-					case 'position':
-						positionValue = data[i];
-						time = new Date(positionValue);
-						position.html(time.getMinutes() + ':' + time.getSeconds());
-						break;
-					case 'repeat':
-						repeat.html(data[i] && 'on repeat' || 'not on repeat');
-						break;
-					case 'shuffle':
-						shuffle.html(data[i] && 'shuffling' || 'not shuffling');
-						break;
-					case 'duration':
-						durationValue = new Date(data[i]);
-						duration.html(durationValue.getMinutes() + ':' + durationValue.getSeconds());
-						break;
-				}
-			}
-		});
-
-		// Keep approximate time updated
-		(function updateTime(){
-			if( !isNaN(positionValue) && isPlaying ){
-				positionValue += 1000;
-				time = new Date(positionValue);
-			}
-
-			if( time ){
-				position.html(time.getMinutes() + ':' + time.getSeconds());
-			}
-			setTimeout(updateTime, 1000);
-		}());
-
-		// Do actions
-		$('.actions a').click(function(e){
-			var $this = $(this),
-				params = $(this).attr('href').split('/'),
-				values;
-
-			e.preventDefault();
-
-			if( params[0] === 'playURI' || params[0] === 'position' || params[0] === 'volume' || params[0] === 'queue' ){
-				values = [];
-
-				$this.parent().find('.values').each(function(value){
-					values.push($(this).val() || '');
-				});
-
-				if( values.join('').length ){
-					socket.emit('do', {
-						command: params[0],
-						values: values
-					})
-				}
-			}
-			else if( params[0] === 'set' ){
-				values = $(this).parent().find('.values').first().val();
-
-				if( values.length && !isNaN(values) ){
-					socket.emit('do', {
-						command: params[0],
-						values: [params[1], +values]
-					});
-				}
-			}
-			else {
-				socket.emit('do', {
-					command: params[0],
-					values: params.splice(1)
-				});
-			}
-		});
-	});
-</script>
-
+	<div class="puff">
+		<header class="sitehead">
+			<h1>Spotify Server</h1>
+		</header>
+		<section class="player" id="player">
+			<article class="player-info">
+				<h2 class="track" id="name"></h2>
+				<p class="artists" id="artists"></p>
+				<p class="album" id="album"></p>
+			</article>
+			<section class="actions">
+				<section class="buttons">
+					<a class="prev" href="prev"></a>
+					<a class="playpause" href="playpause"></a>
+					<a class="next" href="next"></a>
+				</section>
+				<section class="controllers">
+					<section class="volume">
+						<div class="slide"></div>
+					</section>
+					<section class="position">
+						<span id="position"></span>
+						<div class="slide"></div>
+						<span id="duration"></span>
+					</section>
+					<section class="states">
+						<a id="shuffle" href="set/shuffle"></a>
+						<a id="repeat" href="set/repeat"></a>
+					</section>
+				</section>
+			</section>
+		</section>
+		<section class="search">
+			<span>Add track: </span><input class="values" value="" />
+			<a href="playURI">Play</a>
+			<a href="queue">add</a>
+		</section>
+	</div>
+	<footer class="sitefooter">
+		<p>Wanna make cool stuff like this? <a href="http://frojd.se/career">Join Fröjd Interactive!</a></p>
+	</footer>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="/static/scripts/slide.js"></script>
+	<script src="/static/scripts/main.js"></script>
 </body>
 </html>

@@ -34,13 +34,24 @@ Cache.prototype.getAll = function() {
 		i;
 
 	for( i in params ){
-		if( i === 'position' && that.params.state.value ){
-			result[i] = Date.now() - that.params.position.timestamp + that.params.position.value;
-		}
-		else {
-			result[i] = params[i].value;
+		if( params[i] ){
+			if( i === 'position' && that.params.state.value ){
+				result[i] = Date.now() - that.params.position.timestamp + that.params.position.value;
+			}
+			else {
+				result[i] = params[i].value;
+			}
 		}
 	}
 
 	return result;
+};
+
+Cache.prototype.clear = function(callback) {
+	var params = this.params,
+		i;
+
+	for( i in params ){
+		params[i] = undefined;
+	}
 };

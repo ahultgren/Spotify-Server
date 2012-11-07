@@ -37,6 +37,11 @@ Spotify.prototype.initialize = function() {
 				// Emit so the world may know
 				that.event.emit('change', changed);
 			});
+
+			socket.on('disconnect', function(){
+				that.cache.clear();
+				that.event.emit('disconnected');
+			});
 		});
 };
 

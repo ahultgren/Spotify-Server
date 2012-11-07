@@ -1,0 +1,296 @@
+/* Colors
+	Main: #37a600
+	Dark: #3b552e
+	light: #a0f038
+	White: #f2f7f0
+	Bg: #373737
+	Gray: #5c5c5c
+	Borders: #777
+*/
+
+/* General elements */
+
+* {
+	padding: 0;
+	margin: 0;
+}
+html {
+	height: 100%;
+}
+body {
+	background: #373737;
+	height: 100%;
+	font: 1.125em/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	color: #f2f7f0;
+}
+h2 { font-size: 2.56em; }
+h3 { font-size: 1.6em; }
+a {
+	color: #37a600;
+}
+a:hover {
+	color: #a0f038;
+}
+input {
+	border: 1px solid #425738;
+	border-radius: 2px;
+	display: inline-block;
+	height: 29px;
+	width: 30%;
+	padding: 3px 10px;
+	vertical-align: middle;
+	font-size: inherit;
+	color: #37A600;
+}
+
+.puff {
+	min-height: 100%;
+}
+.sitehead {
+	background: #37a600;
+}
+.sitehead h1 {
+	font-size: 18px;
+	text-align: center;
+	height: 40px;
+	line-height: 2em;
+}
+
+.player,
+.search {
+	padding: 20px;
+	overflow: hidden;
+}
+.track,
+.artists,
+.album {
+	text-align: center;
+	white-space: nowrap;
+}
+.track {
+	margin-bottom: 6px;
+	margin-top: 10px;
+}
+.artists,
+.album {
+	font-size: 1.6em;
+}
+
+.buttons {
+	padding: 40px 0 20px;
+	overflow: hidden;
+	text-align: center;
+}
+.buttons a {
+	background: url(../images/icons.png) no-repeat;
+	background-size: 234px auto;
+	border: 2px solid #37a600;
+	border-radius: 50px;
+	display: inline-block;
+	width: 49px;
+	height: 49px;
+	margin: 0 10px;
+}
+.buttons a:hover {
+	border-color: #a0f038;
+}
+.buttons .prev {
+	background-position: 13px 13px;
+}
+.buttons .playpause {
+	background-position: -23px 13px;
+}
+.buttons .next {
+	background-position: -65px 13px;
+}
+.buttons .playpause.pause {
+	background-position: -104px 13px;
+}
+.buttons .prev:hover {
+	background-position: 13px -25px;
+}
+.buttons .playpause:hover {
+	background-position: -23px -25px;
+}
+.buttons .next:hover {
+	background-position: -65px -25px;
+}
+.buttons .playpause.pause:hover {
+	background-position: -104px -25px;
+}
+
+.volume {
+	width: 20%;
+	min-height: 20px;
+	float: left;
+	position: relative;
+}
+.volume::before,
+.volume::after {
+	content: "";
+	background: url(../images/icons.png) no-repeat;
+	background-size: 234px auto;
+	display: block;
+	height: 12px;
+	position: absolute;
+	top: 7px;
+}
+.volume::before {
+	background-position: -211px 0;
+	width: 8px;
+	left: 0;
+}
+.volume::after {
+	background-position: -219px 0;
+	width: 14px;
+	right: 10px;
+}
+.volume .slide {
+	margin: 10px 40px 0 20px;
+}
+.volume .slide:hover {
+	background: #37a600;
+}
+
+.position {
+	width: 70%;
+	min-height: 20px;
+	float: left;
+	position: relative;
+}
+.position #position {
+	float: left;
+}
+.position #duration {
+	float: right;
+}
+
+.states {
+	width: 10%;
+	float: left;
+}
+.states #repeat,
+.states #shuffle {
+	background: url(../images/icons.png) no-repeat;
+	background-size: 234px auto;
+	display: inline-block;
+	height: 21px;
+	margin-top: 4px;
+}
+.states #shuffle {
+	background-position: -163px 0;
+	width: 25px;
+	margin-left: 20px;
+}
+.states #shuffle.on {
+	background-position: -163px -21px;
+}
+.states #shuffle:hover {
+	background-position:-163px -42px;
+}
+.states #repeat {
+	background-position: -188px 0;
+	width: 23px;
+	margin-left: 10px;
+}
+.states #repeat.on {
+	background-position: -188px -21px;
+}
+.states #repeat:hover {
+	background-position:-188px -42px;
+}
+
+.search {
+	display: none; /* Disabled til its actually working */
+}
+
+.sitefooter {
+	background: #3b552e;
+	height: 20px;
+	margin-top: -40px;
+	padding: 10px 0;
+	position: relative;
+	font-size: 0.78em;
+	text-align: center;
+}
+
+/* Helper classes */
+
+.slide {
+	background: #37a600;
+	border-radius: 3px;
+	height: 7px;
+	margin: 10px 50px 0;
+	position: absolute;
+	left: 0;
+	right: 0;
+}
+.slide:hover {
+	background: #a0f038;
+}
+.slide .toggle {
+	background: #f2f7f0;
+	border-radius: 13px;
+	display: block;
+	width: 13px;
+	height: 13px;
+	margin-left: -6px;
+	position: absolute;
+	top: -3px;
+}
+.slide.disabled {
+	background: #777;
+}
+
+@media (max-width: 888px){
+	body {
+		font-size: 0.703em;
+	}
+	.player,
+	.search {
+		padding-bottom: 60px;
+	}
+	.volume,
+	.position,
+	.states {
+		width: 100%;
+		margin-bottom: 20px;
+	}
+	.volume::before,
+	.volume::after {
+		top: 11px;
+	}
+	.volume::after {
+		right: 0;
+	}
+	.volume .slide {
+		margin-right: 30px;
+		margin-left: 30px;
+	}
+	.position #position,
+	.position #duration {
+		margin-top: 5px;
+	}
+	.states {
+		text-align: center;
+	}
+	.slide {
+		border-radius: 15px;
+		height: 15px;
+		margin: 10px 35px;
+	}
+	.slide .toggle {
+		width: 20px;
+		height: 20px;
+		margin-left: -10px;
+	}
+	.sitefooter {
+		font-size: 1em;
+	}
+}
+
+@media (max-height: 400px){
+	.track {
+		font-size: 1.6em;
+	}
+}
