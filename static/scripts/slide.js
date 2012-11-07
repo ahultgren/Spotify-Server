@@ -82,7 +82,7 @@
 			that.toggle.mousedown(function(e){
 				e.preventDefault();
 				e.stopPropagation();
-				initialPosition = e.pageX - left;
+				initialPosition = e.pageX - (left !== undefined ? left : 0);
 
 				if( enabled ){
 					$(document)
