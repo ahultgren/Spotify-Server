@@ -45,6 +45,10 @@ Client.prototype.listen = function() {
 	that.main.spotify.event.on('change', function(changed){
 		that.main.sio.of('/client').emit('change', changed);
 	});
+
+	that.main.spotify.event.on('disconnected', function(changed){
+		that.main.sio.of('/client').emit('spotifyDisconnected');
+	});
 };
 
 Client.prototype.do = function(command) {

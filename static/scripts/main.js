@@ -83,6 +83,21 @@ jQuery(function($){
 		}
 	});
 
+	socket.on('spotifyDisconnected', function(){
+		name.html('');
+		artists.html('');
+		album.html('');
+		positionCounter.html('');
+		duration.html('');
+
+		positionValue = undefined;
+		time = undefined;
+		isPlaying = false;
+
+		position.value(0);
+		volume.value(0);
+	});
+
 	// Keep approximate time updated
 	(function updateTime(){
 		if( !isNaN(positionValue) && isPlaying ){
