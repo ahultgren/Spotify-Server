@@ -141,6 +141,44 @@ jQuery(function($){
 		}
 	});
 
+	// Enable support for keyboard commands
+	$(window).keydown(function(e){
+		switch( e.which ){
+			case 32:
+				e.preventDefault();
+				socket.emit('do', {
+					command: 'playpause'
+				});
+				break;
+			case 37:
+				e.preventDefault();
+				socket.emit('do', {
+					command: 'prev'
+				});
+				break;
+			case 39:
+				e.preventDefault();
+				socket.emit('do', {
+					command: 'next'
+				});
+				break;
+			case 38:
+				e.preventDefault();
+				socket.emit('do', {
+					command: 'set',
+					values: ['volume', volume.value()+10]
+				});
+				break;
+			case 40:
+				e.preventDefault();
+				socket.emit('do', {
+					command: 'set',
+					values: ['volume', volume.value()-10]
+				});
+				break;
+		}
+	});
+
 	// Update sliders when window is resized, since they're adaptive
 	$(window).resize(function(){
 		volume.update();
