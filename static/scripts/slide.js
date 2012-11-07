@@ -24,6 +24,8 @@
 			that.drop = args.drop || function(){};
 			that.move = args.move || function(){};
 
+			that.isDragged = false;
+
 			// Listen for mouse events
 			listener(that);
 		}
@@ -104,12 +106,15 @@
 			});
 
 			that.on('touchend touchcancel', function(e){
-				that.drop();
+				e.preventDefault();
+				that.isDragged = false;
+				that.drop(that.value());
 			});
 
 			function mousemove(e){
-				e.preventDefault();
 				var position = e.pageX - initialPosition;
+				e.preventDefault();
+				that.isDragged = true;
 
 				setLeft(position);
 				that.move(that.value());
@@ -118,12 +123,16 @@
 			function mouseup(e){
 				e.preventDefault();
 				that.drop(that.value());
+				that.isDragged = false;
+
 				$(document)
 					.unbind('mousemove', mousemove)
 					.unbind('mouseup', mouseup);
 			}
 
 			function touchmove(e){
+				e.preventDefault();
+				that.isDragged = true;
 				setLeft(e.originalEvent.pageX - that.offset().left);
 			}
 		}

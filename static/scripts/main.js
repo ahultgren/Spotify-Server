@@ -90,7 +90,7 @@ jQuery(function($){
 			time = new Date(positionValue);
 		}
 
-		if( time ){
+		if( time && !position.isDragged ){
 			position.value(positionValue);
 			positionCounter.html(time.getMinutes() + ':' + ('0' + time.getSeconds()).slice(-2));
 		}
