@@ -12,12 +12,13 @@ Have you ever been in an office where music is playing in the speakers, and ther
 * Play previous/next track
 * Queue tracks
 * Set volume (though currently not allowed in Spotify API) and position
+* All this is a slick user interface
 
 ## Planned features
 * Login/user system (eg authorize as admin, everyone else can only see what's played but not change anything)
-* A prettier and more usable interface
 * Integration with the Spotify web API
 * SSL (good to have when user credentials are involved)
+* Vote to change track!
 
 ## Installation
 
@@ -38,8 +39,6 @@ Then try it out by visiting [http://localhost:3000](http://localhost:3000)
 ## Contribution
 
 Contributions are very much appreciated. If you want to contribute just fork this repo, make your own branch, follow current coding style, change/add one feature per commit, and issue a pull request when you're done. Contributors will be credited below.
-
-Thanks to nicoo for this extensible [list of supported Spoitfy commands](http://www.instructables.com/id/RFID-Controls-for-Spotify-on-OSX-using-hacked-Mir/step3/Spotify-osascript-commands/).
 
 ## License
 
