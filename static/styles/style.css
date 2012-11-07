@@ -83,6 +83,7 @@ input {
 }
 .buttons a {
 	background: url(../images/icons.png) no-repeat;
+	background-size: 234px auto;
 	border: 2px solid #37a600;
 	border-radius: 50px;
 	display: inline-block;
@@ -128,6 +129,7 @@ input {
 .volume::after {
 	content: "";
 	background: url(../images/icons.png) no-repeat;
+	background-size: 234px auto;
 	display: block;
 	height: 12px;
 	position: absolute;
@@ -170,6 +172,7 @@ input {
 .states #repeat,
 .states #shuffle {
 	background: url(../images/icons.png) no-repeat;
+	background-size: 234px auto;
 	display: inline-block;
 	height: 21px;
 	margin-top: 4px;
