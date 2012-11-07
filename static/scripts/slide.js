@@ -99,12 +99,17 @@
 				}
 			});
 
+			that.on('touchmove', function(e){
+				touchmove(e);
+			});
+
+			that.on('touchend touchcancel', function(e){
+				that.drop();
+			});
+
 			function mousemove(e){
 				e.preventDefault();
 				var position = e.pageX - initialPosition;
-
-				position > width && (position = width);
-				position < 0 && (position = 0);
 
 				setLeft(position);
 				that.move(that.value());
@@ -117,10 +122,17 @@
 					.unbind('mousemove', mousemove)
 					.unbind('mouseup', mouseup);
 			}
+
+			function touchmove(e){
+				setLeft(e.originalEvent.pageX - that.offset().left);
+			}
 		}
 
 		function setLeft(position){
 			var that = slide;
+
+			position > width && (position = width);
+			position < 0 && (position = 0);
 			
 			left = position;
 			that.toggle.css('left', position);
