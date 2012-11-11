@@ -7,10 +7,12 @@ function Server(args){
 		var that = this;
 
 		// Connect
-		socket = io.connect(args.port + args.namespace);
+		socket = io.connect(':' + args.port + args.namespace);
 
 		// Extend this object with an EventEmitter
 		$.extend(this, new EventEmitter());
+
+		listen(that);
 	}
 
 	// Public methods
@@ -23,12 +25,8 @@ function Server(args){
 		});
 	};
 
-	server = new Server(args);
-
 	// Private methods
-	function listen(){
-		var that = server;
-
+	function listen(that){
 		socket.on('connect', function(data){
 			console.log('Successfully connected as client');
 			that.trigger('connect');
@@ -46,5 +44,7 @@ function Server(args){
 			that.trigger('disconnect');
 		});
 	}
+
+	server = new Server(args);
 	return server;
 }
