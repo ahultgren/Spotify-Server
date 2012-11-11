@@ -9,7 +9,15 @@ function Search(args){
 		that.list = $(document.createElement('ul'))
 			.addClass('result-list')
 			.hide()
-			.insertAfter(that.input);
+			.insertAfter(that.input)
+			.on('click', '.queue', function(e){
+				e.preventDefault();
+				that.main.server.do('queue', [$(this).attr('href')]);
+			})
+			.on('click', '.play', function(e){
+				e.preventDefault();
+				that.main.server.do('playURI', [$(this).attr('href')]);
+			});
 
 		store = spotifyWebApi();
 
@@ -36,7 +44,7 @@ function Search(args){
 
 		that.input.on('keydown', function(e){
 			e.stopPropagation();
-		})
+		});
 	}
 
 	Search.prototype.renderList = function(data) {
@@ -48,11 +56,18 @@ function Search(args){
 			result += '<li class="caption">Tracks:</li>';
 
 			for( i = 0, l = data.tracks.length; i < l; i++ ){
-				result += '<li>' + data.tracks[i].name + '</li>'
+				result += '<li>'
+					+ '<span class="name">' + data.tracks[i].name + '</span>'
+					+ '<span class="artist">' + data.tracks[i].artists[0].name + '</span>'
+					+ '<a class="queue" href="' + data.tracks[i].href + '">Queue</a>'
+					+ '<a class="play" href="' + data.tracks[i].href + '">Play</a></li>'
 			}
-		}
 
-		that.list.html(result).show();
+			that.list.html(result).show();
+		}
+		else {
+			that.list.empty().hide();
+		}
 	};
 
 	function spotifyWebApi(){
