@@ -14,7 +14,16 @@ function Main(){
 			main: that
 		});
 
-		keyboardShortcuts();
+		jQuery(function($){
+			keyboardShortcuts();
+		});
+
+		$(function(){
+			that.search = Search({
+				main: that,
+				input: $('.searchInput')
+			});
+		});
 	}
 
 	main = new Main();
@@ -22,32 +31,30 @@ function Main(){
 	function keyboardShortcuts(){
 		var that = main;
 
-		jQuery(function($){
-			// Enable support for keyboard commands
-			$(window).keydown(function(e){
-				switch( e.which ){
-					case 32:
-						e.preventDefault();
-						that.server.do('playpause');
-						break;
-					case 37:
-						e.preventDefault();
-						that.server.do('prev');
-						break;
-					case 39:
-						e.preventDefault();
-						that.server.do('next');
-						break;
-					case 38:
-						e.preventDefault();
-						that.server.do('set', ['volume', volume.value()+10]);
-						break;
-					case 40:
-						e.preventDefault();
-						that.server.do('set', ['volume', volume.value()-10]);
-						break;
-				}
-			});
+		// Enable support for keyboard commands
+		$(window).keydown(function(e){
+			switch( e.which ){
+				case 32:
+					e.preventDefault();
+					that.server.do('playpause');
+					break;
+				case 37:
+					e.preventDefault();
+					that.server.do('prev');
+					break;
+				case 39:
+					e.preventDefault();
+					that.server.do('next');
+					break;
+				case 38:
+					e.preventDefault();
+					that.server.do('set', ['volume', volume.value()+10]);
+					break;
+				case 40:
+					e.preventDefault();
+					that.server.do('set', ['volume', volume.value()-10]);
+					break;
+			}
 		});
 	}
 

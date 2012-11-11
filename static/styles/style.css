@@ -186,7 +186,7 @@ input {
 	background-position: -163px -21px;
 }
 .states #shuffle:hover {
-	background-position:-163px -42px;
+	background-position: -163px -42px;
 }
 .states #repeat {
 	background-position: -188px 0;
@@ -197,11 +197,10 @@ input {
 	background-position: -188px -21px;
 }
 .states #repeat:hover {
-	background-position:-188px -42px;
+	background-position: -188px -42px;
 }
 
 .search {
-	display: none; /* Disabled til its actually working */
 }
 
 .sitefooter {
