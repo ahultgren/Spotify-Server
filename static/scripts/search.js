@@ -37,7 +37,11 @@ function Search(args){
 			})
 			.on('blur', function(){
 				focused = false;
-				that.list.hide();
+				setTimeout(function(){
+					if( !focused ){
+						that.list.hide();
+					}
+				}, 250);
 			})
 			.on('keydown', function(e){
 				e.stopPropagation();
