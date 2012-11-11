@@ -20,7 +20,7 @@ Cache.prototype.set = function(params) {
 Cache.prototype.get = function(param) {
 	var that = this;
 
-	if( param === 'position' && that.params.state.value ){
+	if( param === 'position' && that.params.state && that.params.state.value ){
 		return Date.now() - that.params.position.timestamp + that.params.position.value;
 	}
 
@@ -35,7 +35,7 @@ Cache.prototype.getAll = function() {
 
 	for( i in params ){
 		if( params[i] ){
-			if( i === 'position' && that.params.state.value ){
+			if( i === 'position' && that.params.state && that.params.state.value ){
 				result[i] = Date.now() - that.params.position.timestamp + that.params.position.value;
 			}
 			else {
