@@ -55,10 +55,12 @@ function Search(args){
 			.on('click', '.queue', function(e){
 				e.preventDefault();
 				that.main.server.do('queue', [$(this).attr('href')]);
+				that.input.focus();
 			})
 			.on('click', '.play', function(e){
 				e.preventDefault();
 				that.main.server.do('playURI', [$(this).attr('href')]);
+				that.input.focus();
 			});
 
 		store = spotifyWebApi();
