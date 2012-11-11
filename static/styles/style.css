@@ -201,6 +201,12 @@ input {
 }
 
 .search {
+	position: relative;
+}
+.search .result-list {
+	background: #F2F7F0;
+	color: #3B552E;
+	list-style: none;
 }
 
 .sitefooter {

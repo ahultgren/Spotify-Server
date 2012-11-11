@@ -32,7 +32,7 @@ function Search(args){
 				focused = true;
 
 				if( that.list.html().length ){
-					that.list.show();
+					that.show();
 				}
 			})
 			.on('blur', function(){
@@ -46,6 +46,7 @@ function Search(args){
 		that.list = $(document.createElement('ul'))
 			.addClass('result-list')
 			.hide()
+			.css('position', 'absolute')
 			.insertAfter(that.input)
 			.on('click', '.queue', function(e){
 				e.preventDefault();
@@ -74,14 +75,32 @@ function Search(args){
 			}
 
 			that.list.html(result);
-
-			if( focused ){
-				that.list.show();
-			}
+			that.show();
 		}
 		else {
-			that.list.empty().hide();
+			that.list.empty()
+			that.hide();
 		}
+	};
+
+	Search.prototype.show = function() {
+		var that = this,
+			inputPosition;
+
+		if( focused && that.list.is(':hidden') ){
+			inputPosition = that.input.position();
+
+			that.list.css({
+				top: inputPosition.top + that.input.outerHeight,
+				left: inputPosition.left
+			}).width(that.input.width());
+
+			that.list.show();
+		}
+	};
+
+	Search.prototype.hide = function() {
+		that.list.hide();
 	};
 
 	function spotifyWebApi(){
