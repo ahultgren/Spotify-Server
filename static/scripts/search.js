@@ -1,11 +1,48 @@
 function Search(args){
-	var search, store, timer;
+	var search, store, timer, focused;
 
 	function Search(args){
 		var that = this;
 
 		that.main = args.main;
-		that.input = args.input;
+
+		// Set up elements and events
+		that.input = args.input
+			.on('input', function(){
+				var val = $(this).val();
+
+				if( timer ){
+					clearInterval(timer);
+					timer = undefined;
+				}
+
+				if( val.length >= 4 ){
+					timer = setTimeout(function(){
+						timer = undefined;
+						store.find(val).then(function(data){
+							that.renderList(data);
+						});
+					}, 250);
+				}
+				else if( !val.length ){
+					that.renderList();
+				}
+			})
+			.on('focus', function(){
+				focused = true;
+
+				if( that.list.html().length ){
+					that.list.show();
+				}
+			})
+			.on('blur', function(){
+				focused = false;
+				that.list.hide();
+			})
+			.on('keydown', function(e){
+				e.stopPropagation();
+			});
+
 		that.list = $(document.createElement('ul'))
 			.addClass('result-list')
 			.hide()
@@ -20,31 +57,6 @@ function Search(args){
 			});
 
 		store = spotifyWebApi();
-
-		that.input.on('input', function(){
-			var val = $(this).val();
-
-			if( timer ){
-				clearInterval(timer);
-				timer = undefined;
-			}
-
-			if( val.length >= 4 ){
-				timer = setTimeout(function(){
-					timer = undefined;
-					store.find(val).then(function(data){
-						that.renderList(data);
-					});
-				}, 250);
-			}
-			else if( !val.length ){
-				that.renderList();
-			}
-		});
-
-		that.input.on('keydown', function(e){
-			e.stopPropagation();
-		});
 	}
 
 	Search.prototype.renderList = function(data) {
@@ -53,8 +65,6 @@ function Search(args){
 			i, l;
 
 		if( data && data.tracks ){
-			result += '<li class="caption">Tracks:</li>';
-
 			for( i = 0, l = data.tracks.length; i < l; i++ ){
 				result += '<li>'
 					+ '<span class="name">' + data.tracks[i].name + '</span>'
@@ -63,7 +73,11 @@ function Search(args){
 					+ '<a class="play" href="' + data.tracks[i].href + '">Play</a></li>'
 			}
 
-			that.list.html(result).show();
+			that.list.html(result);
+
+			if( focused ){
+				that.list.show();
+			}
 		}
 		else {
 			that.list.empty().hide();
