@@ -70,7 +70,8 @@ function Player(args){
 					playpause.toggleClass('pause', data[i]);
 					break;
 				case 'track':
-					name.html(data[i]);
+					//## Assuming the uri is always sent when track is
+					name.html('<a href="' + data['uri'] + '">' + data[i] + '</a>');
 					break;
 				case 'artists':
 					if( data[i].length < 3 ){
