@@ -106,7 +106,7 @@ function Search(args){
 	};
 
 	Search.prototype.hide = function() {
-		that.list.hide();
+		this.list.hide();
 	};
 
 	function spotifyWebApi(){

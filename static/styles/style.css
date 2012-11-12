@@ -281,12 +281,12 @@ html[xmlns] .clearfix {
 }
 
 @media (max-width: 888px){
-	body {
-		font-size: 0.703em;
+	input {
+		width: 70%;
 	}
 	.player,
 	.search {
-		padding-bottom: 60px;
+		/*padding-bottom: 60px;*/
 	}
 	.volume,
 	.position,
@@ -327,7 +327,16 @@ html[xmlns] .clearfix {
 	}
 }
 
-@media (max-height: 400px){
+@media (max-height: 500px), (max-width: 500px) {
+	body {
+		font-size: 0.703em;
+	}
+	input {
+		width: 94%;
+		padding-right: 3%;
+		padding-left: 3%;
+		font-size: 1.6em;
+	}
 	.track {
 		font-size: 1.6em;
 	}
