@@ -11,7 +11,7 @@
 		<header class="sitehead">
 			<h1>Spotify Server</h1>
 		</header>
-		<section class="player" id="player">
+		<section class="player clearfix" id="player">
 			<article class="player-info">
 				<h2 class="track" id="name"></h2>
 				<p class="artists" id="artists"></p>
@@ -39,10 +39,8 @@
 				</section>
 			</section>
 		</section>
-		<section class="search">
-			<span>Add track: </span><input class="values" value="" />
-			<a href="playURI">Play</a>
-			<a href="queue">add</a>
+		<section class="search clearfix">
+			<input class="searchInput" placeholder="Add track" value="" />
 		</section>
 	</div>
 	<footer class="sitefooter">
@@ -54,6 +52,7 @@
 	<script src="/static/scripts/slide.js"></script>
 	<script src="/static/scripts/server.js"></script>
 	<script src="/static/scripts/player.js"></script>
+	<script src="/static/scripts/search.js"></script>
 	<script src="/static/scripts/main.js"></script>
 </body>
 </html>
