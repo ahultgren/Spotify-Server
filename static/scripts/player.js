@@ -58,6 +58,11 @@ function Player(args){
 			volume.update();
 			position.update();
 		});
+
+		// If unauthorized, disable position slider
+		if( unauthed ){
+			position.disable();
+		}
 	}
 
 	function newData(data){

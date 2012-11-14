@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<title>Spotify Server</title>
+	<link href="/static/styles/style.css" rel="stylesheet" />
+</head>
+<body>
+	<div class="puff">
+		<header class="sitehead">
+			<h1>Spotify Server</h1>
+		</header>
+		<section class="player clearfix" id="player">
+			<article class="player-info">
+				<h2 class="track" id="name"></h2>
+				<p class="artists" id="artists"></p>
+				<p class="album" id="album"></p>
+			</article>
+			<section class="actions">
+				<section class="controllers">
+					<section class="volume">
+						<div class="slide"></div>
+					</section>
+					<section class="position">
+						<span id="position"></span>
+						<div class="slide"></div>
+						<span id="duration"></span>
+					</section>
+				</section>
+			</section>
+		</section>
+		<section class="search clearfix">
+			<input class="searchInput" placeholder="Add track" value="" />
+		</section>
+	</div>
+	<footer class="sitefooter">
+		<p>Wanna make cool stuff like this? <a href="http://frojd.se/career">Join Fröjd Interactive!</a></p>
+	</footer>
+	<script>
+		var unauthed = true;
+	</script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/static/scripts/libs/eventemitter.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="/static/scripts/slide.js"></script>
+	<script src="/static/scripts/server.js"></script>
+	<script src="/static/scripts/player.js"></script>
+	<script src="/static/scripts/search.js"></script>
+	<script src="/static/scripts/main.js"></script>
+</body>
+</html>

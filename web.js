@@ -59,7 +59,7 @@ App.prototype.route = function() {
 			res.sendfile(__dirname + '/index.html');
 		}
 		else {
-			res.send("You're not logged in!");
+			res.sendfile(__dirname + '/user.html');
 		}
 	});
 };
