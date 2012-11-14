@@ -34,6 +34,7 @@ Permissions.prototype.auth = function(req, res, next) {
 		});
 	}
 	else {
+		req.isAdmin = true;
 		next();	
 	}
 };
