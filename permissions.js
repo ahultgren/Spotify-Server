@@ -54,6 +54,7 @@ Permissions.prototype.login = function(token, ip, callback) {
 
 Permissions.prototype.enable = function(token) {
 	this.token = token;
+	store.clear();
 };
 
 Permissions.prototype.disable = function() {
