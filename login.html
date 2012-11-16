@@ -3,24 +3,9 @@
 	<title>Log in - Spotify Server</title>
 </head>
 <body>
-	<input id="password" value="" />
-	<button id="login">Log in</button>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-	<script>
-		$(function(){
-			$('#login').click(function(){
-				$.ajax({
-					url: '/login',
-					data: {
-						token: $('#password').val()
-					},
-					success: function(id){
-						window.localStorage.setItem('auth', id);
-						window.location.href = window.location.host;
-					}
-				})
-			});
-		});
-	</script>
+	<form>
+		<input id="token" name="token" value="" autofocus />
+		<input type="submit" id="login" value="login" />
+	</form>
 </body>
 </html>
