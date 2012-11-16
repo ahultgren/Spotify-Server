@@ -18,25 +18,27 @@ function Permissions(args){
 
 /* Public methods */
 
-Permissions.prototype.auth = function(req, res, next) {
+Permissions.prototype.auth = function() {
 	var that = this;
 
-	// Expected to be called as express.use or equivalent
-	if( that.token !== undefined ){
-		store.validate(req.cookie['auth'], req.ip, function(isValid){
-			if( isValid ){
-				req.isAdmin = true;
-				next();	
-			}
-			else {
-				next();
-			}
-		});
-	}
-	else {
-		req.isAdmin = true;
-		next();	
-	}
+	return function(req, res, next){
+		// Expected to be called as express.use or equivalent
+		if( that.token !== undefined ){
+			store.validate(req.cookies.auth, req.ip, function(isValid){
+				if( isValid ){
+					req.isAuth = true;
+					next();	
+				}
+				else {
+					next();
+				}
+			});
+		}
+		else {
+			req.isAuth = true;
+			next();	
+		}
+	};
 };
 
 Permissions.prototype.login = function(token, ip, callback) {

@@ -54,8 +54,10 @@ App.prototype.route = function() {
 
 	that.app.use('/static', express.static(__dirname + '/static'));
 
-	that.app.get('/', that.permissions.auth, function(req, res){
-		if( req.isAdmin ){
+	that.app.use(express.cookieParser());
+
+	that.app.get('/', that.permissions.auth(), function(req, res){
+		if( req.isAuth ){
 			res.sendfile(__dirname + '/index.html');
 		}
 		else {
@@ -65,11 +67,12 @@ App.prototype.route = function() {
 
 	that.app.get('/login', function(req, res){
 		// Takes care of both /login and /login?token=mjau
-		if( req.query.token ){
+		if( req.query.token !== undefined ){
 			that.permissions.login(req.query.token, req.ip, function(id){
+				console.log(id);
 				if( id ){
-					res.cookie('auth', id, { maxAge: null, httpOnly: true});
-					res.send(200, id);
+					res.cookie('auth', id, {});
+					res.redirect(301, '/');
 				}
 				else {
 					res.send(401);
