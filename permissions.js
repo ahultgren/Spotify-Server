@@ -23,22 +23,28 @@ Permissions.prototype.auth = function() {
 
 	return function(req, res, next){
 		// Expected to be called as express.use or equivalent
-		if( that.token !== undefined ){
-			store.validate(req.cookies.auth, req.ip, function(isValid){
-				if( isValid ){
-					req.isAuth = true;
-					next();	
-				}
-				else {
-					next();
-				}
-			});
-		}
-		else {
-			req.isAuth = true;
-			next();	
-		}
+		that.plainAuth(req.cookies.auth, req.ip, req, next);
 	};
+};
+
+Permissions.prototype.plainAuth = function(id, ip, req, next) {
+	var that = this;
+
+	if( that.token !== undefined ){
+		store.validate(id, ip, function(isValid){
+			if( isValid ){
+				req && (req.isAuth = true);
+				next();	
+			}
+			else {
+				next();
+			}
+		});
+	}
+	else {
+		req.isAuth = true;
+		next();	
+	}
 };
 
 Permissions.prototype.login = function(token, ip, callback) {

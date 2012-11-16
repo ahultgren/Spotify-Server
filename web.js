@@ -57,6 +57,7 @@ App.prototype.route = function() {
 	that.app.use(express.cookieParser());
 
 	that.app.get('/', that.permissions.auth(), function(req, res){
+
 		if( req.isAuth ){
 			res.sendfile(__dirname + '/index.html');
 		}
