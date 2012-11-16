@@ -7,6 +7,7 @@ module.exports = function(args){
 function Spotify(args){
 	var that = this;
 
+	that.permissions = args.main.permissions;
 	that.sio = args.main.sio;
 	that.client = args.main.client;
 	that.cache = args.main.cache;
@@ -36,6 +37,16 @@ Spotify.prototype.initialize = function() {
 
 				// Emit so the world may know
 				that.event.emit('change', changed);
+			});
+
+			// Ability to set admin password
+			socket.on('auth', function(token){
+				if( token ){
+					that.permissions.enable(token);
+				}
+				else {
+					that.permissions.disable();
+				}
 			});
 
 			socket.on('disconnect', function(){
