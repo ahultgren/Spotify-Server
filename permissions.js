@@ -45,7 +45,7 @@ Permissions.prototype.login = function(token, ip, callback) {
 	var that = this;
 
 	if( token === that.token ){
-		store.generateHash(ip, callback);
+		store.add(ip, callback);
 	}
 	else {
 		callback(false);
@@ -63,16 +63,17 @@ Permissions.prototype.disable = function() {
 // Class for storing insensitive session data in memory
 function SessionStore(secret){
 	function SessionStore(secret){
-		this.secret = secret;
+		this.__proto__.secret = secret;
 	}
 
 	SessionStore.prototype = new Array();
+	SessionStore.prototype.constructor = SessionStore;
 
 	SessionStore.prototype.validate = function(hash, ip, callback) {
 		var that = this;
 
-		find(hash, function(){
-			that.generateHash(function(testHash){
+		find(hash, function(i, data){
+			generateHash(ip, data.salt, function(testHash){
 				if( testHash === hash ){
 					callback(true);
 				}
@@ -86,10 +87,37 @@ function SessionStore(secret){
 		});
 	};
 
-	SessionStore.prototype.generateHash = function(ip, callback) {
-		var that = sessionStore;
+	SessionStore.prototype.add = function(ip, callback) {
+		var that = this;
 
-		callback(crypto.createHash('md5').update(ip + that.secret).digest('hex'));
+		generateHash(ip, function(hash, salt){
+			that.push({
+				id: hash,
+				salt: salt
+			});
+
+			callback(hash);
+		});
+	};
+
+	SessionStore.prototype.remove = function(id) {
+		var that = this;
+
+		find(id, function(i){
+			that.splice(i, 1);
+		});
+	};
+
+	SessionStore.prototype.clear = function() {
+		this.splice(0);
+	};
+
+	function generateHash(ip, salt, callback){
+		var that = sessionStore,
+			salt = salt || (Math.random()*0xFFFFFF<<0).toString(16),
+			callback = callback || salt;
+
+		callback(crypto.createHash('md5').update(ip + salt + that.secret).digest('hex'), salt);
 	};
 
 	function find(id, success, fail){
@@ -98,7 +126,7 @@ function SessionStore(secret){
 
 		for( i = that.length; i--; ){
 			if( that[i].id = id){
-				success(id);
+				success(i, that[i]);
 				return;
 			}
 		}

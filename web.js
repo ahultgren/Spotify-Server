@@ -69,10 +69,9 @@ App.prototype.route = function() {
 		// Takes care of both /login and /login?token=mjau
 		if( req.query.token !== undefined ){
 			that.permissions.login(req.query.token, req.ip, function(id){
-				console.log(id);
 				if( id ){
 					res.cookie('auth', id, {});
-					res.redirect(301, '/');
+					res.redirect(303, '/');
 				}
 				else {
 					res.send(401);
