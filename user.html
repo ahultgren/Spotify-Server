@@ -18,11 +18,6 @@
 				<p class="album" id="album"></p>
 			</article>
 			<section class="actions">
-				<section class="buttons">
-					<a class="prev" href="prev"></a>
-					<a class="playpause" href="playpause"></a>
-					<a class="next" href="next"></a>
-				</section>
 				<section class="controllers">
 					<section class="volume">
 						<div class="slide"></div>
@@ -31,10 +26,6 @@
 						<span id="position"></span>
 						<div class="slide"></div>
 						<span id="duration"></span>
-					</section>
-					<section class="states">
-						<a id="shuffle" href="set/shuffle"></a>
-						<a id="repeat" href="set/repeat"></a>
 					</section>
 				</section>
 			</section>
@@ -47,7 +38,7 @@
 		<p>Wanna make cool stuff like this? <a href="http://frojd.se/career">Join Fröjd Interactive!</a></p>
 	</footer>
 	<script>
-		var unauthed = false;
+		var unauthed = true;
 	</script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/static/scripts/libs/eventemitter.js"></script>

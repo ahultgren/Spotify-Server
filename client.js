@@ -15,32 +15,42 @@ function Client(args){
 Client.prototype.listen = function() {
 	var that = this;
 
-	that.main.sio.of('/client').on('connection', function (socket) {
-		console.log('connected as client');
+	that.main.sio.of('/client')
+		.authorization(function(data, next){
+			var cookie = data.headers.cookie.match(/auth=([^;]+)/);
 
-		// Send all data on connect
-		that.get('all', function(all){
-			socket.emit('change', all);
-		});
+			if( cookie && (cookie = cookie[1]) ){
+				that.main.permissions.plainAuth(cookie, data.address.address, data, function(){
+					next(null, true);
+				});
+			}
+		})
+		.on('connection', function (socket) {
+			console.log('connected as client');
 
-		socket.on('get', function(property){
-			that.get(property, function(data){
-				socket.emit(property, data);
+			// Send all data on connect
+			that.get('all', function(all){
+				socket.emit('change', all);
+			});
+
+			socket.on('get', function(property){
+				that.get(property, function(data){
+					socket.emit(property, data);
+				});
+			});
+
+			socket.on('do', function(data){
+				that.do(data, socket);
+			});
+
+			socket.on('refresh', function(){
+				that.main.spotify.refresh();
+			});
+
+			socket.on('disconnect', function (data) {
+				console.log('a client disconnected', data);
 			});
 		});
-
-		socket.on('do', function(data){
-			that.do(data);
-		});
-
-		socket.on('refresh', function(){
-			that.main.spotify.refresh();
-		});
-
-		socket.on('disconnect', function (data) {
-			console.log('a client disconnected', data);
-		});
-	});
 
 	that.main.spotify.event.on('change', function(changed){
 		that.main.sio.of('/client').emit('change', changed);
@@ -51,8 +61,12 @@ Client.prototype.listen = function() {
 	});
 };
 
-Client.prototype.do = function(command) {
-	this.main.spotify.do(command);
+Client.prototype.do = function(command, socket) {
+	var that = this;
+
+	that.main.permissions.authCommand(socket, command, function(){
+		that.main.spotify.do(command);
+	});
 };
 
 Client.prototype.get = function(property, callback) {

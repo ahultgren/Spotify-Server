@@ -14,9 +14,11 @@ function Main(){
 			main: that
 		});
 
-		jQuery(function($){
-			keyboardShortcuts();
-		});
+		if( !unauthed ){
+			jQuery(function($){
+				keyboardShortcuts();
+			});
+		}
 
 		$(function(){
 			that.search = Search({

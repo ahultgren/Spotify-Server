@@ -6,7 +6,8 @@ var
 // Interfaces
 	Client = require('./client'),
 	Spotify = require('./spotify'),
-	Cache = require('./cache');
+	Cache = require('./cache'),
+	Permissions = require('./permissions');
 
 
 function App(args){
@@ -21,6 +22,10 @@ function App(args){
 
 
 	/* Modules */
+
+	that.permissions = Permissions({
+		secret: 'lmkU8y)uOIY78&yYPO)/8%7i676RT)J&h7GB66GE5G(6;K&OHuT#e3"dåk' //## Create config file some day!
+	});
 
 	that.cache = Cache();
 
@@ -49,8 +54,34 @@ App.prototype.route = function() {
 
 	that.app.use('/static', express.static(__dirname + '/static'));
 
-	that.app.get('/', function(req, res){
-		res.sendfile(__dirname + '/index.html');
+	that.app.use(express.cookieParser());
+
+	that.app.get('/', that.permissions.auth(), function(req, res){
+
+		if( req.isAuth ){
+			res.sendfile(__dirname + '/index.html');
+		}
+		else {
+			res.sendfile(__dirname + '/user.html');
+		}
+	});
+
+	that.app.get('/login', function(req, res){
+		// Takes care of both /login and /login?token=mjau
+		if( req.query.token !== undefined ){
+			that.permissions.login(req.query.token, req.ip, function(id){
+				if( id ){
+					res.cookie('auth', id, {});
+					res.redirect(303, '/');
+				}
+				else {
+					res.send(401);
+				}
+			});
+		}
+		else {
+			res.sendfile(__dirname + '/login.html');
+		}
 	});
 };
 
