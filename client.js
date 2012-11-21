@@ -40,7 +40,7 @@ Client.prototype.listen = function() {
 			});
 
 			socket.on('do', function(data){
-				that.do(data);
+				that.do(data, socket);
 			});
 
 			socket.on('refresh', function(){
@@ -61,8 +61,12 @@ Client.prototype.listen = function() {
 	});
 };
 
-Client.prototype.do = function(command) {
-	this.main.spotify.do(command);
+Client.prototype.do = function(command, socket) {
+	var that = this;
+
+	that.main.permissions.authCommand(socket, command, function(){
+		that.main.spotify.do(command);
+	});
 };
 
 Client.prototype.get = function(property, callback) {

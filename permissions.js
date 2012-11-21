@@ -13,10 +13,27 @@ function Permissions(args){
 	that.token = args.token;
 	that.secret = args.secret;
 
+	// List of actions allowed by unauthed clients. Undefined === false
+	that.whitelist = {
+		queue: true,
+		play: false,
+		playURI: false,
+		next: false,
+		prev: false
+	};
+
 	store = SessionStore(that.secret);
 }
 
 /* Public methods */
+
+Permissions.prototype.authCommand = function(socket, command, callback) {
+	var that = this;
+
+	if( that.token === undefined || socket.handshake.isAuth || that.whitelist[command.command] ){
+		callback();
+	}
+};
 
 Permissions.prototype.auth = function() {
 	var that = this;
