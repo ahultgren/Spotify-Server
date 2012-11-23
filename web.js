@@ -59,10 +59,10 @@ App.prototype.route = function() {
 	that.app.get('/', that.permissions.auth(), function(req, res){
 
 		if( req.isAuth ){
-			res.sendfile(__dirname + '/index.html');
+			res.sendfile(__dirname + '/views/index.html');
 		}
 		else {
-			res.sendfile(__dirname + '/user.html');
+			res.sendfile(__dirname + '/views/user.html');
 		}
 	});
 
@@ -80,7 +80,7 @@ App.prototype.route = function() {
 			});
 		}
 		else {
-			res.sendfile(__dirname + '/login.html');
+			res.sendfile(__dirname + '/views/login.html');
 		}
 	});
 };
