@@ -12,6 +12,7 @@ function Spotify(args){
 	that.client = args.main.client;
 	that.cache = args.main.cache;
 	that.token = args.token;
+	that.namespace = args.namespace;
 
 	that.event = new events.EventEmitter();
 
@@ -22,7 +23,7 @@ Spotify.prototype.initialize = function() {
 	var that = this,
 		sockets = that.sio.sockets;
 
-	that.sio.of('/slave')
+	that.sio.of(that.namespace)
 		.authorization(function (handshakeData, callback) {
 			callback(null, ( handshakeData.query.token === that.token ));
 		})
@@ -59,7 +60,7 @@ Spotify.prototype.initialize = function() {
 Spotify.prototype.refresh = function() {
 	var that = this;
 
-	that.sio.of('/slave').emit('refresh');
+	that.sio.of(that.namespace).emit('refresh');
 };
 
 Spotify.prototype.do = function(command) {
@@ -74,6 +75,6 @@ Spotify.prototype.do = function(command) {
 
 	// Ask spotify to execute the command(s)
 	for( i = command.length; i--; ){
-		that.sio.of('/slave').emit('do', command[i]);
+		that.sio.of(that.namespace).emit('do', command[i]);
 	}
 };

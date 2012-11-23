@@ -7,7 +7,7 @@ function Main(){
 		that.server = Server({
 			main: that,
 			port: 3000,
-			namespace: '/client'
+			namespace: '/username_client'
 		});
 
 		that.player = Player({

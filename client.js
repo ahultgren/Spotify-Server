@@ -9,13 +9,14 @@ function Client(args){
 
 	that.main = args.main;
 	that.cache = args.main.cache;
+	that.namespace = args.namespace;
 	that.event = new events.EventEmitter();
 }
 
 Client.prototype.listen = function() {
 	var that = this;
 
-	that.main.sio.of('/client')
+	that.main.sio.of(that.namespace)
 		.authorization(function(data, next){
 			var cookie = data.headers.cookie.match(/auth=([^;]+)/);
 
@@ -53,11 +54,11 @@ Client.prototype.listen = function() {
 		});
 
 	that.main.spotify.event.on('change', function(changed){
-		that.main.sio.of('/client').emit('change', changed);
+		that.main.sio.of(that.namespace).emit('change', changed);
 	});
 
 	that.main.spotify.event.on('disconnected', function(changed){
-		that.main.sio.of('/client').emit('spotifyDisconnected');
+		that.main.sio.of(that.namespace).emit('spotifyDisconnected');
 	});
 };
 

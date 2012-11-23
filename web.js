@@ -1,6 +1,7 @@
 var 
 // Dependencies
 	express = require('express'),
+	app = express(),
 	server = require('http'),
 	socket = require('socket.io'),
 // Interfaces
@@ -15,7 +16,7 @@ function App(args){
 
 	/* Server stuff */
 
-	that.app = args.express();
+	that.app = args.app;
 	that.server = args.server.createServer(that.app);
 	that.sio = args.socket.listen(that.server);
 	that.port = args.port;
@@ -30,12 +31,14 @@ function App(args){
 	that.cache = Cache();
 
 	that.client = Client({
-		main: that
+		main: that,
+		namespace: args.namespaces.client
 	});
 
 	that.spotify = Spotify({
 		main: that,
-		token: '1337' //## Create a config-file and keep auth stuff there
+		token: args.slaveToken,
+		namespace: args.namespaces.slave
 	});
 
 	that.client.listen();
@@ -43,21 +46,15 @@ function App(args){
 
 	/* Start server stuff */
 
-	that.route();
+	that.route(args.baseRoute);
 	that.httpListen();
 };
 
-App.prototype.route = function() {
+App.prototype.route = function(baseRoute) {
 	var that = this;
 
-	//Routing
-
-	that.app.use('/static', express.static(__dirname + '/static'));
-
-	that.app.use(express.cookieParser());
-
-	that.app.get('/', that.permissions.auth(), function(req, res){
-
+	// Routing
+	that.app.get(baseRoute, that.permissions.auth(), function(req, res){
 		if( req.isAuth ){
 			res.sendfile(__dirname + '/views/index.html');
 		}
@@ -66,13 +63,13 @@ App.prototype.route = function() {
 		}
 	});
 
-	that.app.get('/login', function(req, res){
+	that.app.get(baseRoute + '/login', function(req, res){
 		// Takes care of both /login and /login?token=mjau
 		if( req.query.token !== undefined ){
 			that.permissions.login(req.query.token, req.ip, function(id){
 				if( id ){
 					res.cookie('auth', id, {});
-					res.redirect(303, '/');
+					res.redirect(303, baseRoute);
 				}
 				else {
 					res.send(401);
@@ -93,11 +90,23 @@ App.prototype.httpListen = function() {
 	console.info('Listening on port %s', port);
 };
 
+// Global routing and middleware
+app.use('/static', express.static(__dirname + '/static'));
+app.use(express.cookieParser());
+
+
 // Wohoo
 
-var app = new App({
+var main = new App({
 	express: express,
+	app: app,
 	server: server,
+	socket: socket,
 	port: 3000,
-	socket: socket
+	slaveToken: '1337',
+	baseRoute: '/username',
+	namespaces: {
+		client: '/username_client',
+		slave: '/username_slave'
+	}
 });
