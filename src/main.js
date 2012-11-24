@@ -1,26 +1,24 @@
-var 
+var
 // Dependencies
 	path = require('path'),
-	path = require('path'),
-	express = require('express'),
-	app = express(),
-	server = require('http'),
-	socket = require('socket.io'),
 // Interfaces
 	Client = require('./client'),
 	Spotify = require('./spotify'),
 	Cache = require('./cache'),
 	Permissions = require('./permissions');
 
+module.exports = function(args){
+	return new Main(args);
+}
 
-function App(args){
+function Main(args){
 	var that = this;
 
 	/* Server stuff */
 
 	that.app = args.app;
-	that.server = args.server.createServer(that.app);
-	that.sio = args.socket.listen(that.server);
+	that.server = args.server;
+	that.sio = args.sio;
 	that.port = args.port;
 
 
@@ -44,21 +42,15 @@ function App(args){
 	});
 
 	that.client.listen();
-
-
-	/* Start server stuff */
-
 	that.route(args.baseRoute);
-	that.httpListen();
 };
 
-App.prototype.route = function(baseRoute) {
+Main.prototype.route = function(baseRoute) {
 	var that = this;
 
 	// Routing
 	that.app.get(baseRoute, that.permissions.auth(), function(req, res){
 		if( req.isAuth ){
-			console.log(path.join(__dirname, '..', '/views/index.html'));
 			res.sendfile(path.join(__dirname, '..', '/views/index.html'));
 		}
 		else {
@@ -84,32 +76,3 @@ App.prototype.route = function(baseRoute) {
 		}
 	});
 };
-
-App.prototype.httpListen = function() {
-	var that = this,
-		port = that.port;
-
-	that.server.listen(port);
-	console.info('Listening on port %s', port);
-};
-
-// Global routing and middleware
-app.use('/static', express.static(path.join(__dirname, '..', '/static')));
-app.use(express.cookieParser());
-
-
-// Wohoo
-
-var main = new App({
-	express: express,
-	app: app,
-	server: server,
-	socket: socket,
-	port: 3000,
-	slaveToken: '1337',
-	baseRoute: '/username',
-	namespaces: {
-		client: '/username_client',
-		slave: '/username_slave'
-	}
-});
