@@ -1,6 +1,6 @@
 var 
 // Main module
-	Rooms = require('./src/main'),
+	Rooms = require('./rooms/main'),
 // Dependencies
 	express = require('express'),
 	server = require('http'),
