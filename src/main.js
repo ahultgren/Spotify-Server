@@ -1,5 +1,7 @@
 var 
 // Dependencies
+	path = require('path'),
+	path = require('path'),
 	express = require('express'),
 	app = express(),
 	server = require('http'),
@@ -56,10 +58,11 @@ App.prototype.route = function(baseRoute) {
 	// Routing
 	that.app.get(baseRoute, that.permissions.auth(), function(req, res){
 		if( req.isAuth ){
-			res.sendfile(__dirname + '/views/index.html');
+			console.log(path.join(__dirname, '..', '/views/index.html'));
+			res.sendfile(path.join(__dirname, '..', '/views/index.html'));
 		}
 		else {
-			res.sendfile(__dirname + '/views/user.html');
+			res.sendfile(path.join(__dirname, '..', '/views/user.html'));
 		}
 	});
 
@@ -77,7 +80,7 @@ App.prototype.route = function(baseRoute) {
 			});
 		}
 		else {
-			res.sendfile(__dirname + '/views/login.html');
+			res.sendfile(path.join(__dirname, '..', '/views/login.html'));
 		}
 	});
 };
@@ -91,7 +94,7 @@ App.prototype.httpListen = function() {
 };
 
 // Global routing and middleware
-app.use('/static', express.static(__dirname + '/static'));
+app.use('/static', express.static(path.join(__dirname, '..', '/static')));
 app.use(express.cookieParser());
 
 
