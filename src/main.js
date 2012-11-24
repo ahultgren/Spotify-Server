@@ -11,16 +11,46 @@ module.exports = function(args){
 	return new Main(args);
 }
 
-function Main(args){
+function Main(){
+	//## Add cronjob that removes inactive rooms
+}
+
+Main.prototype = new Array();
+
+Main.prototype.add = function(args) {
 	var that = this;
 
-	/* Server stuff */
+	//## Make sure the name is unique and not reserved
+	new Room(args, function(room){
+		that.push(room);
+	});
+};
 
-	that.app = args.app;
-	that.server = args.server;
+Main.prototype.remove = function(index) {
+	//## Make sure no socket listeners are still hanging around
+};
+
+Main.prototype.get = function(name, yes, no) {
+	var that = this,
+		found = false,
+		i;
+
+	for( i = that.length; i--; ){
+		if( that[i].name === name ){
+			found = true;
+			break;
+		}
+	}
+
+	found ? yes(that[i]) : no();
+};
+
+function Room(args, callback){
+	var that = this;
+
+	that.name = args.name;
 	that.sio = args.sio;
 	that.port = args.port;
-
 
 	/* Modules */
 
@@ -42,37 +72,39 @@ function Main(args){
 	});
 
 	that.client.listen();
-	that.route(args.baseRoute);
+
+	callback(that);
 };
 
-Main.prototype.route = function(baseRoute) {
+Room.prototype.playerView = function(req, res, next) {
 	var that = this;
 
-	// Routing
-	that.app.get(baseRoute, that.permissions.auth(), function(req, res){
+	that.permissions.plainAuth(req.cookies.auth, req.ip, req, function(){
 		if( req.isAuth ){
 			res.sendfile(path.join(__dirname, '..', '/views/index.html'));
 		}
 		else {
 			res.sendfile(path.join(__dirname, '..', '/views/user.html'));
-		}
+		}	
 	});
+};
 
-	that.app.get(baseRoute + '/login', function(req, res){
-		// Takes care of both /login and /login?token=mjau
-		if( req.query.token !== undefined ){
-			that.permissions.login(req.query.token, req.ip, function(id){
-				if( id ){
-					res.cookie('auth', id, {});
-					res.redirect(303, baseRoute);
-				}
-				else {
-					res.send(401);
-				}
-			});
-		}
-		else {
-			res.sendfile(path.join(__dirname, '..', '/views/login.html'));
-		}
-	});
+Room.prototype.loginView = function(req, res, next) {
+	var that = this;
+
+	// Takes care of both /login and /login?token=mjau
+	if( req.query.token !== undefined ){
+		that.permissions.login(req.query.token, req.ip, function(id){
+			if( id ){
+				res.cookie('auth', id, {});
+				res.redirect(303, baseRoute);
+			}
+			else {
+				res.send(401);
+			}
+		});
+	}
+	else {
+		res.sendfile(path.join(__dirname, '..', '/views/login.html'));
+	}
 };
