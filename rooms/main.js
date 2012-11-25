@@ -5,7 +5,11 @@ var
 	Client = require('./client'),
 	Spotify = require('./spotify'),
 	Cache = require('./cache'),
-	Permissions = require('./permissions');
+	Permissions = require('./permissions'),
+// Vars
+	reservedRoutes = {
+		static: 1
+	};
 
 module.exports = function(args){
 	return new Main(args);
@@ -17,12 +21,18 @@ function Main(){
 
 Main.prototype = new Array();
 
-Main.prototype.add = function(args) {
+// Public methods
+
+Main.prototype.add = function(args, success, fail) {
 	var that = this;
 
-	//## Make sure the name is unique and not reserved
-	new Room(args, function(room){
-		that.push(room);
+	isReserved(args.name, fail, function(){
+		that.get(args.name, fail,
+		function(){
+			new Room(args, function(room){
+				success ? success(that.push(room)) : that.push(room);
+			});	
+		})
 	});
 };
 
@@ -42,8 +52,18 @@ Main.prototype.get = function(name, yes, no) {
 		}
 	}
 
-	found ? yes(that[i]) : no();
+	found ? yes && yes(that[i]) : no && no({text: 'Name is already used'});
 };
+
+// Private methods
+
+function isReserved(name, yes, no){
+	reservedRoutes[name] 
+		? yes && yes({text: 'Name is not allowed'})
+		: no && no();
+}
+
+// Room model
 
 function Room(args, callback){
 	var that = this;

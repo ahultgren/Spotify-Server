@@ -26,7 +26,7 @@ function App(){
 			room.playerView(req, res, next);
 		},
 		function(){
-			console.log("room not found");
+			res.send(404, 'Room not found');
 			/*that.users.get(req.params.username, function(user){
 				user.profileView(req, res, next);
 			},
