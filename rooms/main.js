@@ -16,7 +16,9 @@ module.exports = function(args){
 }
 
 function Main(){
-	//## Add cronjob that removes inactive rooms
+	var that = this;
+
+	cronDeleteInactive(that);
 }
 
 Main.prototype = new Array();
@@ -37,7 +39,10 @@ Main.prototype.add = function(args, success, fail) {
 };
 
 Main.prototype.remove = function(index) {
-	//## Make sure no socket listeners are still hanging around
+	var that = this;
+
+	that[index].die();
+	that.splice(index, 1);
 };
 
 Main.prototype.get = function(name, yes, no) {
@@ -63,6 +68,20 @@ function isReserved(name, yes, no){
 		: no && no();
 }
 
+function cronDeleteInactive(that){
+	var i;
+
+	setTimeout(function cron(){
+		var limit = Date.now() - 15 * 60000;
+
+		for( i = that.length; i--; ){
+			if( that[i].lastTouched < limit && that[i].spotify.numberOfSlaves === 0 ){
+				that.remove(i);
+			}
+		}
+	}, 60000);
+}
+
 // Room model
 
 function Room(args, callback){
@@ -71,6 +90,8 @@ function Room(args, callback){
 	that.name = args.name;
 	that.sio = args.sio;
 	that.port = args.port;
+
+	that.lastTouched = Date.now();
 
 	/* Modules */
 
@@ -90,6 +111,15 @@ function Room(args, callback){
 		token: args.slaveToken,
 		namespace: args.namespaces.slave
 	});
+
+	// Update lastTouched when Spotify does anything
+	function spotifyTouched(){
+		that.lastTouched = Date.now();
+	}
+
+	that.spotify.event.on('connected', spotifyTouched);
+	that.spotify.event.on('change', spotifyTouched);
+	that.spotify.event.on('disconnect', spotifyTouched);
 
 	that.client.listen();
 
@@ -127,4 +157,11 @@ Room.prototype.loginView = function(req, res, next) {
 	else {
 		res.sendfile(path.join(__dirname, '..', '/views/login.html'));
 	}
+};
+
+Room.prototype.die = function() {
+	var that = this;
+
+	that.client.die();
+	that.spotify.die();
 };

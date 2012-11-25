@@ -40,10 +40,9 @@ function App(){
 	that.server.listen(port);
 	console.info('Listening on port %s', port);
 
-	// Temproarily immediately set up a route for testing
+	// Temporarily immediately set up a route for testing
 	that.rooms.add({
 		name: 'username',
-		express: express,
 		sio: that.sio,
 		slaveToken: '1337',
 		namespaces: {

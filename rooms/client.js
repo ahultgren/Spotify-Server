@@ -93,3 +93,9 @@ Client.prototype.get = function(property, callback) {
 
 	callback(result);
 };
+
+Client.prototype.die = function() {
+	var that = this;
+	// Make sure no socket listeners are still hanging around
+	delete that.main.sio.namespaces[that.namespace];
+};
