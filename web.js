@@ -14,7 +14,9 @@ function App(){
 	that.app = express();
 	that.server = server.createServer(that.app);
 	that.sio = socket.listen(that.server);
-	that.rooms = Rooms();
+	that.rooms = Rooms({
+		sio: that.sio
+	});
 
 	// Global routing and middleware
 	that.app.use('/static', express.static(__dirname + '/static'));
@@ -23,19 +25,7 @@ function App(){
 	that.app.use(that.app.router);
 
 	// Create room
-	that.app.post('/:roomname', function(req, res, next){
-		var name = req.params.roomname;
-
-		that.rooms.add({
-			name: name,
-			sio: that.sio,
-			slaveToken: req.body.token,
-			namespaces: {
-				client: '/' + name + '_client',
-				slave: '/' + name + '_slave'
-			}
-		})
-	});
+	that.app.post('/:roomname', that.rooms.add());
 
 	// Connect to room
 	that.app.get('/:roomname', function(req, res, next){

@@ -10,8 +10,10 @@ module.exports = function(args){
 	return new Main(args);
 }
 
-function Main(){
+function Main(args){
 	var that = this;
+
+	that.sio = args.sio;
 
 	cronDeleteInactive(that);
 }
@@ -20,17 +22,31 @@ Main.prototype = new Array();
 
 // Public methods
 
-Main.prototype.add = function(args, success, fail) {
+Main.prototype.add = function() {
 	var that = this;
 
-	isReserved(args.name, fail, function(){
-		that.get(args.name, fail,
-		function(){
-			new Room(args, function(room){
-				success ? success(that.push(room)) : that.push(room);
-			});	
-		})
-	});
+	return function(req, res, next){
+		var name = req.params.roomname;
+
+		isReserved(name, next, function(){
+			that.get(name, next, function(){
+				new Room({
+					name: name,
+					sio: that.sio,
+					slaveToken: req.body.token,
+					namespaces: {
+						client: '/' + name + '_client',
+						slave: '/' + name + '_slave'
+					}
+				},
+				function(room){
+					that.push(room);
+				});
+
+				res.send(200);
+			});
+		});
+	}
 };
 
 Main.prototype.remove = function(index) {
