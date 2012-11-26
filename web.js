@@ -28,20 +28,7 @@ function App(){
 	that.app.post('/:roomname', that.rooms.add());
 
 	// Connect to room
-	that.app.get('/:roomname', function(req, res, next){
-		that.rooms.get(req.params.roomname, function(room){
-			room.playerView(req, res, next);
-		},
-		function(){
-			next();
-			/*that.users.get(req.params.roomname, function(user){
-				user.profileView(req, res, next);
-			},
-			function(){
-				next();
-			});*/
-		});
-	});
+	that.app.get('/:roomname', that.rooms.playerView());
 
 	// Temporary fail handler
 	that.app.use('/:anything', function(req, res){

@@ -71,6 +71,19 @@ Main.prototype.get = function(name, yes, no) {
 	found ? yes && yes(that[i]) : no && no({text: 'Name is already used'});
 };
 
+Main.prototype.playerView = function() {
+	var that = this;
+
+	return function(req, res, next){
+		that.rooms.get(req.params.roomname, function(room){
+			room.playerView(req, res, next);
+		},
+		function(){
+			next();
+		});
+	}
+};
+
 // Private methods
 
 function isReserved(name, yes, no){
