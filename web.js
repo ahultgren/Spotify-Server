@@ -30,6 +30,9 @@ function App(){
 	// Connect to room
 	that.app.get('/:roomname', that.rooms.playerView());
 
+	// Login to room
+	that.app.get('/:roomname/login', that.rooms.loginView());
+
 	// Temporary fail handler
 	that.app.use('/:anything', function(req, res){
 		res.send(404, 'No such room found');

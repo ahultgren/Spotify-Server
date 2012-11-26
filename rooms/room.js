@@ -74,7 +74,7 @@ Room.prototype.loginView = function(req, res, next) {
 		that.permissions.login(req.query.token, req.ip, function(id){
 			if( id ){
 				res.cookie('auth', id, {});
-				res.redirect(303, baseRoute);
+				res.redirect(303, path.join(req.path, '..'));
 			}
 			else {
 				res.send(401);

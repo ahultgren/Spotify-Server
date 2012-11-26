@@ -75,13 +75,26 @@ Main.prototype.playerView = function() {
 	var that = this;
 
 	return function(req, res, next){
-		that.rooms.get(req.params.roomname, function(room){
+		that.get(req.params.roomname, function(room){
 			room.playerView(req, res, next);
 		},
 		function(){
 			next();
 		});
-	}
+	};
+};
+
+Main.prototype.loginView = function() {
+	var that = this;
+
+	return function(req, res, next){
+		that.get(req.params.roomname, function(room){
+			room.loginView(req, res, next);
+		},
+		function(){
+			next();
+		});
+	};
 };
 
 // Private methods
