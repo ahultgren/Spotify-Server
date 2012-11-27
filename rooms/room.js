@@ -26,6 +26,8 @@ function Room(args, callback){
 		secret: 'lmkU8y)uOIY78&yYPO)/8%7i676RT)J&h7GB66GE5G(6;K&OHuT#e3"dåk' //## Create config file some day!
 	});
 
+	args.adminToken && that.permissions.enable(args.adminToken);
+
 	that.cache = Cache();
 
 	that.client = Client({

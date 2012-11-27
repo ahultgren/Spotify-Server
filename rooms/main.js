@@ -33,7 +33,8 @@ Main.prototype.add = function() {
 				new Room({
 					name: name,
 					sio: that.sio,
-					slaveToken: req.body.token,
+					slaveToken: req.body.slaveToken,
+					adminToken: req.body.adminToken,
 					namespaces: {
 						client: '/' + name + '_client',
 						slave: '/' + name + '_slave'
