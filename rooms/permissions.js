@@ -11,7 +11,7 @@ function Permissions(args){
 	var that = this;
 
 	that.token = args.token;
-	that.secret = args.secret;
+	that.secret = (Math.random()*1e50).toString(32);
 
 	// List of actions allowed by unauthed clients. Undefined === false
 	that.whitelist = {
