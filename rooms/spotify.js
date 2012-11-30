@@ -12,6 +12,8 @@ function Spotify(args){
 	that.client = args.main.client;
 	that.cache = args.main.cache;
 	that.token = args.token;
+	that.namespace = args.namespace;
+	that.numerOfSlaves = 0;
 
 	that.event = new events.EventEmitter();
 
@@ -22,12 +24,14 @@ Spotify.prototype.initialize = function() {
 	var that = this,
 		sockets = that.sio.sockets;
 
-	that.sio.of('/slave')
+	that.sio.of(that.namespace)
 		.authorization(function (handshakeData, callback) {
 			callback(null, ( handshakeData.query.token === that.token ));
 		})
 		.on('connection', function(socket){
 			console.log('connected as slave');
+			that.event.emit('connected');
+			that.numerOfSlaves++;
 
 			// Automatical emits on changes to states. The message is expected
 			// to contain { changedProperty: newValue }
@@ -52,6 +56,7 @@ Spotify.prototype.initialize = function() {
 			socket.on('disconnect', function(){
 				that.cache.clear();
 				that.event.emit('disconnected');
+				that.numerOfSlaves--;
 			});
 		});
 };
@@ -59,7 +64,7 @@ Spotify.prototype.initialize = function() {
 Spotify.prototype.refresh = function() {
 	var that = this;
 
-	that.sio.of('/slave').emit('refresh');
+	that.sio.of(that.namespace).emit('refresh');
 };
 
 Spotify.prototype.do = function(command) {
@@ -74,6 +79,12 @@ Spotify.prototype.do = function(command) {
 
 	// Ask spotify to execute the command(s)
 	for( i = command.length; i--; ){
-		that.sio.of('/slave').emit('do', command[i]);
+		that.sio.of(that.namespace).emit('do', command[i]);
 	}
+};
+
+Spotify.prototype.die = function() {
+	var that = this;
+	// Make sure no socket listeners are still hanging around
+	delete that.sio.namespaces[that.namespace];
 };

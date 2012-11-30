@@ -1,103 +1,51 @@
 var 
+// Main module
+	Rooms = require('./rooms/main'),
 // Dependencies
 	express = require('express'),
 	server = require('http'),
-	socket = require('socket.io'),
-// Interfaces
-	Client = require('./client'),
-	Spotify = require('./spotify'),
-	Cache = require('./cache'),
-	Permissions = require('./permissions');
+	socket = require('socket.io')
+// Vars
+	port = 3000;
 
-
-function App(args){
+function App(){
 	var that = this;
 
-	/* Server stuff */
-
-	that.app = args.express();
-	that.server = args.server.createServer(that.app);
-	that.sio = args.socket.listen(that.server);
-	that.port = args.port;
-
-
-	/* Modules */
-
-	that.permissions = Permissions({
-		secret: 'lmkU8y)uOIY78&yYPO)/8%7i676RT)J&h7GB66GE5G(6;K&OHuT#e3"dåk' //## Create config file some day!
+	that.app = express();
+	that.server = server.createServer(that.app);
+	that.sio = socket.listen(that.server);
+	that.rooms = Rooms({
+		sio: that.sio
 	});
 
-	that.cache = Cache();
-
-	that.client = Client({
-		main: that
-	});
-
-	that.spotify = Spotify({
-		main: that,
-		token: '1337' //## Create a config-file and keep auth stuff there
-	});
-
-	that.client.listen();
-
-
-	/* Start server stuff */
-
-	that.route();
-	that.httpListen();
-};
-
-App.prototype.route = function() {
-	var that = this;
-
-	//Routing
-
+	// Global routing and middleware
 	that.app.use('/static', express.static(__dirname + '/static'));
-
 	that.app.use(express.cookieParser());
+	that.app.use(express.bodyParser());
+	that.app.use(that.app.router);
 
-	that.app.get('/', that.permissions.auth(), function(req, res){
+	// Create room
+	that.app.post('/:roomname', that.rooms.add());
 
-		if( req.isAuth ){
-			res.sendfile(__dirname + '/index.html');
+	// Connect to room
+	that.app.get('/:roomname', that.rooms.playerView());
+
+	// Login to room
+	that.app.get('/:roomname/login', that.rooms.loginView());
+
+	// Temporary fail handler
+	that.app.use(function(err, req, res, next){
+		if( err.code ){
+			res.send(err.code, err.message);
 		}
 		else {
-			res.sendfile(__dirname + '/user.html');
+			res.send(500, 'Unexpected error.')
 		}
 	});
 
-	that.app.get('/login', function(req, res){
-		// Takes care of both /login and /login?token=mjau
-		if( req.query.token !== undefined ){
-			that.permissions.login(req.query.token, req.ip, function(id){
-				if( id ){
-					res.cookie('auth', id, {});
-					res.redirect(303, '/');
-				}
-				else {
-					res.send(401);
-				}
-			});
-		}
-		else {
-			res.sendfile(__dirname + '/login.html');
-		}
-	});
-};
-
-App.prototype.httpListen = function() {
-	var that = this,
-		port = that.port;
-
+	// Wohoo
 	that.server.listen(port);
 	console.info('Listening on port %s', port);
-};
+}
 
-// Wohoo
-
-var app = new App({
-	express: express,
-	server: server,
-	port: 3000,
-	socket: socket
-});
+new App();
