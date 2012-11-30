@@ -77,7 +77,7 @@ function Search(args){
 					+ '<span class="name">' + data.tracks[i].name + '</span>'
 					+ '<span class="artist">' + data.tracks[i].artists[0].name + '</span>'
 					+ '<a class="queue" href="' + data.tracks[i].href + '">Queue</a>'
-					+ '<a class="play" href="' + data.tracks[i].href + '">Play</a></li>'
+					+ ( !unauthed ? '<a class="play" href="' + data.tracks[i].href + '">Play</a></li>' : '' )
 			}
 
 			that.list.html(result);
