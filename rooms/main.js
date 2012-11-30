@@ -80,7 +80,9 @@ Main.prototype.playerView = function() {
 			room.playerView(req, res, next);
 		},
 		function(){
-			next();
+			var err = new Error('This is not the room you\'re looking for.')
+			err.code = 404;
+			next(err);
 		});
 	};
 };
@@ -93,7 +95,9 @@ Main.prototype.loginView = function() {
 			room.loginView(req, res, next);
 		},
 		function(){
-			next();
+			var err = new Error('There\'s no way you\'ll get in here.')
+			err.code = 404;
+			next(err);
 		});
 	};
 };

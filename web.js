@@ -34,8 +34,13 @@ function App(){
 	that.app.get('/:roomname/login', that.rooms.loginView());
 
 	// Temporary fail handler
-	that.app.use('/:anything', function(req, res){
-		res.send(404, 'No such room found');
+	that.app.use(function(err, req, res, next){
+		if( err.code ){
+			res.send(err.code, err.message);
+		}
+		else {
+			res.send(500, 'Unexpected error.')
+		}
 	});
 
 	// Wohoo
