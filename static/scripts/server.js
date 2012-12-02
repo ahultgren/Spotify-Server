@@ -7,7 +7,7 @@ function Server(args){
 		var that = this;
 
 		// Connect
-		socket = io.connect(':' + args.port + args.namespace);
+		socket = io.connect(args.namespace);
 
 		// Extend this object with an EventEmitter
 		$.extend(this, new EventEmitter());

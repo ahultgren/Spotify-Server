@@ -6,7 +6,6 @@ function Main(){
 
 		that.server = Server({
 			main: that,
-			port: 3000,
 			namespace: '/' + window.location.pathname.split('/').pop() + '_client'
 		});
 
