@@ -18,7 +18,7 @@ Client.prototype.listen = function() {
 
 	that.main.sio.of(that.namespace)
 		.authorization(function(data, next){
-			var cookie = data.headers.cookie.match(/auth=([^;]+)/);
+			var cookie = data.headers.cookie && data.headers.cookie.match(/auth=([^;]+)/) || false;
 
 			if( cookie && (cookie = cookie[1]) ){
 				that.main.permissions.plainAuth(cookie, data.address.address, data, function(){
