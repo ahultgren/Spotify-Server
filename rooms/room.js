@@ -16,7 +16,6 @@ function Room(args, callback){
 
 	that.name = args.name;
 	that.sio = args.sio;
-	that.port = args.port;
 
 	that.lastTouched = Date.now();
 
