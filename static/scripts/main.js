@@ -6,7 +6,7 @@ function Main(){
 
 		that.server = Server({
 			main: that,
-			namespace: '/' + window.location.pathname.split('/').pop() + '_client'
+			namespace: window.location.href + '_client'
 		});
 
 		that.player = Player({

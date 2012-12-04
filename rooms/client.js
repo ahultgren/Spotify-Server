@@ -18,13 +18,12 @@ Client.prototype.listen = function() {
 
 	that.main.sio.of(that.namespace)
 		.authorization(function(data, next){
-			var cookie = data.headers.cookie && data.headers.cookie.match(/auth=([^;]+)/) || false;
+			var cookie = data.headers.cookie && data.headers.cookie.match(/auth=([^;]+)/);
+			cookie = cookie && cookie[1] || false;
 
-			if( cookie && (cookie = cookie[1]) ){
-				that.main.permissions.plainAuth(cookie, data.address.address, data, function(){
-					next(null, true);
-				});
-			}
+			that.main.permissions.plainAuth(cookie, data.address.address, data, function(){
+				next(null, true);
+			});
 		})
 		.on('connection', function (socket) {
 			console.log('connected as client');
