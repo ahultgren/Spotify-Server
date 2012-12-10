@@ -57,10 +57,10 @@ Room.prototype.playerView = function(req, res, next) {
 
 	that.permissions.plainAuth(req.cookies.auth, req.ip, req, function(){
 		if( req.isAuth ){
-			res.sendfile(path.join(__dirname, '..', '/views/index.html'));
+			res.sendfile(path.join(__dirname, '/views/index.html'));
 		}
 		else {
-			res.sendfile(path.join(__dirname, '..', '/views/user.html'));
+			res.sendfile(path.join(__dirname, '/views/user.html'));
 		}	
 	});
 };
@@ -81,7 +81,7 @@ Room.prototype.loginView = function(req, res, next) {
 		});
 	}
 	else {
-		res.sendfile(path.join(__dirname, '..', '/views/login.html'));
+		res.sendfile(path.join(__dirname, '/views/login.html'));
 	}
 };
 
