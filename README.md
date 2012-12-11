@@ -2,7 +2,9 @@
 
 Get your own spotify web-based remote controller and let the whole team (or just you) choose what Spotify is playing in the office speakers, right in the browser!
 
-Have you ever been in an office where music is playing in the speakers, and there's one self-appointed music-fürher that controls the music? Or perhaps you want to be that fürher yourself, but you can't be assed to go all the way to the machine playing music. What's the solution? **Spotify Server**. Spotify Server lets you and/or your coworkers control Spotify almost the same way as you would directly in the program.
+Have you ever been in an office or to a party where music is playing in the speakers, and there's one self-appointed music-fürher that controls the music? Or perhaps you want to be that fürher yourself, but you can't be assed to go all the way to the machine playing music. Maybe you're just tired of huddling around the computer competing to queue the most tracks.
+
+Spotify Server is the solution to all this, and a variety of other problems. You will no longer have to huddle with your friends around the computer while competing about queuing the most songs. You can secretly manipulate the playlist while you lounge in your very comfortable armchair. You could even put a big screen in the middle of the living room, showing what is currently played.
 
 ## Current features
 * See what's playing (name, artists, album, duration, player state, player position, and whether shuffling or repeating or not)
@@ -15,10 +17,12 @@ Have you ever been in an office where music is playing in the speakers, and ther
 * All this is a slick user interface
 
 ## Planned features
-* Login/user system (eg authorize as admin, everyone else can only see what's played but not change anything)
-* Integration with the Spotify web API
-* SSL (good to have when user credentials are involved)
 * Vote to change track!
+* Display play queue
+* Vote to change track
+* Vote to order queued tracks
+* Chat with admin or other listeners
+* More fine-grained permissions system
 
 ## Installation
 
