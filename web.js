@@ -1,72 +1,56 @@
 var 
+// Main module
+	Rooms = require('./rooms/main'),
 // Dependencies
 	express = require('express'),
 	server = require('http'),
-	socket = require('socket.io'),
-// Interfaces
-	Client = require('./client'),
-	Spotify = require('./spotify'),
-	Cache = require('./cache');
+	socket = require('socket.io')
+// Vars
+	port = 3000;
 
-
-function App(args){
+function App(){
 	var that = this;
 
-	/* Server stuff */
-
-	that.app = args.express();
-	that.server = args.server.createServer(that.app);
-	that.sio = args.socket.listen(that.server);
-	that.port = args.port;
-
-
-	/* Modules */
-
-	that.cache = Cache();
-
-	that.client = Client({
-		main: that
+	that.app = express();
+	that.server = server.createServer(that.app);
+	that.sio = socket.listen(that.server);
+	that.rooms = Rooms({
+		sio: that.sio
 	});
 
-	that.spotify = Spotify({
-		main: that,
-		token: '1337' //## Create a config-file and keep auth stuff there
-	});
-
-	that.client.listen();
-
-
-	/* Start server stuff */
-
-	that.route();
-	that.httpListen();
-};
-
-App.prototype.route = function() {
-	var that = this;
-
-	//Routing
-
+	// Global routing and middleware
 	that.app.use('/static', express.static(__dirname + '/static'));
+	that.app.use(express.cookieParser());
+	that.app.use(express.bodyParser());
+	that.app.use(that.app.router);
 
-	that.app.get('/', function(req, res){
-		res.sendfile(__dirname + '/index.html');
+	// Start page
+	that.app.get('/', function(req, res, next){
+		res.sendfile(__dirname + '/views/index.html');
 	});
-};
 
-App.prototype.httpListen = function() {
-	var that = this,
-		port = that.port;
+	// Create room
+	that.app.post('/:roomname', that.rooms.add());
 
+	// Connect to room
+	that.app.get('/:roomname', that.rooms.playerView());
+
+	// Login to room
+	that.app.get('/:roomname/login', that.rooms.loginView());
+
+	// Temporary fail handler
+	that.app.use(function(err, req, res, next){
+		if( err.code ){
+			res.send(err.code, err.message);
+		}
+		else {
+			res.send(500, 'Unexpected error.')
+		}
+	});
+
+	// Wohoo
 	that.server.listen(port);
 	console.info('Listening on port %s', port);
-};
+}
 
-// Wohoo
-
-var app = new App({
-	express: express,
-	server: server,
-	port: 3000,
-	socket: socket
-});
+new App();

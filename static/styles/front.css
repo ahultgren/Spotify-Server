@@ -1,0 +1,46 @@
+/* Colors
+	Main: #37a600
+	Dark: #3b552e
+	light: #a0f038
+	White: #f2f7f0
+	Bg: #373737
+	Gray: #5c5c5c
+	Borders: #777
+*/
+
+article {
+	margin: 0 1em 2em;
+	max-width: 780px;
+}
+h2 {
+	padding: 0.8em 0 0.3em;
+}
+p {
+	line-height: 1.6;
+	margin-bottom: 1em;
+}
+ul {
+	margin-left: 3em;
+}
+li {
+	padding-left: 1em;
+	line-height: 1.8;
+}
+.sitefooter {
+	margin-top: 0;
+	position: static;
+}
+
+@media (max-height: 500px), (max-width: 500px) {
+	body {
+		font-size: 1em;
+	}
+
+	ul {
+		margin-left: 1.5em;
+	}
+	li {
+		padding-left: 0.3em;
+		line-height: 1.6;
+	}
+}

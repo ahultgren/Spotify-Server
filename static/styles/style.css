@@ -23,6 +23,9 @@ body {
 	font: 1.125em/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	color: #f2f7f0;
 }
+h2, h3 {
+	font-family: 'Crete Round', serif;
+}
 h2 { font-size: 2.56em; }
 h3 { font-size: 1.6em; }
 a {
@@ -32,6 +35,7 @@ a:hover {
 	color: #a0f038;
 }
 input {
+	background: #f2f7f0;
 	border: 1px solid #425738;
 	border-radius: 2px;
 	display: inline-block;
@@ -59,7 +63,6 @@ input {
 .player,
 .search {
 	padding: 20px;
-	overflow: hidden;
 }
 .track,
 .artists,
@@ -186,7 +189,7 @@ input {
 	background-position: -163px -21px;
 }
 .states #shuffle:hover {
-	background-position:-163px -42px;
+	background-position: -163px -42px;
 }
 .states #repeat {
 	background-position: -188px 0;
@@ -197,11 +200,34 @@ input {
 	background-position: -188px -21px;
 }
 .states #repeat:hover {
-	background-position:-188px -42px;
+	background-position: -188px -42px;
 }
 
 .search {
-	display: none; /* Disabled til its actually working */
+	position: relative;
+}
+.search .result-list {
+	background: #F2F7F0;
+	margin: 10px 1px 10px -19px;
+	padding: 10px;
+	color: #3B552E;
+	list-style: none;
+	position: relative !important;
+}
+.search .result-list li {
+	line-height: 1.7;
+}
+.search .result-list span,
+.search .result-list a {
+	display: inline-block;
+}
+.search .result-list .name {
+	padding-right: 20px;
+	font-weight: bold;
+}
+.search .result-list .queue,
+.search .result-list .play {
+	float: right;
 }
 
 .sitefooter {
@@ -242,13 +268,28 @@ input {
 	background: #777;
 }
 
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+html[xmlns] .clearfix {
+	display: block;
+}
+* html .clearfix {
+	height: 1%;
+}
+
 @media (max-width: 888px){
-	body {
-		font-size: 0.703em;
+	input {
+		width: 70%;
 	}
 	.player,
 	.search {
-		padding-bottom: 60px;
+		/*padding-bottom: 60px;*/
 	}
 	.volume,
 	.position,
@@ -289,7 +330,16 @@ input {
 	}
 }
 
-@media (max-height: 400px){
+@media (max-height: 500px), (max-width: 500px) {
+	body {
+		font-size: 0.703em;
+	}
+	input {
+		width: 94%;
+		padding-right: 3%;
+		padding-left: 3%;
+		font-size: 1.6em;
+	}
 	.track {
 		font-size: 1.6em;
 	}

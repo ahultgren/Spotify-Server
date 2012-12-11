@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<title>Spotify Server</title>
+	<link href="/static/styles/style.css" rel="stylesheet" />
+	<link href="/static/styles/front.css" rel="stylesheet" />
+	<link href='http://fonts.googleapis.com/css?family=Crete+Round' rel='stylesheet' type='text/css' />
+</head>
+<body>
+	<div class="puff">
+		<header class="sitehead">
+			<h1>Frodj</h1>
+		</header>
+		<article>
+			<h2>tl;dr</h2>
+			<p>
+				Frodj is a Spotify app for all those occasions when everyone wants a say in what song is played. Let your friends choose what’s played through a web interface, or retain all the power yourself from the comfort of your couch.
+			</p>
+			<h2>How to use Frodj</h2>
+			<p>
+				Currently Frodj is in the early stage of development. Most importantly this means that Spotify haven't approved the app yet and so it's not available from the App Finder. Thus, if you want to use Frodj <em>now</em> you have to use Spotify Premium, get a developer account on Spotify and download the app from github. It's all explained step by step in the <a href="https://github.com/ahultgren/Spotify-Slave">repo for Spotify Slave</a>.
+			</p>
+			<p>
+				It also means that I haven't built all the features yet and that the UI is a bit unpolished. However that only means that I'm very open for suggestions, ideas and feedback about where to take Frodj. If you have an awesome feature in mind and want to be part of the development of Frodj, don't hesitate to create an issue on github or <a href="https://twitter.com/andreashultgren">send a tweet my way</a>.
+			</p>
+			<h2>Current features</h2>
+			<ul>
+				<li>See what track is played right now (track name, artist, album, duration)</li>
+				<li>See various player states (position, volume, whether shuffling and/or repeating)</li>
+				<li>Control playback (play/pause, next, previous)</li>
+				<li>Search for songs via Spotify's web API and play/or queue them</li>
+				<li>Admin mode, which prevents not logged in users from directly manipulating playback</li>
+			</ul>
+			<h2>Planned features</h2>
+			<ul>
+				<li>Display play queue</li>
+				<li>Vote to change track</li>
+				<li>Vote to order queued tracks</li>
+				<li>Chat with admin or other listeners</li>
+				<li>More fine-grained permissions system</li>
+			</ul>
+		</article>
+	</div>
+	<footer class="sitefooter">
+		<p>Made by <a href="http://andreashultgren.se">Andreas Hultgren</a>, supported by <a href="http://frojd.se/career">Fröjd Interactive</a>.</p>
+	</footer>
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-36967009-1']);
+		_gaq.push(['_setDomainName', 'frodj.me']);
+		_gaq.push(['_trackPageview']);
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+</body>
+</html>
