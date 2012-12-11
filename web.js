@@ -24,6 +24,11 @@ function App(){
 	that.app.use(express.bodyParser());
 	that.app.use(that.app.router);
 
+	// Start page
+	that.app.get('/', function(req, res, next){
+		res.sendfile(__dirname + '/views/index.html');
+	});
+
 	// Create room
 	that.app.post('/:roomname', that.rooms.add());
 

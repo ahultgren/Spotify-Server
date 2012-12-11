@@ -23,6 +23,9 @@ body {
 	font: 1.125em/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	color: #f2f7f0;
 }
+h2, h3 {
+	font-family: 'Crete Round', serif;
+}
 h2 { font-size: 2.56em; }
 h3 { font-size: 1.6em; }
 a {
