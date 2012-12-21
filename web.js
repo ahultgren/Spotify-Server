@@ -4,7 +4,7 @@ var
 // Dependencies
 	express = require('express'),
 	server = require('http'),
-	socket = require('socket.io')
+	socket = require('socket.io'),
 // Vars
 	port = 3000;
 
