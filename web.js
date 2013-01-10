@@ -1,4 +1,9 @@
 var 
+// Monitoring
+	nodefly = require('nodefly').profile(
+		'',
+		['Spotify Server', process.env.NODE_ENV === 'development' ? 'local' : 'production', process.env.INDEX_OF_PROCESS || 0]
+	),
 // Main module
 	Rooms = require('./rooms/main'),
 // Dependencies
