@@ -1,2 +1,7 @@
 node_modules
 resources
+*.config
+*.log
+*.out
+
+!sample.config
