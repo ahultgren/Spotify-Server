@@ -51,7 +51,9 @@
 			}
 			else {
 				// Setter
-				setLeft(width * (value - that.min)/(that.max - that.min));
+				if( !that.isDragged ){
+					setLeft(width * (value - that.min)/(that.max - that.min));
+				}
 				return that;
 			}
 		};
@@ -107,10 +109,12 @@
 				touchmove(e);
 			});
 
-			that.on('touchend touchcancel', function(e){
-				e.preventDefault();
-				that.isDragged = false;
-				that.drop(that.value());
+			$('body').on('touchend touchcancel', function(e){
+				if( that.isDragged ){
+					e.preventDefault();
+					that.isDragged = false;
+					that.drop(that.value());
+				}
 			});
 
 			function mousemove(e){
