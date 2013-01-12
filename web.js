@@ -1,4 +1,10 @@
 var 
+	config = require('./.config'),
+// Monitoring
+	nodefly = require('nodefly').profile(
+		config.nodefly_key,
+		[config.appName, config.env, process.env.INDEX_OF_PROCESS || 0]
+	),
 // Main module
 	Rooms = require('./rooms/main'),
 // Dependencies

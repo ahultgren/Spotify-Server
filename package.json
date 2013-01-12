@@ -1,9 +1,10 @@
 {
   "name": "spotify-server",
   "description": "A web based UI for Spotify",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "dependencies": {
     "express": "3.x",
-    "socket.io": "0.9.11"
+    "socket.io": "0.9.11",
+    "nodefly": "stable"
   }
 }

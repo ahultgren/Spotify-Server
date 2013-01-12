@@ -29,7 +29,15 @@ Main.prototype.add = function() {
 		var name = req.params.roomname;
 
 		isReserved(name, next, function(){
-			that.get(name, next, function(){
+			that.get(name, function(room){
+				console.log(room);
+				if( room.spotify.token === req.body.slaveToken ){
+					res.send(200);
+				}
+				else {
+					res.send(401);
+				}
+			}, function(){
 				new Room({
 					name: name,
 					sio: that.sio,
@@ -69,7 +77,7 @@ Main.prototype.get = function(name, yes, no) {
 		}
 	}
 
-	found ? yes && yes(that[i]) : no && no({text: 'Name is already used'});
+	found ? yes && yes(that[i]) : no && no();
 };
 
 Main.prototype.playerView = function() {

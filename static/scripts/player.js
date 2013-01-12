@@ -30,9 +30,9 @@ function Player(args){
 	function initialize(){
 		var that = player;
 
-		playpause = $('.playpause').click(action);
-		next = $('.next').click(action);
-		prev = $('.prev').click(action);
+		playpause = $('.playpause').fastClick(action);
+		next = $('.next').fastClick(action);
+		prev = $('.prev').fastClick(action);
 		name = $('#name');
 		artists = $('#artists');
 		album = $('#album');
@@ -42,8 +42,8 @@ function Player(args){
 			}
 		});
 		positionCounter = $('#position');
-		repeat = $('#repeat').click(action);
-		shuffle = $('#shuffle').click(action);
+		repeat = $('#repeat').fastClick(action);
+		shuffle = $('#shuffle').fastClick(action);
 		duration = $('#duration');
 		volume = $('.volume .slide').slide({
 			min: 0,
